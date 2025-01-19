@@ -1,0 +1,56 @@
+quarkus:
+  application:
+    name: "elder-rings"
+    version: "0.0.1"
+
+  http:
+    host: 127.0.0.1
+    port: 8080
+    debug: true
+    cors:
+      ~: true
+      origin: "*"
+      # access-control-allow-credentials: true
+    root-path: /elder-rings/
+    non-application-root-path: /elder-rings/monitor
+  rest:
+    path: /api
+
+  # Logging configuration
+  log:
+    level: info
+    file:
+      path: "log/elder-rings.log"
+    console:
+      format: "%d %p (%t) %m%n" # Log format
+
+  # Quinoa configuration (for serving frontend)
+  quinoa:
+    ui-dir: src/main/ui
+    enable-spa-routing: true
+    ui-build-dir: dist
+    ignored-path-prefixes:
+      - /elder-rings/api
+      - /elder-rings/ws
+      - /elder-rings/monitor
+    dev-server: # Dev server URL for live reload during development
+      host: "127.0.0.1"
+      port: 5173
+      managed: false
+
+  # Jackson (json serialization)
+  jackson:
+    serialization-inclusion: NON_ABSENT
+    fail-on-unknown-properties: false
+    accept-case-insensitive-enums: true
+
+  # Metric configuration
+  smallrye-health:
+    root-path: health
+  micrometer:
+    export:
+      json:
+        enabled: true
+        path: "metrics/json"
+      prometheus:
+        path: "metrics/prometheus"

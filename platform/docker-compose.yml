@@ -1,0 +1,48 @@
+version: '3.8'
+
+networks:
+  keycloak_network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=keycloak            # Name of the database for Keycloak
+      - POSTGRES_USER=keycloak           # Username for the database
+      - POSTGRES_PASSWORD=K3YcL04KAdm%nD4a|a    # Password for the database
+    volumes:
+      - ./keycloak_postgres_data:/var/lib/postgresql/data  # Persist data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]  # Check if PostgreSQL is ready
+      interval: 5s                              # Interval between checks
+      timeout: 5s                               # Timeout for each check
+      retries: 5                                # Number of retries before marking as unhealthy
+    networks:
+      - keycloak_network
+
+  keycloak:
+    build: ./keycloak/
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgres/keycloak
+      - KC_DB_USERNAME:keycloak
+      - KC_DB_PASSWORD=K3YcL04KAdm%nD4a|a
+      - KC_BOOTSTRAP_ADMIN_USERNAME=keycloak_master   # Admin username
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=K3YcL04KAdm%n     # Admin password
+    command: ["start-dev"]                      # This is the command to start Keycloak in development mode
+    ports:
+      - "8080:8080"                             # Keycloak web UI port
+    depends_on:
+      postgres:
+        condition: service_healthy              # Wait until PostgreSQL is healthy
+    volumes:
+      - ./keycloak/data:/opt/keycloak/data      # Persist Keycloak data
+      - ./keycloak/conf:/opt/keycloak/conf      # Persist Keycloak conf
+      - ./keycloak/realms:/opt/keycloak/realms  # Persist Keycloak realms
+    networks:
+      - keycloak_network
+
+volumes:
+  postgres_data:                          # Volume for PostgreSQL data
+  keycloak_data:                          # Volume for Keycloak data
