@@ -36,7 +36,7 @@ quarkus:
     dev-server: # Dev server URL for live reload during development
       host: "127.0.0.1"
       port: 5173
-      managed: false
+      managed: true
 
   # Jackson (json serialization)
   jackson:
@@ -54,3 +54,31 @@ quarkus:
         path: "metrics/json"
       prometheus:
         path: "metrics/prometheus"
+
+  # OIDC related configurations
+  oidc:
+    auth-server-url: http://<keycloak-url>/realms/<realm-name>
+    client-id: elderrings
+    credentials: 
+      secret: Uns3cur3dS3cR3t
+      jwt:
+        signature-algorithm: RS256
+      client-secret:
+        method: post
+    application-type: hybrid
+    authentication:
+      scopes: openid
+      cookie-domain: 127.0.0.1
+      restore-path-after-redirect: true
+      error-path: /error
+      add-openid-scope: true
+    roles:
+      source: accesstoken
+    token-state-manager:
+      encryption-required: true
+      encryption-scecret: oi2jwOInZWza5wLzpi75sdihN7bb6hKs
+      split-tokens: true
+
+application:
+  info:
+    env: "dev"
