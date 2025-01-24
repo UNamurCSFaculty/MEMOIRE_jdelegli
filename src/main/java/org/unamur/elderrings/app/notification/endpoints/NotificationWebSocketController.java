@@ -36,7 +36,7 @@ public class NotificationWebSocketController {
   }
 
   @OnError
-  public void onError(Session session) {
+  public void onError(Session session, Throwable throwable) {
     onErrorNotificationSession.onError(session);
   }
   

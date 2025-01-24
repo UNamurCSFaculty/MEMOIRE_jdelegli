@@ -57,7 +57,11 @@ quarkus:
 
   # OIDC related configurations
   oidc:
-    auth-server-url: http://<keycloak-url>/realms/<realm-name>
+    tls:
+      verification: none
+    devservices:
+      enabled: true
+    auth-server-url: http://localhost:8180/realms/quarkus
     client-id: elderrings
     credentials: 
       secret: Uns3cur3dS3cR3t
@@ -68,10 +72,13 @@ quarkus:
     application-type: hybrid
     authentication:
       scopes: openid
-      cookie-domain: 127.0.0.1
-      restore-path-after-redirect: true
-      error-path: /error
       add-openid-scope: true
+      verify-access-token: true
+      error-path: /error
+      restore-path-after-redirect: true
+      cookie-domain: 127.0.0.1
+      cookie-path: /elder-rings
+      cookie-same-site: LAX
     roles:
       source: accesstoken
     token-state-manager:

@@ -5,7 +5,6 @@ import org.unamur.elderrings.app.telecommunication.ws.OnCloseCallRoomSession;
 import org.unamur.elderrings.app.telecommunication.ws.OnErrorCallRoomSession;
 import org.unamur.elderrings.app.telecommunication.ws.OnMessageCallRoomSession;
 import org.unamur.elderrings.app.telecommunication.ws.OnOpenCallRoomSession;
-import org.unamur.elderrings.modules.user.api.models.User;
 import org.unamur.elderrings.utils.JSONEncoder;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -31,22 +30,22 @@ public class CallRoomWebSocketController {
   private final OnErrorCallRoomSession onErrorCallRoomSession;
 
   @OnOpen
-  public void onOpen(User user, Session session, @PathParam("roomId") String roomId){
+  public void onOpen(Session session, @PathParam("roomId") String roomId){
     onOpenCallRoomSession.onOpen(roomId, session);
   }
 
   @OnError
-  public void onError(User user, Session session, @PathParam("roomId") String roomId){
+  public void onError(Session session, Throwable throwable, @PathParam("roomId") String roomId){
     onErrorCallRoomSession.onError(roomId);
   }
 
   @OnClose
-  public void onClose(User user, Session session, @PathParam("roomId") String roomId){
+  public void onClose(Session session, @PathParam("roomId") String roomId){
     onCloseCallRoomSession.onClose(roomId);
   }
 
   @OnMessage
-  public void onMessage(User user, Session session, String message, @PathParam("roomId") String roomId){
+  public void onMessage(Session session, String message, @PathParam("roomId") String roomId){
     onMessageCallRoomSession.onMessage(roomId, message);
   }
   

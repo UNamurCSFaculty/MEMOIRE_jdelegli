@@ -71,6 +71,7 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-config-yaml</artifactId>
         </dependency>
+        <!-- Auth related -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-oidc</artifactId>
@@ -82,6 +83,15 @@
          <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client-oidc-token-propagation</artifactId>
+        </dependency>
+        <!-- DB related -->
+         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-reactive-pg-client</artifactId>
         </dependency>
         <!-- Lombok -->
         <dependency>
