@@ -25,7 +25,11 @@
 
     /* Custom app path */
     "paths": {
-      "@components/*": ["./src/components/*"]
+      "@components/*": ["./src/components/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@openapi/*": ["./src/openapi/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@types/*": ["./src/types/*"]
     }
   },
   "includes": ["src", "basepath.config.d.ts"],

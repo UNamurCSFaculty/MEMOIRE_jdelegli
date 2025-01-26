@@ -5,6 +5,7 @@
 bin/
 platform/keycloak
 platform/keycloak_postgres_data
+platform/elderrings_postgres_data
 
 # IntelliJ
 .idea

@@ -5,8 +5,10 @@ networks:
     driver: bridge
 
 services:
-  postgres:
+  keycloak-db:
+    # build: ./keycloak/
     image: postgres:latest
+    container_name: keycloak-db
     environment:
       - POSTGRES_DB=keycloak            # Name of the database for Keycloak
       - POSTGRES_USER=keycloak           # Username for the database
@@ -22,19 +24,22 @@ services:
       - keycloak_network
 
   keycloak:
-    build: ./keycloak/
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
     environment:
       - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://postgres/keycloak
+      - KC_DB_URL=jdbc:postgresql://keycloak-db/keycloak
       - KC_DB_USERNAME:keycloak
       - KC_DB_PASSWORD=K3YcL04KAdm%nD4a|a
       - KC_BOOTSTRAP_ADMIN_USERNAME=keycloak_master   # Admin username
       - KC_BOOTSTRAP_ADMIN_PASSWORD=K3YcL04KAdm%n     # Admin password
-    command: ["start-dev"]                      # This is the command to start Keycloak in development mode
+    command:
+      - "start-dev" # This is the command to start Keycloak in development mode
+      - "--http-relative-path=/auth"                     
     ports:
-      - "8080:8080"                             # Keycloak web UI port
+      - "8180:8080"                             # Keycloak web UI port
     depends_on:
-      postgres:
+      keycloak-db:
         condition: service_healthy              # Wait until PostgreSQL is healthy
     volumes:
       - ./keycloak/data:/opt/keycloak/data      # Persist Keycloak data
@@ -42,6 +47,18 @@ services:
       - ./keycloak/realms:/opt/keycloak/realms  # Persist Keycloak realms
     networks:
       - keycloak_network
+
+  elderrings-db:
+    image: postgres:15
+    container_name: elderrings-db
+    environment:
+      POSTGRES_DB: elderrings
+      POSTGRES_USER: elderrings_user
+      POSTGRES_PASSWORD: elderrings_p4ssw0rd
+    volumes:
+      - ./elderrings_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  
 
 volumes:
   postgres_data:                          # Volume for PostgreSQL data

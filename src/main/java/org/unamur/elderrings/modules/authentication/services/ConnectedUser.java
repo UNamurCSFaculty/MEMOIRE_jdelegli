@@ -2,6 +2,8 @@ package org.unamur.elderrings.modules.authentication.services;
 
 import java.util.UUID;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.RequestScoped;
@@ -13,20 +15,52 @@ public class ConnectedUser {
 
   private final SecurityIdentity identity;
 
-  public UUID getId() {
-    try {
-      return UUID.fromString(identity.getAttribute("id"));
-    } catch (Exception e) {
-      throw new ForbiddenException("Invalid user, all users must have an id");
+    public UUID getId() {
+      try {
+        JsonWebToken principal = (JsonWebToken) identity.getPrincipal();
+        return UUID.fromString(principal.getSubject());
+      } catch (Exception e) {
+        throw new ForbiddenException("Invalid user, all users must have an ID");
+      }
+        // Retrieves the "id" claim (typically "sub" in the token) as a UUID; mandatory
+        
     }
+
+    public String getUsername() {
+        // Retrieves the username, typically "preferred_username" or "sub" in the token; mandatory
+        return getMandatoryClaim("preferred_username", "Invalid user, all users must have a username");
+    }
+
+    public String getGivenName() {
+        // Retrieves the given name (first name); optional
+        return getOptionalClaim("given_name");
+    }
+
+    public String getFamilyName() {
+        // Retrieves the family name (last name); optional
+        return getOptionalClaim("family_name");
+    }
+
+    public String getEmail() {
+        // Retrieves the email address; optional
+        return getOptionalClaim("email");
+    }
+
+    private String getMandatoryClaim(String claimName, String errorMessage) {
+      try {
+        return getClaim(claimName);
+      } catch (Exception e) {
+        throw new ForbiddenException(errorMessage);
+      }
+    }
+
+    private String getOptionalClaim(String claimName) {
+      return getClaim(claimName); // Returns null if the claim is absent
   }
 
-  public String getUsername() {
-    try {
-      return identity.getPrincipal().getName();
-    } catch (Exception e) {
-      throw new ForbiddenException("Invalid user, all users must have a username");
-    }
+  private String getClaim(String claimName) {
+    // Accesses claims from the JWT principal
+    JsonWebToken principal = (JsonWebToken) identity.getPrincipal();
+    return principal.getClaim(claimName);
   }
-  
 }

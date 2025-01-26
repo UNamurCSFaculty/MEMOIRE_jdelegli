@@ -13,6 +13,17 @@ quarkus:
       # access-control-allow-credentials: true
     root-path: /elder-rings/
     non-application-root-path: /elder-rings/monitor
+    auth:
+      permission:
+        authenticated:
+          paths:
+            - /elder-rings/*
+          policy: authenticated
+        permit:
+          paths:
+            - /elder-rings/monitor/*
+          policy: permit
+
   rest:
     path: /api
 
@@ -22,6 +33,8 @@ quarkus:
     file:
       path: "log/elder-rings.log"
     console:
+      enable: true
+      json: false # Disable JSON logging for console output
       format: "%d %p (%t) %m%n" # Log format
 
   # Quinoa configuration (for serving frontend)
@@ -61,14 +74,20 @@ quarkus:
       verification: none
     devservices:
       enabled: true
-    auth-server-url: http://localhost:8180/realms/quarkus
+    auth-server-url: http://127.0.0.1:8180/auth/realms/elderrings
     client-id: elderrings
-    credentials: 
-      secret: Uns3cur3dS3cR3t
+    credentials:
+      secret: exvFhqRAZD6m0qKtszUCqN2mOxeX3SoH
       jwt:
         signature-algorithm: RS256
       client-secret:
         method: post
+    token:
+      issuer: http://127.0.0.1:8180/auth/realms/elderrings
+    applications:
+      - client:
+          redirect-uris:
+            - http://127.0.0.1:8080/elderrings/
     application-type: hybrid
     authentication:
       scopes: openid
@@ -86,6 +105,22 @@ quarkus:
       encryption-scecret: oi2jwOInZWza5wLzpi75sdihN7bb6hKs
       split-tokens: true
 
+  ## Database related configuration
+  datasource:
+    db-kind: postgresql
+    username: elderrings_user
+    password: elderrings_p4ssw0rd
+    jdbc:
+      url: jdbc:postgresql://127.0.0.1:5432/elderrings
+    # Reactive PostgreSQL configuration
+    reactive:
+      url: postgresql://127.0.0.1:5432/elderrings
+  hibernate-orm:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    database:
+      generation: update # Automatically updates schema; change to 'none' in production
+
+# Custom application dedicated configurations
 application:
   info:
     env: "dev"

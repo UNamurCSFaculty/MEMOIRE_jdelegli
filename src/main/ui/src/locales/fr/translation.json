@@ -1,0 +1,9 @@
+{
+  "Pages": {
+    "CallRoom": {
+      "UserLeft": "Votre correspondant à quitté la conversation",
+      "WaitingUserToJoin": "En attente de votre correspondant",
+      "EndCall": "Raccrocher"
+    }
+  }
+}

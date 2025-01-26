@@ -24,11 +24,12 @@ public class OnOpenCallRoomSession {
   public void onOpen(String roomId, Session session){
     CallRoomId callRoomId = CallRoomId.fromString(roomId);
     CallRoom callRoom = getCallRoom.getCallRoom(callRoomId);
+  
 
-    if(!callRoom.isMember(user)) {
-      throw new ForbiddenException(String.format("User %s is not allowed in the room", user.getId()));
-    }
+    // if(!callRoom.isMember(user)) {
+    //   throw new ForbiddenException(String.format("User %s is not allowed in the room", user.getId()));
+    // }
 
-    joinCallRoom.joinCallRoom(callRoomId, session);
+    // joinCallRoom.joinCallRoom(callRoomId, session);
   } 
 }
