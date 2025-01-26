@@ -32,13 +32,14 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
 
   const [isCallStarted, setIsCallStarted] = useState<boolean>(false);
-  const [userConntected, setUserConnected] = useState<boolean>(false);
+  const [userConnected, setUserConnected] = useState<boolean>(false);
   const [userLeft, setUserLeft] = useState<boolean>(false);
 
   useEffect(() => {
     const ws = getWebSocket();
 
     if (!peerConnection.current) {
+      console.log("jusqu'ici tout va bien");
       peerConnection.current = new RTCPeerConnection();
       peerConnection.current.onicecandidate = (evt) => onIceCandidateHandler(evt, sendJsonMessage);
       peerConnection.current.ontrack = (evt) => onTrackHandler(evt, remoteVideoRef);
@@ -114,12 +115,12 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
           ref={remoteVideoRef}
           autoPlay
           muted={false}
-          className={twMerge("h-full w-[50vw] mt-auto", userConntected ? "" : "hidden")}
+          className={twMerge("h-full w-[50vw] mt-auto", userConnected ? "" : "hidden")}
         />
         <div
           className={twMerge(
             "flex flex-col h-full w-[50vw] bg-gray-200 rounded-xl justify-center",
-            !userConntected ? "" : "hidden"
+            !userConnected ? "" : "hidden"
           )}
         >
           <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-400/80 mx-auto" />
@@ -131,7 +132,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
           ref={localVideoRef}
           autoPlay
           muted={true}
-          className={twMerge("w-[15%] mt-auto", userConntected ? "" : "hidden")}
+          className={twMerge("w-[15%] mt-auto", userConnected ? "" : "hidden")}
         />
       </div>
       {/* add tooltip with {t("Pages.CallRoom.EndCall")} */}
