@@ -51,6 +51,10 @@ quarkus:
       port: 5173
       managed: true
 
+  # Websockets
+  websocket:
+    dispatch-to-worker: true
+
   # Jackson (json serialization)
   jackson:
     serialization-inclusion: NON_ABSENT

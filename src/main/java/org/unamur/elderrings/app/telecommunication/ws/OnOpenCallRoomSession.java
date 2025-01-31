@@ -26,10 +26,10 @@ public class OnOpenCallRoomSession {
     CallRoom callRoom = getCallRoom.getCallRoom(callRoomId);
   
 
-    // if(!callRoom.isMember(user)) {
-    //   throw new ForbiddenException(String.format("User %s is not allowed in the room", user.getId()));
-    // }
+    if(!callRoom.isMember(user)) {
+      throw new ForbiddenException(String.format("User %s is not allowed in the room", user.getId()));
+    }
 
-    // joinCallRoom.joinCallRoom(callRoomId, session);
+    joinCallRoom.joinCallRoom(callRoomId, session);
   } 
 }

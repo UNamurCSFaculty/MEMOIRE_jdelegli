@@ -1,6 +1,7 @@
 //Note : this component will be split in the future
 
 import {
+  answerCall,
   initiateCall,
   onIceCandidateHandler,
   onTrackHandler,
@@ -39,7 +40,6 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
     const ws = getWebSocket();
 
     if (!peerConnection.current) {
-      console.log("jusqu'ici tout va bien");
       peerConnection.current = new RTCPeerConnection();
       peerConnection.current.onicecandidate = (evt) => onIceCandidateHandler(evt, sendJsonMessage);
       peerConnection.current.ontrack = (evt) => onTrackHandler(evt, remoteVideoRef);
@@ -86,7 +86,13 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
               startCall();
             } else {
               parsedMessage.value.forEach((message) => {
-                proccessWebRTCMessage(JSON.parse(message), peerConnection);
+                const parsedMessage = JSON.parse(message);
+                proccessWebRTCMessage(parsedMessage, peerConnection);
+                if (parsedMessage.type === "offer") {
+                  answerCall(peerConnection, localVideoRef, sendJsonMessage);
+                  setUserConnected(true);
+                  setIsCallStarted(true);
+                }
               });
             }
           }
