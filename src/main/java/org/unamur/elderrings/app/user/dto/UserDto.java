@@ -1,13 +1,15 @@
-package org.unamur.elderrings.modules.user.api.models;
+package org.unamur.elderrings.app.user.dto;
 
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
-public class User {
+public class UserDto {
 
   private UUID id;
 

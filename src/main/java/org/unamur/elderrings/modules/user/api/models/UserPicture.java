@@ -7,16 +7,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class User {
+public class UserPicture {
 
   private UUID id;
 
-  private String username;
-
-  private String firstName;
-
-  private String lastName;
-
-  private Boolean isRoom;
-
+  private byte[] image;
 }

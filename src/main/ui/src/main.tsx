@@ -4,9 +4,12 @@ import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import mainRouter from "./mainRouter.tsx";
 import "./locales/i18n.ts";
+import UserAuthContextProvider from "@contexts/UserAuthContextProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={mainRouter} />
+    <UserAuthContextProvider>
+      <RouterProvider router={mainRouter} />
+    </UserAuthContextProvider>
   </StrictMode>
 );

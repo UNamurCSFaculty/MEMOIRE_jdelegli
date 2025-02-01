@@ -29,7 +29,8 @@
       "@utils/*": ["./src/utils/*"],
       "@openapi/*": ["./src/openapi/*"],
       "@pages/*": ["./src/pages/*"],
-      "@types/*": ["./src/types/*"]
+      "@type/*": ["./src/types/*"],
+      "@contexts/*": ["./src/contexts/*"]
     }
   },
   "includes": ["src", "basepath.config.d.ts"],

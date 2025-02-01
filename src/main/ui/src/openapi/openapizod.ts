@@ -7,9 +7,7 @@ const CreateCallRoomBody = z
       .array(
         z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
           .uuid()
       )
       .min(1)
@@ -24,11 +22,24 @@ const CallRoomDto = z
     ).uuid(),
   })
   .passthrough();
+const UserDto = z
+  .object({
+    id: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    username: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    isRoom: z.boolean(),
+  })
+  .partial()
+  .passthrough();
 
 export const schemas = {
   CreateCallRoomBody,
   UUID,
   CallRoomDto,
+  UserDto,
 };
 
 const endpoints = makeApi([
@@ -66,6 +77,41 @@ const endpoints = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/user/:userId/set-picture",
+    alias: "setUserPicture",
+    requestFormat: "form-url",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ file: z.instanceof(File) })
+          .partial()
+          .passthrough(),
+      },
+      {
+        name: "userId",
+        type: "Path",
+        schema: z
+          .string()
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .uuid(),
+      },
+    ],
+    response: z
+      .string()
+      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+      .uuid(),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/me",
+    alias: "getCurrentUser",
+    requestFormat: "json",
+    response: UserDto,
   },
 ]);
 
