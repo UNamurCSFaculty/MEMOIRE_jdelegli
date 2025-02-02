@@ -15,9 +15,9 @@ import useWebSocket from "react-use-websocket";
 import { webrtcWebSocketEventMessage } from "../../types/rtcWebSocketEventMessage";
 import { twMerge } from "tailwind-merge";
 import PrimeSpinnerDotted from "~icons/prime/spinner-dotted";
-import MdiCallEnd from "~icons/mdi/call-end";
 import Row from "@components/layout/Row";
 import Col from "@components/layout/Col";
+import { IconEndCall } from "@components/icons/favouriteIcons";
 
 export interface VideoCallProps {
   roomId: string;
@@ -149,7 +149,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         className="mx-auto bg-red-500 hover:bg-red-600 text-white rounded-full h-12 w-12"
         disabled={!isCallStarted}
       >
-        <MdiCallEnd className="mx-auto" />
+        <IconEndCall className="mx-auto" />
       </button>
     </Col>
   );

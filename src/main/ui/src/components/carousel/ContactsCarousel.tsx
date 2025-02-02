@@ -1,5 +1,10 @@
 import { ContactDto } from "@type/openapiTypes";
 import { useEffect, useState } from "react";
+import { basePath } from "../../../basepath.config";
+import { apiClient } from "@openapi/zodiosClient";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@heroui/button";
+import { IconStartCall } from "@components/icons/favouriteIcons";
 
 interface ContactsCarouselProps {
   contacts: ContactDto[];
@@ -7,22 +12,7 @@ interface ContactsCarouselProps {
 
 export default function ContactsCarousel({ contacts }: Readonly<ContactsCarouselProps>) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Array of big images from the internet
-  //   const images = [
-  //     "https://picsum.photos/id/237/1600/900",
-  //     "https://picsum.photos/id/238/1600/900",
-  //     "https://picsum.photos/id/239/1600/900",
-  //     "https://picsum.photos/id/240/1600/900",
-  //     "https://picsum.photos/id/241/1600/900",
-  //   ];
-  const images = [
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?q=80&w=1966&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1508186225823-0963cf9ab0de?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  ];
+  const navigate = useNavigate();
 
   // Keyboard navigation
   useEffect(() => {
@@ -32,18 +22,24 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
       } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
         prevSlide();
       } else if (event.key === "Enter") {
-        console.log("Start call");
+        callContact(contacts[currentIndex]);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [currentIndex, contacts]);
 
-  const nextSlide = () => setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  function callContact(contact: ContactDto) {
+    apiClient.createCallRoom({ userIds: [contact.id!] }).then((resp) => {
+      navigate("call-room/" + resp.id);
+    });
+  }
+
+  const nextSlide = () => setCurrentIndex((prevIndex) => (prevIndex + 1) % contacts.length);
 
   const prevSlide = () =>
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + contacts.length) % contacts.length);
 
   return (
     <div className="relative max-w-4xl mx-auto overflow-hidden h-full w-full  bg-gray-100 rounded-lg">
@@ -54,16 +50,34 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
           transform: `translateX(-${currentIndex * 100}%)`,
         }}
       >
-        {images.map((image, index) => (
+        {contacts.map((contact, index) => (
           <div
             key={index}
-            className="flex-shrink-0 h-full w-full  flex justify-center items-center"
+            className="relative flex-shrink-0 h-full w-full flex justify-center items-center"
           >
+            {/* Image */}
             <img
-              src={image}
-              alt={`Slide ${index + 1}`}
+              src={
+                contact.picture
+                  ? `data:image/*;base64,${contact.picture}`
+                  : basePath + "/picture-user-default.jpg"
+              }
+              alt={`${contact.firstName} ${contact.lastName}`}
               className="max-w-full max-h-full object-contain"
             />
+            {/* Call button */}
+            <div className="absolute bottom-28 left-1/2 transform -translate-x-1/2 text-white p-2 text-center w-full">
+              <Button color="success" isIconOnly size="lg" onPress={() => callContact(contact)}>
+                <IconStartCall className="text-white" />
+              </Button>
+            </div>
+
+            {/* Name */}
+            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-white p-2 text-center w-full">
+              <p className="capitalize inline-block bg-black bg-opacity-60 py-1 px-4 rounded-full text-4xl">
+                {contact.firstName} {contact.lastName}
+              </p>
+            </div>
           </div>
         ))}
       </div>
@@ -86,7 +100,7 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
 
       {/* Indicators */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {images.map((_, index) => (
+        {contacts.map((_, index) => (
           <div
             key={index}
             onClick={() => setCurrentIndex(index)}
