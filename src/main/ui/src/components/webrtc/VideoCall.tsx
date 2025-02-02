@@ -16,6 +16,8 @@ import { webrtcWebSocketEventMessage } from "../../types/rtcWebSocketEventMessag
 import { twMerge } from "tailwind-merge";
 import PrimeSpinnerDotted from "~icons/prime/spinner-dotted";
 import MdiCallEnd from "~icons/mdi/call-end";
+import Row from "@components/layout/Row";
+import Col from "@components/layout/Col";
 
 export interface VideoCallProps {
   roomId: string;
@@ -115,17 +117,17 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   }
 
   return (
-    <div className="flex flex-col w-full h-full gap-10 p-10">
-      <div className="flex flex-row mx-auto gap-0 justify-around">
+    <Col className="w-full h-full gap-10 p-10">
+      <Row className="mx-auto gap-0 justify-around">
         <video
           ref={remoteVideoRef}
           autoPlay
           muted={false}
           className={twMerge("h-full w-[50vw] mt-auto", userConnected ? "" : "hidden")}
         />
-        <div
+        <Col
           className={twMerge(
-            "flex flex-col h-full w-[50vw] bg-gray-200 rounded-xl justify-center",
+            "h-full w-[50vw] bg-gray-200 rounded-xl justify-center",
             !userConnected ? "" : "hidden"
           )}
         >
@@ -133,14 +135,14 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
           <p className="text-center font-semibold text-xl text-gray-500">
             {t("Pages.CallRoom.WaitingUserToJoin")}
           </p>
-        </div>
+        </Col>
         <video
           ref={localVideoRef}
           autoPlay
           muted={true}
           className={twMerge("w-[15%] mt-auto", userConnected ? "" : "hidden")}
         />
-      </div>
+      </Row>
       {/* add tooltip with {t("Pages.CallRoom.EndCall")} */}
       <button
         onClick={endCall}
@@ -149,6 +151,6 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       >
         <MdiCallEnd className="mx-auto" />
       </button>
-    </div>
+    </Col>
   );
 }

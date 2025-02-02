@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public interface SetUserPicture {
 
-  UUID setPicture(UUID userId, byte[] image);
+  UUID setPicture(byte[] image);
 
 }

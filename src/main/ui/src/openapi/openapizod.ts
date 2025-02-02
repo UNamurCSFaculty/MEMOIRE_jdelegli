@@ -7,7 +7,9 @@ const CreateCallRoomBody = z
       .array(
         z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
           .uuid()
       )
       .min(1)
@@ -21,6 +23,19 @@ const CallRoomDto = z
       /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
   })
+  .passthrough();
+const ContactDto = z
+  .object({
+    id: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    username: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    isRoom: z.boolean(),
+    picture: z.instanceof(File),
+  })
+  .partial()
   .passthrough();
 const UserDto = z
   .object({
@@ -39,6 +54,7 @@ export const schemas = {
   CreateCallRoomBody,
   UUID,
   CallRoomDto,
+  ContactDto,
   UserDto,
 };
 
@@ -59,28 +75,21 @@ const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/elder-rings/api/hello",
-    alias: "getElderRingsapihello",
+    path: "/elder-rings/api/user/get-contacts",
+    alias: "getContact",
     requestFormat: "json",
-    response: z.void(),
+    response: z.array(ContactDto),
   },
   {
     method: "get",
-    path: "/elder-rings/api/hello/greeting/:name",
-    alias: "getElderRingsapihellogreetingName",
+    path: "/elder-rings/api/user/me",
+    alias: "getCurrentUser",
     requestFormat: "json",
-    parameters: [
-      {
-        name: "name",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
+    response: UserDto,
   },
   {
     method: "post",
-    path: "/elder-rings/api/user/:userId/set-picture",
+    path: "/elder-rings/api/user/set-picture",
     alias: "setUserPicture",
     requestFormat: "form-url",
     parameters: [
@@ -92,26 +101,13 @@ const endpoints = makeApi([
           .partial()
           .passthrough(),
       },
-      {
-        name: "userId",
-        type: "Path",
-        schema: z
-          .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
-          .uuid(),
-      },
     ],
     response: z
       .string()
-      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+      .regex(
+        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      )
       .uuid(),
-  },
-  {
-    method: "get",
-    path: "/elder-rings/api/user/me",
-    alias: "getCurrentUser",
-    requestFormat: "json",
-    response: UserDto,
   },
 ]);
 

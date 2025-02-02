@@ -13,10 +13,16 @@
     "tsc": ".\\node_modules\\.bin\\tsc"
   },
   "dependencies": {
+    "@heroui/button": "^2.2.10",
+    "@heroui/input": "^2.4.10",
+    "@heroui/system": "^2.4.7",
+    "@heroui/theme": "^2.4.6",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
     "@zodios/core": "^10.9.6",
+    "axios": "^1.7.9",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.0.6",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
     "react": "^18.3.1",

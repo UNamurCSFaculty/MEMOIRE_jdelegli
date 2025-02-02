@@ -1,9 +1,42 @@
 {
+  "Components": {
+    "Errors": {
+      "ErrorHandler": {
+        "WhatHappened": "Que s'est-il passé",
+        "WhatNow": "Que faire ?",
+        "TechnicalDetailsHeader": "Informations techniques",
+        "UnknownError": "Erreur inconnue",
+        "Title": "Erreur",
+        "Summary": "Quelque chose d'imprévu s'est produit",
+        "Action": "Retour à <1>l'accueil</1>."
+      }
+    }
+  },
   "Pages": {
+    "Generic": {
+      "PageNotFound": {
+        "Title": "Page non trouvée",
+        "Message": "La page que vous cherchez n'existe pas ...",
+        "Action": "Retour à <1>l'accueil</1>."
+      },
+      "NotConnectedPage": {
+        "Title": "Oooops",
+        "Message": "Il semblerait que vous ne soyez pas connecté",
+        "Action": "Retour à <1>l'accueil</1>."
+      },
+      "Unauthorized": {
+        "Title": "Accès refusé",
+        "Message": "Vous n'avez pas les droits suffisants pour accéder à cette page",
+        "Action": "Retour à <1>l'accueil</1>."
+      }
+    },
     "CallRoom": {
       "UserLeft": "Votre correspondant à quitté la conversation",
       "WaitingUserToJoin": "En attente de votre correspondant",
       "EndCall": "Raccrocher"
+    },
+    "ContactPage": {
+      "NoContactsFound": "Pas de contacts trouvés"
     }
   }
 }

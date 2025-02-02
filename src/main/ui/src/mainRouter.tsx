@@ -1,17 +1,18 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
-import Carousel from "@components/Carousel";
 import { basePath } from "../basepath.config";
 import CallRoomPage from "@pages/CallRoomPage";
-import Greetings from "@pages/Greetings";
-import CreateCallRoomPage from "@pages/CreateCallRoomPage";
+import PageNotFound from "@pages/generic/PageNotFound";
+import ErrorDisplayPage from "@pages/generic/ErrorDisplayPage";
+import RootLayout from "@pages/RootLayout";
+import ContactPage from "@pages/ContactPage";
 
 const mainRouter = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/">
-      <Route path="contacts" element={<Carousel></Carousel>} index />
-      <Route path="create-call-room" element={<CreateCallRoomPage />} />
+    <Route path="/" id="rootLayout" element={<RootLayout />} errorElement={<ErrorDisplayPage />}>
+      <Route index element={<ContactPage />} />
+      <Route path="contacts" element={<ContactPage />} />
       <Route path="call-room/:roomId" element={<CallRoomPage />} />
-      <Route path="greetings" element={<Greetings />} />
+      <Route path="*" element={<PageNotFound />} />
     </Route>
   ),
   { basename: basePath }

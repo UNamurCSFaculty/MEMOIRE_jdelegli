@@ -3,6 +3,7 @@ package org.unamur.elderrings.modules.user.internal;
 import java.util.UUID;
 
 import org.unamur.elderrings.infra.user.repositories.UserRepository;
+import org.unamur.elderrings.modules.authentication.services.ConnectedUser;
 import org.unamur.elderrings.modules.user.api.SetUserPicture;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,9 +17,11 @@ public class SetUserPictureImpl implements SetUserPicture {
 
   private final UserRepository repository;
 
+  private final ConnectedUser user;
+
   @Override
-  public UUID setPicture(UUID userId, byte[] image) {
-    return repository.setUserPicture(userId, image);
+  public UUID setPicture(byte[] image) {
+    return repository.setUserPicture(user.getId(), image);
   }
   
 }
