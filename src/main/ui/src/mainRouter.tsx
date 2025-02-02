@@ -5,6 +5,7 @@ import PageNotFound from "@pages/generic/PageNotFound";
 import ErrorDisplayPage from "@pages/generic/ErrorDisplayPage";
 import RootLayout from "@pages/RootLayout";
 import ContactPage from "@pages/ContactPage";
+import SetUserProfile from "@pages/SetUserProfile";
 
 const mainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -12,6 +13,8 @@ const mainRouter = createBrowserRouter(
       <Route index element={<ContactPage />} />
       <Route path="contacts" element={<ContactPage />} />
       <Route path="call-room/:roomId" element={<CallRoomPage />} />
+      <Route path="change-picture" element={<SetUserProfile />} />
+
       <Route path="*" element={<PageNotFound />} />
     </Route>
   ),

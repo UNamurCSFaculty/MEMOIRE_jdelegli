@@ -7,9 +7,7 @@ const CreateCallRoomBody = z
       .array(
         z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
           .uuid()
       )
       .min(1)
@@ -33,7 +31,7 @@ const ContactDto = z
     firstName: z.string(),
     lastName: z.string(),
     isRoom: z.boolean(),
-    picture: z.instanceof(File),
+    picture: z.union([z.string(), z.null()]),
   })
   .partial()
   .passthrough();
@@ -104,9 +102,7 @@ const endpoints = makeApi([
     ],
     response: z
       .string()
-      .regex(
-        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-      )
+      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
       .uuid(),
   },
 ]);

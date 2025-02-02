@@ -9,9 +9,13 @@ import org.unamur.elderrings.infra.user.entities.UserPictureEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @ApplicationScoped
+@AllArgsConstructor
 public class UserRepository implements PanacheRepository<UserEntity>  {
+
+  private final UserPictureRepository userPictureRepository; 
 
   // Get user by id
   public Optional<UserEntity> getUserById(UUID id) {
@@ -65,6 +69,7 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
       UserEntity user = userOpt.get();
       UserPictureEntity userPicture = new UserPictureEntity();
       userPicture.setImage(image);
+      userPictureRepository.persistAndFlush(userPicture);
       user.setPicture(userPicture);  // Assuming you've set up a setProfilePicture method in UserEntity
       persist(user);  // Save the updated user with the new profile picture
       return userPicture.getId();

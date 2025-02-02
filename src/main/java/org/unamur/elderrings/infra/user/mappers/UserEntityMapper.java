@@ -1,5 +1,7 @@
 package org.unamur.elderrings.infra.user.mappers;
 
+import java.util.Optional;
+
 import org.unamur.elderrings.infra.user.entities.UserEntity;
 import org.unamur.elderrings.modules.user.api.models.Contact;
 import org.unamur.elderrings.modules.user.api.models.User;
@@ -38,10 +40,8 @@ public class UserEntityMapper {
       entity.getLastName(), 
       entity.getIsRoom()
     );
-    UserPicture picture = null;
-    if (entity.getPicture() != null) {
-      picture = new UserPicture(entity.getPicture().getImage());
-    }
+    Optional<UserPicture> picture = Optional.ofNullable(entity.getPicture())
+                                            .map(p -> new UserPicture(p.getImage())); // Safely wrap the picture in Optional
     return new Contact(user, picture);
   }
   

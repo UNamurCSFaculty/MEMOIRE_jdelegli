@@ -1,5 +1,7 @@
 package org.unamur.elderrings.modules.user.api.models;
 
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,6 +10,6 @@ import lombok.Getter;
 public class Contact  {
 
   User user;
-  UserPicture picture;
+  Optional<UserPicture> picture;
   
 }
