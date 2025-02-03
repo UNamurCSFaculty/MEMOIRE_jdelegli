@@ -1,3 +1,9 @@
 export { default as IconLoader } from "~icons/tabler/loader-2";
 export { default as IconStartCall } from "~icons/mdi/phone";
 export { default as IconEndCall } from "~icons/mdi/call-end";
+export { default as IconScreenShare } from "~icons/material-symbols-light/screen-share-outline";
+export { default as IconScreenShareStop } from "~icons/material-symbols-light/stop-screen-share-outline";
+export { default as IconMute } from "~icons/mdi/mute";
+export { default as IconUnmute } from "~icons/mdi/speakerphone";
+export { default as IconStopVideo } from "~icons/mdi/video-off-outline";
+export { default as IconStartVideo } from "~icons/mdi/video-outline";

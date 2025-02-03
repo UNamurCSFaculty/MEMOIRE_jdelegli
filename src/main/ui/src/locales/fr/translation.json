@@ -33,7 +33,13 @@
     "CallRoom": {
       "UserLeft": "Votre correspondant à quitté la conversation",
       "WaitingUserToJoin": "En attente de votre correspondant",
-      "EndCall": "Raccrocher"
+      "EndCall": "Raccrocher",
+      "StopScreenShare": "Arrêter le partage d'écran",
+      "ShareScreen": "Partager l'écran",
+      "DisplayVideo": "Afficher la webcam",
+      "HideVideo": "Cacher la webcam",
+      "Mute": "Couper le micro",
+      "Unmute": "Activer le micro"
     },
     "ContactPage": {
       "NoContactsFound": "Pas de contacts trouvés"
