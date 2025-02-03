@@ -6,10 +6,7 @@ import {
   onIceCandidateHandler,
   onTrackHandler,
   proccessWebRTCMessage,
-  startScreenShare,
-  stopScreenShare,
   terminateCall,
-  toggleMuteAudio,
 } from "@utils/webRtcHelper";
 import { buildWsUrl } from "@utils/webSocketHelper";
 import { useEffect, useRef, useState } from "react";
@@ -20,18 +17,8 @@ import { twMerge } from "tailwind-merge";
 import PrimeSpinnerDotted from "~icons/prime/spinner-dotted";
 import Row from "@components/layout/Row";
 import Col from "@components/layout/Col";
-import {
-  IconEndCall,
-  IconMute,
-  IconScreenShare,
-  IconScreenShareStop,
-  IconStartVideo,
-  IconStopVideo,
-  IconUnmute,
-} from "@components/icons/favouriteIcons";
-import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
 import { useNavigate } from "react-router-dom";
+import VideoCallActionBar from "./VideoCallActionBar";
 
 export interface VideoCallProps {
   roomId: string;
@@ -46,13 +33,9 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   );
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
-
   const peerConnection = useRef<RTCPeerConnection | null>(null);
 
   const [isCallStarted, setIsCallStarted] = useState<boolean>(false);
-  const [isScreenSharing, setIsScreenSharing] = useState<boolean>(false);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const [isVideoHidden, setIsVideoHidden] = useState(false);
   const [userConnected, setUserConnected] = useState<boolean>(false);
   const [userLeft, setUserLeft] = useState<boolean>(false);
 
@@ -136,132 +119,47 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   }
 
   return (
-    <Col className="w-full h-full gap-10 p-10">
-      <Row className="mx-auto gap-0 justify-around">
-        <video
-          ref={remoteVideoRef}
-          autoPlay
-          muted={false}
-          className={twMerge("h-full w-[50vw] mt-auto", userConnected ? "" : "hidden")}
-        />
-        <Col
-          className={twMerge(
-            "h-full w-[50vw] bg-gray-200 rounded-xl justify-center",
-            !userConnected ? "" : "hidden"
-          )}
-        >
-          <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-400/80 mx-auto" />
-          <p className="text-center font-semibold text-xl text-gray-500">
-            {t("Pages.CallRoom.WaitingUserToJoin")}
-          </p>
-        </Col>
-        <video
-          ref={localVideoRef}
-          autoPlay
-          muted={true}
-          className={twMerge("w-[15%] mt-auto", userConnected ? "" : "hidden")}
-        />
-      </Row>
-      <Row className="gap-4 mx-auto">
-        <Tooltip content={t("Pages.CallRoom.EndCall")}>
-          <Button isIconOnly size="lg" color="danger" onPress={endCall} disabled={isCallStarted}>
-            <IconEndCall />
-          </Button>
-        </Tooltip>
-        {isScreenSharing ? (
-          <Tooltip content={t("Pages.CallRoom.StopScreenShare")}>
-            <Button
-              isIconOnly
-              size="lg"
-              color="default"
-              onPress={() => {
-                stopScreenShare(peerConnection, localVideoRef);
-                setIsScreenSharing(false);
-              }}
-              disabled={isCallStarted}
-            >
-              <IconScreenShareStop />
-            </Button>
-          </Tooltip>
-        ) : (
-          <Tooltip content={t("Pages.CallRoom.ShareScreen")}>
-            <Button
-              isIconOnly
-              size="lg"
-              color="default"
-              onPress={() => {
-                startScreenShare(peerConnection, localVideoRef);
-                setIsScreenSharing(true);
-              }}
-              disabled={isCallStarted}
-            >
-              <IconScreenShare />
-            </Button>
-          </Tooltip>
+    <div className="w-screen h-screen bg-black">
+      {/* Remote Video - Fullscreen */}
+      <video
+        ref={remoteVideoRef}
+        autoPlay
+        muted={false}
+        className={twMerge("h-full w-full", userConnected ? "" : "hidden")}
+      />
+
+      {/* Local Video - Bottom Right Overlay */}
+      <video
+        ref={localVideoRef}
+        autoPlay
+        muted={true}
+        className={twMerge(
+          "w-[20%] absolute bottom-4 right-4 border-2 border-gray-100 rounded-lg",
+          userConnected ? "" : "hidden"
         )}
-        {isAudioMuted ? (
-          <Tooltip content={t("Pages.CallRoom.Unmute")}>
-            <Button
-              isIconOnly
-              size="lg"
-              color="default"
-              onPress={() => {
-                toggleMuteAudio(peerConnection);
-                setIsAudioMuted(false);
-              }}
-              disabled={isCallStarted}
-            >
-              <IconUnmute />
-            </Button>
-          </Tooltip>
-        ) : (
-          <Tooltip content={t("Pages.CallRoom.Mute")}>
-            <Button
-              isIconOnly
-              size="lg"
-              color="default"
-              onPress={() => {
-                startScreenShare(peerConnection, localVideoRef);
-                setIsScreenSharing(true);
-              }}
-              disabled={isCallStarted}
-            >
-              <IconMute />
-            </Button>
-          </Tooltip>
+      />
+
+      {/* Waiting State - Hidden when user is connected */}
+      <Col
+        className={twMerge(
+          "h-full w-full bg-gray-200 rounded-xl flex items-center justify-center",
+          userConnected ? "hidden" : ""
         )}
-        {isVideoHidden ? (
-          <Tooltip content={t("Pages.CallRoom.HideVideo")}>
-            <Button
-              isIconOnly
-              size="lg"
-              color="default"
-              onPress={() => {
-                toggleMuteAudio(peerConnection);
-                setIsVideoHidden(false);
-              }}
-              disabled={isCallStarted}
-            >
-              <IconStopVideo />
-            </Button>
-          </Tooltip>
-        ) : (
-          <Tooltip content={t("Pages.CallRoom.DisplayVideo")}>
-            <Button
-              isIconOnly
-              size="lg"
-              color="default"
-              onPress={() => {
-                startScreenShare(peerConnection, localVideoRef);
-                setIsVideoHidden(true);
-              }}
-              disabled={isCallStarted}
-            >
-              <IconStartVideo />
-            </Button>
-          </Tooltip>
-        )}
-      </Row>
-    </Col>
+      >
+        <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-400/80 mx-auto" />
+        <p className="text-center font-semibold text-xl text-gray-500">
+          {t("Pages.CallRoom.WaitingUserToJoin")}
+        </p>
+      </Col>
+
+      {/* Action Bar - Positioned at the bottom of remote video */}
+      <VideoCallActionBar
+        disabled={!isCallStarted}
+        peerConnection={peerConnection}
+        localVideoRef={localVideoRef}
+        endCall={endCall}
+        className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
+      />
+    </div>
   );
 }
