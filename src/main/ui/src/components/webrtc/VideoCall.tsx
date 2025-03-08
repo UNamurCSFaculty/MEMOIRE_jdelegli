@@ -2,6 +2,7 @@
 
 import {
   answerCall,
+  closeAllConnections,
   initiateCall,
   onIceCandidateHandler,
   onTrackHandler,
@@ -15,7 +16,6 @@ import useWebSocket from "react-use-websocket";
 import { webrtcWebSocketEventMessage } from "../../types/rtcWebSocketEventMessage";
 import { twMerge } from "tailwind-merge";
 import PrimeSpinnerDotted from "~icons/prime/spinner-dotted";
-import Row from "@components/layout/Row";
 import Col from "@components/layout/Col";
 import { useNavigate } from "react-router-dom";
 import VideoCallActionBar from "./VideoCallActionBar";
@@ -39,28 +39,27 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   const [userConnected, setUserConnected] = useState<boolean>(false);
   const [userLeft, setUserLeft] = useState<boolean>(false);
 
-  useEffect(() => {
-    const ws = getWebSocket();
+  const closeAllConnectionsAndSessions = () => {
+    closeAllConnections(peerConnection, remoteVideoRef, localVideoRef);
+    getWebSocket()?.close();
+  };
 
+  useEffect(() => {
     if (!peerConnection.current) {
       peerConnection.current = new RTCPeerConnection();
       peerConnection.current.onicecandidate = (evt) => onIceCandidateHandler(evt, sendJsonMessage);
       peerConnection.current.ontrack = (evt) => onTrackHandler(evt, remoteVideoRef);
     }
 
-    const handleBeforeUnload = () => {
-      ws?.close();
-    };
-
     // To ensure to close the socket if the user close the window
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", closeAllConnectionsAndSessions);
 
     // Function trigger when the component is unmounted
     return () => {
       //Remove the event listener to be clean
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", closeAllConnectionsAndSessions);
       // Manually close the socket as it's not part of the window event listener
-      handleBeforeUnload();
+      closeAllConnectionsAndSessions();
     };
   }, []);
 
@@ -103,6 +102,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         }
         case "CALL_ROOM_USER_LEFT": {
           setUserLeft(true);
+          closeAllConnectionsAndSessions();
         }
       }
     }

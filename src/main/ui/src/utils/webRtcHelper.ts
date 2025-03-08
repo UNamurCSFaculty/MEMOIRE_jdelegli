@@ -15,6 +15,38 @@ export function onIceCandidateHandler(
   else sendJsonMessage({ type: "ice-candidate", value: evt.candidate });
 }
 
+export function closeAllConnections(
+  peerConnection: MutableRefObject<RTCPeerConnection | null>,
+  remoteVideoRef: RefObject<HTMLVideoElement>,
+  localVideoRef: RefObject<HTMLVideoElement>
+) {
+  // 1. close all WebRTC peer connections
+  if (peerConnection.current && peerConnection.current.signalingState !== "closed") {
+    peerConnection.current.getSenders().forEach((sender) => {
+      if (sender.track) sender.track.stop();
+      peerConnection.current?.removeTrack(sender);
+    });
+    peerConnection.current.close();
+    peerConnection.current = null;
+  }
+  // 2. Stop local media tracks
+  if (localVideoRef.current?.srcObject) {
+    const stream = localVideoRef.current.srcObject as MediaStream;
+    stream.getTracks().forEach((track) => {
+      track.stop();
+    });
+    localVideoRef.current.srcObject = null;
+  }
+  // 2. Stop remote media tracks
+  if (remoteVideoRef.current?.srcObject) {
+    const stream = remoteVideoRef.current.srcObject as MediaStream;
+    stream.getTracks().forEach((track) => {
+      track.stop();
+    });
+    remoteVideoRef.current.srcObject = null;
+  }
+}
+
 export function onTrackHandler(evt: RTCTrackEvent, remoteVideoRef: RefObject<HTMLVideoElement>) {
   if (remoteVideoRef.current) {
     remoteVideoRef.current.srcObject = evt.streams[0];
@@ -130,9 +162,7 @@ export function terminateCall(
   if (!peerConnection?.current) {
     console.error("Cannot end a call before the connection is ready");
   } else {
-    peerConnection.current.close();
-    if (localVideoRef?.current?.srcObject) localVideoRef.current.srcObject = null;
-    if (remoteVideoRef?.current?.srcObject) remoteVideoRef.current.srcObject = null;
+    closeAllConnections(peerConnection, remoteVideoRef, localVideoRef);
   }
 }
 
