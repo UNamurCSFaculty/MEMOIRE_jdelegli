@@ -19,6 +19,7 @@ import PrimeSpinnerDotted from "~icons/prime/spinner-dotted";
 import Col from "@components/layout/Col";
 import { useNavigate } from "react-router-dom";
 import VideoCallActionBar from "./VideoCallActionBar";
+import Captions from "./Captions";
 
 export interface VideoCallProps {
   roomId: string;
@@ -151,6 +152,12 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
           {t("Pages.CallRoom.WaitingUserToJoin")}
         </p>
       </Col>
+
+      {/* text Captions - Positioned just above the action bar */}
+      <Captions
+        peerConnection={peerConnection}
+        className="absolute bottom-24 left-1/2 transform -translate-x-1/2"
+      />
 
       {/* Action Bar - Positioned at the bottom of remote video */}
       <VideoCallActionBar
