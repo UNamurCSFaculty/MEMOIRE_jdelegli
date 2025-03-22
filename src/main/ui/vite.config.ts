@@ -9,6 +9,9 @@ export default defineConfig({
   base: basePath,
   plugins: [react(), tsconfigPaths(), Icons({ compiler: "jsx", jsx: "react" })],
   server: {
+    cors: {
+      origin: "*",
+    },
     host: "127.0.0.1",
     port: 5173,
     strictPort: true,

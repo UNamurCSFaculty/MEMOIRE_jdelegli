@@ -7,6 +7,7 @@ import RootLayout from "@pages/RootLayout";
 import ContactPage from "@pages/ContactPage";
 import SetUserProfile from "@pages/SetUserProfile";
 import AddContactPage from "@pages/AddContactPage";
+import UserPreferencePage from "@pages/UserPreferencePage";
 
 const mainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -14,6 +15,7 @@ const mainRouter = createBrowserRouter(
       <Route index element={<ContactPage />} />
       <Route path="contacts" element={<ContactPage />} />
       <Route path="add-contact" element={<AddContactPage />} />
+      <Route path="user-preferences" element={<UserPreferencePage />} />
       <Route path="call-room/:roomId" element={<CallRoomPage />} />
       <Route path="change-picture" element={<SetUserProfile />} />
 

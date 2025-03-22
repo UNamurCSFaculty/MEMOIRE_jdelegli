@@ -56,14 +56,16 @@ If you are not running on windows, you can either make your own script, or use t
   - [x] Direct (self) management
   - [ ] Tutor / Admin management
 - [ ] Role management
-- [ ] User Preference
-  - [ ] General
-    - [ ] Picture
-    - [ ] Lang
-    - [ ] Public // allow other user to see them, otherwise private profile
-  - [ ] Audio
-    - [ ] Frequency filters
-    - [ ] Noise filter
-  - [ ] Visual
-    - [ ] Text size (element size ?)
-    - [ ] Read text on screen ?
+- [x] User Preference
+  - [x] General
+    - [x] Picture
+    - [x] Lang
+    - [x] Public
+      - [ ] filter on this for getAllUsers
+  - [x] Audio
+    - [x] Frequency filters
+    - [x] Noise filter
+  - [x] Visual
+    - [x] Text size (element size ?)
+    - [x] Read text on screen ?
+    - [ ] Implements frontend to use it

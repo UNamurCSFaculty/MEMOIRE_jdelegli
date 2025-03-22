@@ -7,6 +7,7 @@ quarkus:
     host: 127.0.0.1
     port: 8080
     debug: true
+    mime-types: audio-mpeg:.mp3
     cors:
       ~: true
       origin: "*"

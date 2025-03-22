@@ -7,25 +7,49 @@ interface UserAuthContextProps {
 }
 
 export default function UserAuthContextProvider({ children }: Readonly<UserAuthContextProps>) {
-  const [userAuth, setUserAuth] = useState<UserAuthContextType>({ user: null, status: "loading" });
+  const [userAuth, setUserAuth] = useState<UserAuthContextType>({
+    user: null,
+    userPreferences: null,
+    status: "loading",
+  });
 
   useEffect(() => {
-    apiClient
-      .getCurrentUser()
-      .then((resp) => {
+    const fetchUserAndPreferences = async () => {
+      try {
+        const [user, preferences] = await Promise.all([
+          apiClient.getCurrentUser(),
+          apiClient.getCurrentUserPreferences(),
+        ]);
+
         setUserAuth({
-          user: resp,
+          user,
+          userPreferences: preferences,
           status: "idle",
+          refreshUserPreferences,
         });
-      })
-      .catch((e) => {
+      } catch (e) {
         setUserAuth((curr) => ({
-          user: curr.user,
+          ...curr,
           status: "idle",
           error: JSON.stringify(e, null, 2),
         }));
-        console.error("Error while fetching user : ", e);
-      });
+        console.error("Error while fetching user or preferences: ", e);
+      }
+    };
+
+    const refreshUserPreferences = async () => {
+      try {
+        const preferences = await apiClient.getCurrentUserPreferences();
+        setUserAuth((curr) => ({
+          ...curr,
+          userPreferences: preferences,
+        }));
+      } catch (e) {
+        console.error("Failed to refresh preferences", e);
+      }
+    };
+
+    fetchUserAndPreferences();
   }, []);
 
   return userAuth.status === "idle" ? (

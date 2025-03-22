@@ -43,6 +43,33 @@ const ContactRequestDto = z
   })
   .partial()
   .passthrough();
+const UserGeneralPreferencesDto = z
+  .object({ lang: z.string(), isPublic: z.boolean(), public: z.boolean() })
+  .partial()
+  .passthrough();
+const UserVisualPreferencesDto = z
+  .object({ textSize: z.string(), readTextOnScreen: z.boolean() })
+  .partial()
+  .passthrough();
+const UserFrequencyGainDto = z
+  .object({ frequency: z.number().int(), gain: z.number() })
+  .partial()
+  .passthrough();
+const UserAudioPreferencesDto = z
+  .object({
+    noiseReduction: z.boolean(),
+    filters: z.array(UserFrequencyGainDto),
+  })
+  .partial()
+  .passthrough();
+const UserPreferencesDto = z
+  .object({
+    general: UserGeneralPreferencesDto,
+    visual: UserVisualPreferencesDto,
+    audio: UserAudioPreferencesDto,
+  })
+  .partial()
+  .passthrough();
 const ContactDto = z
   .object({
     id: UUID.regex(
@@ -76,6 +103,11 @@ export const schemas = {
   ContactRequestStatusDto,
   Instant,
   ContactRequestDto,
+  UserGeneralPreferencesDto,
+  UserVisualPreferencesDto,
+  UserFrequencyGainDto,
+  UserAudioPreferencesDto,
+  UserPreferencesDto,
   ContactDto,
   UserDto,
 };
@@ -150,6 +182,27 @@ const endpoints = makeApi([
     alias: "getPendingRequests",
     requestFormat: "json",
     response: z.array(ContactRequestDto),
+  },
+  {
+    method: "put",
+    path: "/elder-rings/api/user-preferences",
+    alias: "updateCurrentUserPreferences",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: UserPreferencesDto,
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user-preferences",
+    alias: "getCurrentUserPreferences",
+    requestFormat: "json",
+    response: UserPreferencesDto,
   },
   {
     method: "get",
