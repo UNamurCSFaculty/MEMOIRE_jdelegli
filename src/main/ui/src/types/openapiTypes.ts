@@ -4,3 +4,4 @@ import { z } from "zod";
 export type UserDto = z.infer<typeof schemas.UserDto>;
 export type CallRoomDto = z.infer<typeof schemas.CallRoomDto>;
 export type ContactDto = z.infer<typeof schemas.ContactDto>;
+export type ContactRequestDto = z.infer<typeof schemas.ContactRequestDto>;

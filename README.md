@@ -41,5 +41,29 @@ If you are not running on windows, you can either make your own script, or use t
 
 ## How to use the application
 
-1. Setting up keycloak and creating users (not documented as it will be automated)
-2. Open a website and go to http://127.0.0.1:8080/elder-rings/
+1. Set up keycloak and create users (not documented as it will be automated)
+2. Open a browser and go to http://127.0.0.1:8080/elder-rings/
+
+## Functionnalities
+
+- [x] Video call
+  - [x] Screen sharing
+  - [x] Basic commands (mute, hide camera, ...)
+  - [x] Transcript
+  - [ ] Audio filters
+  - [ ] Remote compatible (keyboard navigation)
+- [ ] Contact management
+  - [x] Direct (self) management
+  - [ ] Tutor / Admin management
+- [ ] Role management
+- [ ] User Preference
+  - [ ] General
+    - [ ] Picture
+    - [ ] Lang
+    - [ ] Public // allow other user to see them, otherwise private profile
+  - [ ] Audio
+    - [ ] Frequency filters
+    - [ ] Noise filter
+  - [ ] Visual
+    - [ ] Text size (element size ?)
+    - [ ] Read text on screen ?

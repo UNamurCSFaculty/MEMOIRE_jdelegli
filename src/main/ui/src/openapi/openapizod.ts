@@ -7,7 +7,9 @@ const CreateCallRoomBody = z
       .array(
         z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
           .uuid()
       )
       .min(1)
@@ -21,6 +23,25 @@ const CallRoomDto = z
       /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
   })
+  .passthrough();
+const ContactRequestStatusDto = z.enum(["PENDING", "ACCEPTED", "REJECTED"]);
+const Instant = z.string();
+const ContactRequestDto = z
+  .object({
+    id: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    requesterId: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    targetId: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    status: ContactRequestStatusDto,
+    createdAt: Instant.datetime({ offset: true }),
+    updatedAt: Instant.datetime({ offset: true }),
+  })
+  .partial()
   .passthrough();
 const ContactDto = z
   .object({
@@ -52,6 +73,9 @@ export const schemas = {
   CreateCallRoomBody,
   UUID,
   CallRoomDto,
+  ContactRequestStatusDto,
+  Instant,
+  ContactRequestDto,
   ContactDto,
   UserDto,
 };
@@ -72,9 +96,72 @@ const endpoints = makeApi([
     response: CallRoomDto,
   },
   {
+    method: "post",
+    path: "/elder-rings/api/contact-management",
+    alias: "createContactRequest",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "targetId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z
+      .string()
+      .regex(
+        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      )
+      .uuid(),
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/contact-management/:requestId/response",
+    alias: "respondToContactRequest",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "requestId",
+        type: "Path",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid(),
+      },
+      {
+        name: "accepted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/contact-management/pending",
+    alias: "getPendingRequests",
+    requestFormat: "json",
+    response: z.array(ContactRequestDto),
+  },
+  {
     method: "get",
     path: "/elder-rings/api/user/get-contacts",
     alias: "getContact",
+    requestFormat: "json",
+    response: z.array(ContactDto),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/get-visible-users",
+    alias: "getVisibleUsers",
     requestFormat: "json",
     response: z.array(ContactDto),
   },
@@ -102,7 +189,9 @@ const endpoints = makeApi([
     ],
     response: z
       .string()
-      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+      .regex(
+        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      )
       .uuid(),
   },
 ]);

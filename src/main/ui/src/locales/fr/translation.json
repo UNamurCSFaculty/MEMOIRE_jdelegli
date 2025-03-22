@@ -43,6 +43,9 @@
     },
     "ContactPage": {
       "NoContactsFound": "Pas de contacts trouvés"
+    },
+    "AddContactPage": {
+      "NoVisibleUserFound": "Aucun utilisateur trouvé"
     }
   }
 }

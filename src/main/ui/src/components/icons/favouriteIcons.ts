@@ -7,3 +7,4 @@ export { default as IconMute } from "~icons/mdi/microphone-off";
 export { default as IconUnmute } from "~icons/mdi/microphone";
 export { default as IconStopVideo } from "~icons/mdi/video-off-outline";
 export { default as IconStartVideo } from "~icons/mdi/video-outline";
+export { default as IconSearch } from "~icons/mdi/search";

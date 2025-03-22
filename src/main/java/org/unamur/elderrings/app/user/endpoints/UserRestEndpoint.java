@@ -14,6 +14,7 @@ import org.unamur.elderrings.app.user.dto.ContactDto;
 import org.unamur.elderrings.app.user.dto.UserDto;
 import org.unamur.elderrings.app.user.mappers.ContactMapper;
 import org.unamur.elderrings.app.user.mappers.UserMapper;
+import org.unamur.elderrings.modules.user.api.GetAllVisibleUsers;
 import org.unamur.elderrings.modules.user.api.GetUserContacts;
 import org.unamur.elderrings.modules.user.api.SetUserPicture;
 import org.unamur.elderrings.modules.user.api.UpdateUserFromToken;
@@ -35,6 +36,7 @@ public class UserRestEndpoint {
   private final UpdateUserFromToken updateUserFromToken;
   private final SetUserPicture setUserPicture;
   private final GetUserContacts getUserContacts;
+  private final GetAllVisibleUsers getAllVisibleUsers;
 
   @GET
   @Path("/me")
@@ -51,6 +53,14 @@ public class UserRestEndpoint {
   @PermitAll
   public RestResponse<List<ContactDto>> getContact(){
     return RestResponse.ok(getUserContacts.getUserContacts().stream().map(ContactMapper::toDto).toList());
+  }
+
+  @GET
+  @Path("/get-visible-users")
+  @Operation(operationId = "getVisibleUsers")
+  @PermitAll
+  public RestResponse<List<ContactDto>> getVisibleUsers(){
+    return RestResponse.ok(getAllVisibleUsers.getAllVisibleUsers().stream().map(ContactMapper::toDto).toList());
   }
 
   @POST
