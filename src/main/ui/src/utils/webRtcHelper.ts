@@ -62,14 +62,23 @@ export function initiateCall(
   if (!peerConnection?.current) {
     console.error("Cannot initiate a call before the connection is ready");
   } else {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      // we can ignore the "is possibly null" issue on current as already tested in if condition
-      stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-      createAndSendOffer(peerConnection, sendJsonMessage);
-    });
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true,
+          autoGainControl: true,
+        },
+        video: true,
+      })
+      .then((stream) => {
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
+        // we can ignore the "is possibly null" issue on current as already tested in if condition
+        stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
+        createAndSendOffer(peerConnection, sendJsonMessage);
+      });
   }
 }
 
@@ -83,21 +92,30 @@ export function stopScreenShare(
   }
 
   // Get back the webcam stream
-  navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-    const webcamTrack = stream.getVideoTracks()[0];
+  navigator.mediaDevices
+    .getUserMedia({
+      audio: {
+        noiseSuppression: true,
+        echoCancellation: true,
+        autoGainControl: true,
+      },
+      video: true,
+    })
+    .then((stream) => {
+      const webcamTrack = stream.getVideoTracks()[0];
 
-    // Restore local video to webcam feed
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = stream;
-    }
+      // Restore local video to webcam feed
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
 
-    // Replace the screen-sharing track with webcam track
-    const sender = peerConnection.current?.getSenders().find((s) => s.track?.kind === "video");
+      // Replace the screen-sharing track with webcam track
+      const sender = peerConnection.current?.getSenders().find((s) => s.track?.kind === "video");
 
-    if (sender) {
-      sender.replaceTrack(webcamTrack);
-    }
-  });
+      if (sender) {
+        sender.replaceTrack(webcamTrack);
+      }
+    });
 }
 
 export function startScreenShare(
@@ -143,14 +161,23 @@ export function answerCall(
   if (!peerConnection?.current) {
     console.error("Cannot answer a call before the connection is ready");
   } else {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      // we can ignore the "is possibly null" issue on current as already tested in if condition
-      stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-      createAndSendAnswer(peerConnection, sendJsonMessage);
-    });
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true,
+          autoGainControl: true,
+        },
+        video: true,
+      })
+      .then((stream) => {
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
+        // we can ignore the "is possibly null" issue on current as already tested in if condition
+        stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
+        createAndSendAnswer(peerConnection, sendJsonMessage);
+      });
   }
 }
 

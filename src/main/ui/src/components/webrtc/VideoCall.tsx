@@ -20,6 +20,7 @@ import Col from "@components/layout/Col";
 import { useNavigate } from "react-router-dom";
 import VideoCallActionBar from "./VideoCallActionBar";
 import Captions from "./Captions";
+import { useAudioFilters } from "../../hooks/useAudioFilters";
 
 export interface VideoCallProps {
   roomId: string;
@@ -29,12 +30,16 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+
   const { getWebSocket, lastJsonMessage, sendJsonMessage } = useWebSocket(
     buildWsUrl("call-room", roomId)
   );
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
+
+  const { handlePlay } = useAudioFilters(remoteVideoRef);
 
   const [isCallStarted, setIsCallStarted] = useState<boolean>(false);
   const [userConnected, setUserConnected] = useState<boolean>(false);
@@ -124,6 +129,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       {/* Remote Video - Fullscreen */}
       <video
         ref={remoteVideoRef}
+        onPlay={handlePlay}
         autoPlay
         muted={false}
         className={twMerge("h-full w-full", userConnected ? "" : "hidden")}
@@ -157,6 +163,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       <Captions
         peerConnection={peerConnection}
         className="absolute bottom-24 left-1/2 transform -translate-x-1/2"
+        emitCaptions={!isAudioMuted}
       />
 
       {/* Action Bar - Positioned at the bottom of remote video */}
@@ -166,6 +173,8 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         localVideoRef={localVideoRef}
         endCall={endCall}
         className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
+        isAudioMuted={isAudioMuted}
+        setIsAudioMuted={setIsAudioMuted}
       />
     </div>
   );

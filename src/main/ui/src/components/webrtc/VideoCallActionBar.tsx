@@ -25,6 +25,8 @@ interface VideoCallActionBarProps {
   localVideoRef: RefObject<HTMLVideoElement>;
   endCall: () => void;
   className?: string;
+  isAudioMuted: boolean;
+  setIsAudioMuted: (b: boolean) => void;
 }
 
 export default function VideoCallActionBar({
@@ -33,9 +35,10 @@ export default function VideoCallActionBar({
   localVideoRef,
   peerConnection,
   className,
+  isAudioMuted,
+  setIsAudioMuted,
 }: Readonly<VideoCallActionBarProps>) {
   const [isScreenSharing, setIsScreenSharing] = useState<boolean>(false);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoHidden, setIsVideoHidden] = useState(false);
 
   return (

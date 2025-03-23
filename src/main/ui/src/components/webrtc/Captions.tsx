@@ -3,9 +3,14 @@ import { MutableRefObject, useEffect, useRef, useState } from "react";
 export interface CaptionsProps {
   peerConnection: MutableRefObject<RTCPeerConnection | null>;
   className?: string;
+  emitCaptions: boolean;
 }
 
-export default function Captions({ peerConnection, className }: Readonly<CaptionsProps>) {
+export default function Captions({
+  peerConnection,
+  className,
+  emitCaptions,
+}: Readonly<CaptionsProps>) {
   const [remoteCaption, setRemoteCaption] = useState("");
 
   const dataChannel = useRef<RTCDataChannel | null>(null);
@@ -14,10 +19,7 @@ export default function Captions({ peerConnection, className }: Readonly<Caption
 
   useEffect(() => {
     if (!peerConnection.current) {
-      console.log("Peer connection not initiated yet");
       return;
-    } else {
-      console.log("Peer connection initiated ");
     }
 
     // Create a DataChannel for sending captions (only initiator)
@@ -72,7 +74,7 @@ export default function Captions({ peerConnection, className }: Readonly<Caption
         transcript += event.results[i][0].transcript;
       }
 
-      if (dataChannel.current?.readyState === "open") {
+      if (dataChannel.current?.readyState === "open" && emitCaptions) {
         dataChannel.current?.send(transcript); // Send caption if data channel is open
       }
     };
@@ -82,7 +84,7 @@ export default function Captions({ peerConnection, className }: Readonly<Caption
     return () => {
       recognition.current?.stop();
     };
-  }, []);
+  }, [emitCaptions]);
 
   return (
     <div className={className ?? ""}>

@@ -50,7 +50,7 @@ If you are not running on windows, you can either make your own script, or use t
   - [x] Screen sharing
   - [x] Basic commands (mute, hide camera, ...)
   - [x] Transcript
-  - [ ] Audio filters
+  - [x] Audio filters
   - [ ] Remote compatible (keyboard navigation)
 - [ ] Contact management
   - [x] Direct (self) management
