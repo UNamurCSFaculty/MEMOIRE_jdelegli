@@ -56,10 +56,7 @@ const UserFrequencyGainDto = z
   .partial()
   .passthrough();
 const UserAudioPreferencesDto = z
-  .object({
-    noiseReduction: z.boolean(),
-    filters: z.array(UserFrequencyGainDto),
-  })
+  .object({ compression: z.boolean(), filters: z.array(UserFrequencyGainDto) })
   .partial()
   .passthrough();
 const UserPreferencesDto = z

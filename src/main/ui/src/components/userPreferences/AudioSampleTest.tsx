@@ -4,15 +4,12 @@ import { useAudioFilters } from "../../hooks/useAudioFilters";
 
 interface AudioSampleTestProps {
   eqBands: UserFrequencyGainDto[];
-  noiseReduction: boolean;
+  compression: boolean;
 }
 
-export default function AudioSampleTest({
-  eqBands,
-  noiseReduction,
-}: Readonly<AudioSampleTestProps>) {
+export default function AudioSampleTest({ eqBands, compression }: Readonly<AudioSampleTestProps>) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { handlePlay } = useAudioFilters(audioRef, eqBands, noiseReduction);
+  const { handlePlay } = useAudioFilters(audioRef, eqBands, compression);
 
   return (
     <div className="flex">

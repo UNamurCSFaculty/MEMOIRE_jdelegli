@@ -40,7 +40,7 @@ public class UserPreferences {
     @Setter
     @AllArgsConstructor
     public static class AudioPreferences {
-        private boolean noiseReduction;
+        private boolean compression;
         private List<FrequencyGain> filters;
     }
 

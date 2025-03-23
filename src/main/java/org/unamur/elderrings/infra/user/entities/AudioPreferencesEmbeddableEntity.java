@@ -13,7 +13,7 @@ import lombok.Setter;
 @Embeddable
 public class AudioPreferencesEmbeddableEntity {
 
-    @Column(name = "noise_reduction_enabled")
-    private boolean noiseReduction;
+    @Column(name = "compression_enabled")
+    private boolean compression;
 
 }

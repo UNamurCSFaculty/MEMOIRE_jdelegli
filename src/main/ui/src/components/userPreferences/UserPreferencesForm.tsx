@@ -115,10 +115,10 @@ export default function UserPreferencesForm({
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={formData.audio?.noiseReduction}
-            onChange={(e) => handleChange("audio", "noiseReduction", e.target.checked)}
+            checked={formData.audio?.compression}
+            onChange={(e) => handleChange("audio", "compression", e.target.checked)}
           />
-          Noise reduction
+          Enable Audio Compression
         </label>
 
         <h3 className="text-md font-semibold mb-2">Audio Filters</h3>
@@ -154,7 +154,7 @@ export default function UserPreferencesForm({
         <h3 className="text-md font-semibold mb-2">Test the configuration</h3>
         <AudioSampleTest
           eqBands={formData.audio?.filters ?? []}
-          noiseReduction={formData.audio?.noiseReduction ?? false}
+          compression={formData.audio?.compression ?? false}
         />
       </section>
 

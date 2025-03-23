@@ -35,7 +35,7 @@ public class UserPreferencesDto {
     @Setter
     @AllArgsConstructor
     public static class UserAudioPreferencesDto {
-        private boolean noiseReduction;
+        private boolean compression;
         private List<UserFrequencyGainDto> filters;
     }
 

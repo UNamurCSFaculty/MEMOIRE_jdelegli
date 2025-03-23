@@ -5,11 +5,11 @@ import { UserFrequencyGainDto } from "@type/openapiTypes";
 export function useAudioFilters(
   audioRef: React.RefObject<HTMLMediaElement>,
   eqBands?: UserFrequencyGainDto[],
-  noiseReduction?: boolean
+  compression?: boolean
 ) {
   const { userPreferences } = useUserPreferences();
   const eqBandsFinal = eqBands ?? userPreferences?.audio?.filters;
-  const noiseReductionFinal = noiseReduction ?? userPreferences?.audio?.noiseReduction;
+  const compressionFinal = compression ?? userPreferences?.audio?.compression;
   const audioContext = useRef<AudioContext | null>(null);
   const sourceNode = useRef<MediaElementAudioSourceNode | null>(null);
   const filterNodes = useRef<BiquadFilterNode[]>([]);
@@ -76,18 +76,7 @@ export function useAudioFilters(
       lastNode.current = source;
     }
 
-    // Apply optional noise reduction
-    if (noiseReductionFinal) {
-      //
-      // Simple solution with lowpass, not optimal as might overlapse with the other biquad filters we have
-      //
-      // const lowPass = ctx.createBiquadFilter();
-      // lowPass.type = "lowpass";
-      // lowPass.frequency.setValueAtTime(1000, ctx.currentTime);
-      // lastNode.current.connect(lowPass);
-      // lowPass.connect(ctx.destination);
-      // lowPassNode.current = lowPass;
-      // lastNode.current = lowPass;
+    if (compressionFinal) {
       const compressor = ctx.createDynamicsCompressor();
       compressor.threshold.value = -50;
       compressor.knee.value = 40;
@@ -102,7 +91,7 @@ export function useAudioFilters(
     } else {
       lastNode.current.connect(ctx.destination);
     }
-  }, [audioRef, eqBandsFinal, noiseReductionFinal]);
+  }, [audioRef, eqBandsFinal, compressionFinal]);
 
   const handlePlay = () => {
     if (audioContext.current?.state === "suspended") {

@@ -21,7 +21,7 @@ public class UserPreferencesDtoMapper {
                         dto.getVisual().isReadTextOnScreen()
                 ),
                 new UserPreferences.AudioPreferences(
-                        dto.getAudio().isNoiseReduction(),
+                        dto.getAudio().isCompression(),
                         dto.getAudio().getFilters().stream()
                                 .map(f -> new UserPreferences.FrequencyGain(f.getFrequency(), f.getGain()))
                                 .toList()
@@ -40,7 +40,7 @@ public class UserPreferencesDtoMapper {
                         model.getVisual().isReadTextOnScreen()
                 ),
                 new UserPreferencesDto.UserAudioPreferencesDto(
-                        model.getAudio().isNoiseReduction(),
+                        model.getAudio().isCompression(),
                         model.getAudio().getFilters().stream()
                                 .map(f -> new UserPreferencesDto.UserFrequencyGainDto(f.getFrequency(), f.getGain()))
                                 .toList()
