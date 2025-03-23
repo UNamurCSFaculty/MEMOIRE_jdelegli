@@ -2,6 +2,8 @@ package org.unamur.elderrings.app.user.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +22,7 @@ public class UserPreferencesDto {
     @AllArgsConstructor
     public static class UserGeneralPreferencesDto {
         private String lang;
+        @JsonProperty("isPublic")
         private boolean isPublic;
     }
 

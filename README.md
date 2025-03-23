@@ -61,7 +61,7 @@ If you are not running on windows, you can either make your own script, or use t
     - [x] Picture
     - [x] Lang
     - [x] Public
-      - [ ] filter on this for getAllUsers
+      - [x] filter on this for getAllUsers
   - [x] Audio
     - [x] Frequency filters
     - [x] Noise filter

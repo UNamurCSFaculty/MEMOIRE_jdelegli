@@ -1,5 +1,6 @@
 package org.unamur.elderrings.infra.user.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -77,5 +78,13 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
       throw new IllegalArgumentException("User not found");
     }
   }
+
+  public List<UserEntity> findAllVisibleUsersExcluding(UUID excludedUserId) {
+    return find("""
+        SELECT u FROM UserEntity u
+        WHERE u.preferences.general.isPublic = true
+        AND u.id <> ?1
+    """, excludedUserId).list();
+}
   
 }

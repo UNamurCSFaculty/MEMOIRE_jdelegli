@@ -6,6 +6,7 @@ import org.hibernate.annotations.Comment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -44,5 +45,8 @@ public class UserEntity {
   @OneToOne
   @JoinColumn(name = "picture_id", nullable = true)
   private UserPictureEntity picture; // Foreign key to associate with the user
+
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+  private UserPreferencesEntity preferences;
   
 }
