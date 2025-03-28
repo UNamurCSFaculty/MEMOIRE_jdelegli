@@ -4,7 +4,9 @@ import { basePath } from "../../../basepath.config";
 import { apiClient } from "@openapi/zodiosClient";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@heroui/button";
-import { IconStartCall } from "@components/icons/favouriteIcons";
+import { IconChevonLeft, IconChevonRight, IconStartCall } from "@components/icons/favouriteIcons";
+import { useTranslation } from "react-i18next";
+import { useTTS } from "../../hooks/useTTS";
 
 interface ContactsCarouselProps {
   contacts: ContactDto[];
@@ -13,8 +15,10 @@ interface ContactsCarouselProps {
 export default function ContactsCarousel({ contacts }: Readonly<ContactsCarouselProps>) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
-  // Keyboard navigation
+  const tts = useTTS();
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight" || event.key === "ArrowDown") {
@@ -30,22 +34,28 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentIndex, contacts]);
 
+  useEffect(() => {
+    tts(contacts[currentIndex].firstName + " " + contacts[currentIndex].lastName);
+  }, [currentIndex]);
+
   function callContact(contact: ContactDto) {
     apiClient.createCallRoom({ userIds: [contact.id!] }).then((resp) => {
-      navigate("call-room/" + resp.id);
+      navigate("../call-room/" + resp.id);
     });
   }
 
-  const nextSlide = () => setCurrentIndex((prevIndex) => (prevIndex + 1) % contacts.length);
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % contacts.length);
+  };
 
   const prevSlide = () =>
     setCurrentIndex((prevIndex) => (prevIndex - 1 + contacts.length) % contacts.length);
 
   return (
-    <div className="relative max-w-4xl mx-auto overflow-hidden h-full w-full  bg-gray-100 rounded-lg">
+    <div className="relative max-w-4xl mx-auto overflow-hidden h-full w-full rounded-lg">
       {/* Slides */}
       <div
-        className="flex transition-transform duration-500 h-full w-full "
+        className="flex transition-transform duration-500 h-full w-full"
         style={{
           transform: `translateX(-${currentIndex * 100}%)`,
         }}
@@ -62,12 +72,23 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
                   ? `data:image/*;base64,${contact.picture}`
                   : basePath + "/picture-user-default.jpg"
               }
-              alt={`${contact.firstName} ${contact.lastName}`}
+              alt={t("Components.ContactsCarousel.ContactPictureAlt", {
+                name: `${contact.firstName} ${contact.lastName}`,
+              })}
               className="max-w-full max-h-full object-contain"
             />
+
             {/* Call button */}
             <div className="absolute bottom-28 left-1/2 transform -translate-x-1/2 text-white p-2 text-center w-full">
-              <Button color="success" isIconOnly size="lg" onPress={() => callContact(contact)}>
+              <Button
+                color="success"
+                isIconOnly
+                size="lg"
+                onPress={() => callContact(contact)}
+                aria-label={t("Components.ContactsCarousel.CallContact", {
+                  name: `${contact.firstName} ${contact.lastName}`,
+                })}
+              >
                 <IconStartCall className="text-white" />
               </Button>
             </div>
@@ -83,20 +104,24 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
       </div>
 
       {/* Navigation Buttons */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black text-white p-2 rounded hover:bg-gray-700 focus:outline-none"
-        aria-label="Previous Slide"
+      <Button
+        onPress={prevSlide}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2"
+        aria-label={t("Components.ContactsCarousel.PreviousSlide")}
+        isIconOnly
+        isDisabled={contacts.length <= 1}
       >
-        Prev
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black text-white p-2 rounded hover:bg-gray-700 focus:outline-none"
-        aria-label="Next Slide"
+        <IconChevonLeft />
+      </Button>
+      <Button
+        onPress={nextSlide}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2"
+        aria-label={t("Components.ContactsCarousel.NextSlide")}
+        isIconOnly
+        isDisabled={contacts.length <= 1}
       >
-        Next
-      </button>
+        <IconChevonRight />
+      </Button>
 
       {/* Indicators */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -109,7 +134,7 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
             className={`w-3 h-3 rounded-full cursor-pointer ${
               index === currentIndex ? "bg-gray-200" : "bg-gray-500"
             } hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-300`}
-            aria-label={`Go to slide ${index + 1}`}
+            aria-label={t("Components.ContactsCarousel.GoToSlide", { index: index + 1 })}
           />
         ))}
       </div>

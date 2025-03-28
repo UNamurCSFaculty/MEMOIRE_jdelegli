@@ -60,12 +60,26 @@ If you are not running on windows, you can either make your own script, or use t
   - [x] General
     - [x] Picture
     - [x] Lang
+      - [ ] Do all translations
     - [x] Public
       - [x] filter on this for getAllUsers
+    - [x] Text to speech
   - [x] Audio
     - [x] Frequency filters
     - [x] Noise filter
   - [x] Visual
     - [x] Text size (element size ?)
     - [x] Read text on screen ?
-    - [ ] Implements frontend to use it
+    - [x] Implements frontend to use it
+- [x] Home page
+  - [x] Sounds
+  - [x] Sounds preference
+- [ ] Add contact improvement
+  - [ ] popup
+- [ ] User setting improvement
+  - [ ] Upload picture
+    - [ ] Use webcam ?
+- [ ] Incoming call improvement
+  - [ ] Pop up
+  - [ ] Sound
+- [ ] Décrochage auto

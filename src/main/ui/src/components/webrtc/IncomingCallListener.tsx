@@ -11,11 +11,18 @@ import { Button } from "@heroui/button";
 import Row from "@components/layout/Row";
 import { IconEndCall, IconStartCall } from "@components/icons/favouriteIcons";
 import { useNavigate } from "react-router-dom";
+import { ContactDto } from "@type/openapiTypes";
+import { apiClient } from "@openapi/zodiosClient";
+import { basePath } from "../../../basepath.config";
+import { useTranslation } from "react-i18next";
 
 export default function IncomingCallListener() {
   const [roomOffer, setRoomOffer] = useState<CallRoomInvitationMessageContent | null>(null);
+  const [contact, setContact] = useState<ContactDto | null>(null);
   const { lastJsonMessage } = useWebSocket(buildWsUrl("notifications"));
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (lastJsonMessage) {
@@ -27,15 +34,40 @@ export default function IncomingCallListener() {
     }
   }, [lastJsonMessage]);
 
-  if (roomOffer) {
+  useEffect(() => {
+    if (roomOffer) {
+      apiClient
+        .getUser({ queries: { userId: roomOffer?.userId } })
+        .then((resp) => setContact(resp));
+    }
+  }, [roomOffer]);
+
+  if (roomOffer && contact) {
     return (
       <Modal isOpen={true}>
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Appel entrant</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                {t("Components.IncomingCallListener.IncomingCall")}
+              </ModalHeader>
               <ModalBody>
-                <p>le user {roomOffer.userId} essaie de vous appeller</p>
+                <p className="flex flex-col items-center gap-4">
+                  <img
+                    src={
+                      contact.picture
+                        ? `data:image/*;base64,${contact.picture}`
+                        : basePath + "/picture-user-default.jpg"
+                    }
+                    alt={t("Components.IncomingCallListener.ContactPictureAlt", {
+                      name: `${contact.firstName} ${contact.lastName}`,
+                    })}
+                    className="w-64 object-contain"
+                  />
+                  {t("Components.IncomingCallListener.CallRequest", {
+                    name: `${contact.firstName} ${contact.lastName}`,
+                  })}
+                </p>
               </ModalBody>
               <ModalFooter>
                 <Row className="items-center gap-12 justify-center w-full">
@@ -44,9 +76,11 @@ export default function IncomingCallListener() {
                     isIconOnly
                     onPress={() => {
                       setRoomOffer(null);
+                      setContact(null);
                       navigate("call-room/" + roomOffer.roomId);
                     }}
                     size="lg"
+                    aria-label={t("Components.IncomingCallListener.AcceptCall")}
                   >
                     <IconStartCall />
                   </Button>
@@ -55,8 +89,10 @@ export default function IncomingCallListener() {
                     isIconOnly
                     onPress={() => {
                       setRoomOffer(null);
+                      setContact(null);
                     }}
                     size="lg"
+                    aria-label={t("Components.IncomingCallListener.DeclineCall")}
                   >
                     <IconEndCall />
                   </Button>

@@ -1,20 +1,37 @@
+import { useEffect, useState } from "react";
 import { apiClient } from "@openapi/zodiosClient";
-import { UserPreferencesDto } from "@type/openapiTypes";
-import { useState } from "react";
+import { UserPreferencesDto, textSizeDtoValues } from "@type/openapiTypes";
 import { useUserPreferences } from "../../hooks/useUserPreferences";
 import AudioSampleTest from "./AudioSampleTest";
+import { useTranslation } from "react-i18next";
+import { SupportedLanguage } from "../../locales/i18n";
+import { notifySuccess } from "@utils/notifyUtil";
+import isEqual from "lodash/isEqual";
+import { Button, Checkbox, Divider, Input, NumberInput, Select, SelectItem } from "@heroui/react";
+import { IconAdd, IconRemove } from "@components/icons/favouriteIcons";
+import { basePath } from "../../../basepath.config";
+import BackHomeButton from "@components/navigation/BackHomeButton";
 
-interface UserPreferencesFormProps {
-  initialPreferences?: UserPreferencesDto;
-}
-
-export default function UserPreferencesForm({
-  initialPreferences,
-}: Readonly<UserPreferencesFormProps>) {
+export default function UserPreferencesForm() {
+  const { t } = useTranslation();
   const { userPreferences, refreshUserPreferences } = useUserPreferences();
-  const [formData, setFormData] = useState<UserPreferencesDto>(
-    initialPreferences ?? userPreferences
-  );
+  const [formData, setFormData] = useState<UserPreferencesDto | null>(null);
+  const [initialPreferences, setInitialPreferences] = useState<UserPreferencesDto | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [userPicture, setUserPicture] = useState<string | null>(null);
+
+  useEffect(() => {
+    apiClient.getCurrentUserPicture().then((resp) => setUserPicture(resp));
+  }, []);
+
+  useEffect(() => {
+    if (userPreferences) {
+      setFormData(userPreferences);
+      setInitialPreferences(userPreferences);
+    }
+  }, [userPreferences]);
+
+  if (!formData) return null;
 
   const handleChange = <
     Section extends keyof UserPreferencesDto,
@@ -29,10 +46,9 @@ export default function UserPreferencesForm({
     value: Value
   ) => {
     setFormData((prev) => {
-      const currentSection = prev[section];
-
+      const currentSection = prev![section];
       return {
-        ...prev,
+        ...prev!,
         [section]: currentSection
           ? {
               ...currentSection,
@@ -45,156 +61,258 @@ export default function UserPreferencesForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const actions = [];
+
+    if (!isEqual(formData, initialPreferences)) {
+      actions.push(apiClient.updateCurrentUserPreferences(formData));
+    }
+
+    if (file) {
+      const formDataObj = new FormData();
+      formDataObj.append("file", file);
+      actions.push(
+        fetch("/elder-rings/api/user/set-picture", {
+          method: "POST",
+          body: formDataObj,
+        })
+      );
+    }
+
     try {
-      await apiClient.updateCurrentUserPreferences(formData);
+      await Promise.all(actions);
       await refreshUserPreferences?.();
-      alert("Preferences updated!");
+      notifySuccess(t("Components.UserPreferencesForm.PreferencesUpdated"));
+      setInitialPreferences(formData);
+      setFile(null);
     } catch (err) {
       console.error("Failed to update preferences", err);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {/* General */}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">General</h2>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.general?.isPublic}
-            onChange={(e) => handleChange("general", "isPublic", e.target.checked)}
-          />
-          Profil public
-        </label>
-        <label className="block mb-2">
-          Langue
-          <select
-            value={formData.general?.lang}
-            onChange={(e) => handleChange("general", "lang", e.target.value)}
-            className="mt-1 block border border-gray-300 rounded p-1"
-          >
-            <option value="sm">Français</option>
-            <option value="md">English</option>
-            <option value="lg">Nederlands</option>
-          </select>
-        </label>
-      </section>
-
-      {/* Visual */}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">Visual</h2>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.visual?.readTextOnScreen}
-            onChange={(e) => handleChange("visual", "readTextOnScreen", e.target.checked)}
-          />
-          Read text on screen
-        </label>
-        <label className="block mb-2">
-          Text size
-          <select
-            value={formData.visual?.textSize}
-            onChange={(e) => handleChange("visual", "textSize", e.target.value)}
-            className="mt-1 block border border-gray-300 rounded p-1"
-          >
-            <option value="sm">Small</option>
-            <option value="md">Medium</option>
-            <option value="lg">Large</option>
-            <option value="xl">Extra Large</option>
-            <option value="2xl">2X Large</option>
-          </select>
-        </label>
-      </section>
-
-      {/* Audio */}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">Audio Preferences</h2>
-
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.audio?.compression}
-            onChange={(e) => handleChange("audio", "compression", e.target.checked)}
-          />
-          Enable Audio Compression
-        </label>
-
-        <h3 className="text-md font-semibold mb-2">Audio Filters</h3>
-        {formData.audio?.filters?.map((filter, index) => (
-          <div key={index} className="flex items-center gap-2 mb-2">
-            <input
-              type="number"
-              placeholder="Frequency (Hz)"
-              value={filter.frequency}
-              onChange={(e) => updateAudioFilter(index, "frequency", parseInt(e.target.value, 10))}
-              className="w-32 border border-gray-300 rounded p-1"
-            />
-            <input
-              type="number"
-              placeholder="Gain"
-              value={filter.gain}
-              onChange={(e) => updateAudioFilter(index, "gain", parseFloat(e.target.value))}
-              className="w-24 border border-gray-300 rounded p-1"
-            />
-            <button
-              type="button"
-              onClick={() => removeAudioFilter(index)}
-              className="text-red-600 text-sm"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={addAudioFilter} className="text-blue-600 text-sm">
-          + Add filter
-        </button>
-
-        <h3 className="text-md font-semibold mb-2">Test the configuration</h3>
-        <AudioSampleTest
-          eqBands={formData.audio?.filters ?? []}
-          compression={formData.audio?.compression ?? false}
-        />
-      </section>
-
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-        Save Preferences
-      </button>
-    </form>
-  );
-
-  function updateAudioFilter(index: number, field: "frequency" | "gain", value: number) {
+  const updateAudioFilter = (index: number, field: "frequency" | "gain", value: number) => {
     const updatedFilters = formData.audio?.filters ? [...formData.audio.filters] : [];
     updatedFilters[index] = { ...updatedFilters[index], [field]: value };
     setFormData((prev) => ({
-      ...prev,
+      ...prev!,
       audio: {
-        ...prev.audio,
+        ...prev!.audio,
         filters: updatedFilters,
       },
     }));
-  }
+  };
 
-  function addAudioFilter() {
+  const addAudioFilter = () => {
     setFormData((prev) => ({
-      ...prev,
+      ...prev!,
       audio: {
-        ...prev.audio,
-        filters: prev.audio?.filters
-          ? [...prev.audio.filters, { frequency: 1000, gain: 0 }]
+        ...prev!.audio,
+        filters: prev!.audio?.filters
+          ? [...prev!.audio.filters, { frequency: 1000, gain: 0 }]
           : [{ frequency: 1000, gain: 0 }],
       },
     }));
-  }
+  };
 
-  function removeAudioFilter(index: number) {
+  const removeAudioFilter = (index: number) => {
     setFormData((prev) => ({
-      ...prev,
+      ...prev!,
       audio: {
-        ...prev.audio,
-        filters: prev.audio?.filters?.filter((_, i) => i !== index),
+        ...prev!.audio,
+        filters: prev!.audio?.filters?.filter((_, i) => i !== index),
       },
     }));
-  }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col grow h-full overflow-auto p-4">
+      {/* Profile Picture */}
+      <div className="flex flex-wrap gap-8 justify-start">
+        <section className="w-1/3">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-semibold">
+              {t("Components.UserPreferencesForm.ProfilePicture")}
+            </h2>
+            <Divider className="" />
+            <img
+              src={
+                userPicture
+                  ? `data:image/*;base64,${userPicture}`
+                  : basePath + "/picture-user-default.jpg"
+              }
+              alt={t("Components.UserPreferencesForm.PersonalPicture")}
+              className="w-64 object-contain"
+            />
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="w-80"
+            />
+          </div>
+        </section>
+
+        <div className="flex flex-col gap-4 w-1/3">
+          {/* General */}
+          <section>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">
+                {t("Components.UserPreferencesForm.GeneralTitle")}
+              </h2>
+              <Divider className="" />
+              <Checkbox
+                isSelected={formData.general?.isPublic}
+                onValueChange={(e) => handleChange("general", "isPublic", e)}
+                aria-label={t("Components.UserPreferencesForm.IsPublicProfile")}
+              >
+                {t("Components.UserPreferencesForm.IsPublicProfile")}
+              </Checkbox>
+              <Select
+                className="max-w-xs"
+                label={t("Components.UserPreferencesForm.Language")}
+                aria-label={t("Components.UserPreferencesForm.Language")}
+                selectedKeys={formData.general?.lang ? [formData.general?.lang] : []}
+                variant="flat"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  handleChange("general", "lang", e.target.value);
+                }}
+              >
+                {Object.values(SupportedLanguage).map((lang) => (
+                  <SelectItem key={lang} textValue={t(`Enums.Language.${lang.toUpperCase()}`)}>
+                    {t(`Enums.Language.${lang.toUpperCase()}`)}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          </section>
+
+          {/* Visual */}
+          <section>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">
+                {t("Components.UserPreferencesForm.VisualTitle")}
+              </h2>
+              <Divider className="" />
+              <Checkbox
+                isSelected={formData.visual?.readTextOnScreen}
+                onValueChange={(e) => handleChange("visual", "readTextOnScreen", e)}
+                aria-label={t("Components.UserPreferencesForm.ReadTextOnScreen")}
+              >
+                {t("Components.UserPreferencesForm.ReadTextOnScreen")}
+              </Checkbox>
+              <Select
+                className="max-w-xs"
+                label={t("Components.UserPreferencesForm.TextSize")}
+                aria-label={t("Components.UserPreferencesForm.TextSize")}
+                selectedKeys={formData.visual?.textSize ? [formData.visual?.textSize] : []}
+                variant="flat"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  handleChange("visual", "textSize", e.target.value);
+                }}
+              >
+                {textSizeDtoValues.map((value) => (
+                  <SelectItem key={value} textValue={t(`Enums.TextSizeDto.${value}`)}>
+                    {t(`Enums.TextSizeDto.${value}`)}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          </section>
+        </div>
+
+        {/* Audio */}
+        <section>
+          <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-semibold">
+              {t("Components.UserPreferencesForm.AudioTitle")}
+            </h2>
+            <Divider className="" />
+            <Checkbox
+              isSelected={formData.audio?.compression}
+              onValueChange={(e) => handleChange("audio", "compression", e)}
+              aria-label={t("Components.UserPreferencesForm.EnableAudioCompression")}
+            >
+              {t("Components.UserPreferencesForm.EnableAudioCompression")}
+            </Checkbox>
+            <Checkbox
+              isSelected={formData.audio?.playInterfaceSounds}
+              onValueChange={(e) => handleChange("audio", "playInterfaceSounds", e)}
+              aria-label={t("Components.UserPreferencesForm.PlayInterfaceSounds")}
+            >
+              {t("Components.UserPreferencesForm.PlayInterfaceSounds")}
+            </Checkbox>
+            <div className="flex flex-col gap-2 pl-2">
+              <h3 className="text-md font-semibold">
+                {t("Components.UserPreferencesForm.AudioFilters")}
+              </h3>
+              {formData.audio?.filters?.map((filter, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <NumberInput
+                    placeholder={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
+                    value={filter.frequency}
+                    onValueChange={(e) => updateAudioFilter(index, "frequency", e)}
+                    aria-label={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
+                    size="sm"
+                    minValue={100}
+                    maxValue={20000}
+                    className="w-32"
+                  />
+                  <NumberInput
+                    placeholder={t("Components.UserPreferencesForm.GainPlaceholder")}
+                    value={filter.gain}
+                    onValueChange={(e) => updateAudioFilter(index, "gain", e)}
+                    aria-label={t("Components.UserPreferencesForm.GainPlaceholder")}
+                    size="sm"
+                    minValue={-100}
+                    maxValue={100}
+                    className="w-32"
+                  />
+                  <Button
+                    onPress={() => removeAudioFilter(index)}
+                    isIconOnly
+                    aria-label={t("Components.UserPreferencesForm.RemoveFilter")}
+                    color="danger"
+                    variant="light"
+                  >
+                    <IconRemove />
+                  </Button>
+                </div>
+              ))}
+              <Button
+                onPress={addAudioFilter}
+                aria-label={t("Components.UserPreferencesForm.AddFilter")}
+                variant="light"
+                startContent={<IconAdd />}
+                color="primary"
+              >
+                {t("Components.UserPreferencesForm.AddFilter")}
+              </Button>
+            </div>
+            <div className="flex flex-col gap-2 pl-2">
+              <h3 className="text-md font-semibold">
+                {t("Components.UserPreferencesForm.TestConfigTitle")}
+              </h3>
+              <AudioSampleTest
+                eqBands={formData.audio?.filters ?? []}
+                compression={formData.audio?.compression ?? false}
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="flex justify-center mt-auto gap-2">
+        <Button
+          type="submit"
+          aria-label={t("Components.UserPreferencesForm.SavePreferences")}
+          color="primary"
+          size="lg"
+        >
+          {t("Components.UserPreferencesForm.SavePreferences")}
+        </Button>
+        <BackHomeButton variant="solid" size="lg" color="primary" />
+      </div>
+    </form>
+  );
 }

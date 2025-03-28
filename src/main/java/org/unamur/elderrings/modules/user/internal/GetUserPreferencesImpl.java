@@ -26,7 +26,7 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
                   userId,
                   new UserPreferences.GeneralPreferences("fr", false),
                   new UserPreferences.VisualPreferences(TextSize.MD, false),
-                  new UserPreferences.AudioPreferences(false, List.of())
+                  new UserPreferences.AudioPreferences(false, List.of(), false)
               ));
     }
 }

@@ -79,6 +79,12 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
     }
   }
 
+  public Optional<UserPictureEntity> getUserPicture(UUID userId) {
+    return find("id", userId)
+        .firstResultOptional()
+        .map(UserEntity::getPicture);
+  }
+
   public List<UserEntity> findAllVisibleUsersExcluding(UUID excludedUserId) {
     return find("""
         SELECT u FROM UserEntity u

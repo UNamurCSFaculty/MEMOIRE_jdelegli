@@ -16,4 +16,7 @@ public class AudioPreferencesEmbeddableEntity {
     @Column(name = "compression_enabled")
     private boolean compression;
 
+    @Column(name = "play_interface_sounds")
+    private boolean playInterfaceSounds;
+
 }

@@ -32,7 +32,8 @@ public class UserPreferencesEntityMapper {
                         entity.getAudio().isCompression(),
                         entity.getFilters().stream()
                                 .map(f -> new UserPreferences.FrequencyGain(f.getFrequency(), f.getGain()))
-                                .toList()
+                                .toList(),
+                        entity.getAudio().isPlayInterfaceSounds()
                 )
         );
     }
@@ -54,6 +55,7 @@ public class UserPreferencesEntityMapper {
         var audio = new AudioPreferencesEmbeddableEntity();
         audio.setCompression(model.getAudio().isCompression());
         entity.setAudio(audio);
+        audio.setPlayInterfaceSounds(model.getAudio().isPlayInterfaceSounds());
 
         List<UserAudioFilterEntity> filters = model.getAudio().getFilters().stream().map(f -> {
             var filter = new UserAudioFilterEntity();

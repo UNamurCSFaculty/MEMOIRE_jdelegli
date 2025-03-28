@@ -6,6 +6,7 @@ import LoadingPage from "./generic/LoadingPage";
 import { useTranslation } from "react-i18next";
 import Col from "@components/layout/Col";
 import ContactRequestModal from "@components/addContact/ContactRequestModal";
+import BackHomeButton from "@components/navigation/BackHomeButton";
 
 export default function ContactPage() {
   const { t } = useTranslation();
@@ -26,14 +27,11 @@ export default function ContactPage() {
     apiClient.getPendingRequests().then((resp) => setContactRequests(resp));
   }, []);
 
-  console.log("contactRequests :", contactRequests);
-  console.log("isModalOpen :", isModalOpen);
-
   if (isLoading) {
     return <LoadingPage />;
   } else {
     return (
-      <>
+      <div className="flex items-center justify-center">
         {contactRequests !== null && contactRequests.length > 0 && (
           <ContactRequestModal
             requests={contactRequests}
@@ -47,15 +45,24 @@ export default function ContactPage() {
           />
         )}
         {contacts && contacts.length > 0 ? (
-          <ContactsCarousel contacts={contacts} />
+          <>
+            <BackHomeButton
+              size="lg"
+              color="default"
+              variant="solid"
+              className="absolute top-4 left-4 z-10"
+            />
+            <ContactsCarousel contacts={contacts} />
+          </>
         ) : (
-          <Col className="h-full w-full items-center justify-center">
-            <p className="text-center text-xl text-default-500 text-semibold">
+          <Col className="h-full w-full items-center justify-center gap-4">
+            <p className="text-center text-4xl text-white font-semibold ">
               {t("Pages.ContactPage.NoContactsFound")}
             </p>
+            <BackHomeButton shortcuts={["Enter"]} size="lg" color="default" variant="solid" />
           </Col>
         )}
-      </>
+      </div>
     );
   }
 }

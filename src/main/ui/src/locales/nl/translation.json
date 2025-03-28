@@ -1,9 +1,4 @@
 {
-  "Common": {
-    "LoadingSuspension": "Chargement ...",
-    "Back": "Retour",
-    "GoBackHome": "Retour à l'accueil."
-  },
   "Components": {
     "Errors": {
       "ErrorHandler": {
@@ -16,23 +11,7 @@
         "Action": "Retour à <1>l'accueil</1>."
       }
     },
-    "ContactsCarousel": {
-      "ContactPictureAlt": "Photo de {{name}}",
-      "CallContact": "Démarrer un appel avec {{name}}",
-      "PreviousSlide": "Contact précédent",
-      "NextSlide": "Contact suivant",
-      "GoToSlide": "Aller au contact {{index}}"
-    },
-    "IncomingCallListener": {
-      "IncomingCall": "Appel entrant",
-      "CallRequest": "{{name}} souhaite vous appeler",
-      "ContactPictureAlt": "Photo de {{name}}",
-      "AcceptCall": "Accepter l'appel",
-      "DeclineCall": "Refuser l'appel"
-    },
     "UserPreferencesForm": {
-      "ProfilePicture": "Image de profil",
-      "PersonalPicture": "Votre image",
       "IsPublicProfile": "Profil public",
       "PreferencesUpdated": "Préférences mises à jour !",
       "GeneralTitle": "Préférences générales",
@@ -42,7 +21,6 @@
       "TextSize": "Taille du texte",
       "AudioTitle": "Préférences audio",
       "EnableAudioCompression": "Activer la compression audio",
-      "PlayInterfaceSounds": "Jouer les sons de l'interface",
       "AudioFilters": "Filtres audio",
       "FrequencyPlaceholder": "Fréquence (Hz)",
       "GainPlaceholder": "Gain",
@@ -69,12 +47,6 @@
         "Message": "Vous n'avez pas les droits suffisants pour accéder à cette page",
         "Action": "Retour à <1>l'accueil</1>."
       }
-    },
-    "HomeMenu": {
-      "Contacts": "Contacts",
-      "Events": "Événements",
-      "Preference": "Préférences",
-      "Weather": "Météo"
     },
     "CallRoom": {
       "UserLeft": "Votre correspondant à quitté la conversation",
@@ -103,9 +75,9 @@
       "XXL": "Extra grand"
     },
     "Language": {
-      "FR": "Français",
-      "EN": "Anglais",
-      "NL": "Néerlandais"
+      "FR": "Frans",
+      "EN": "Engels",
+      "NL": "Nederlands"
     }
   }
 }

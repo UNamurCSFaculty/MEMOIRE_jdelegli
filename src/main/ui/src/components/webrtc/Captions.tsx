@@ -1,9 +1,19 @@
 import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { useUserPreferences } from "../../hooks/useUserPreferences";
 
 export interface CaptionsProps {
   peerConnection: MutableRefObject<RTCPeerConnection | null>;
   className?: string;
   emitCaptions: boolean;
+}
+
+export function getSpeechLocaleFromUserPrefs(lang: string | undefined): string {
+  const map: Record<string, string> = {
+    fr: "fr-FR",
+    en: "en-US",
+    nl: "nl-NL",
+  };
+  return map[lang ?? "fr"] ?? "fr-FR";
 }
 
 export default function Captions({
@@ -12,6 +22,7 @@ export default function Captions({
   emitCaptions,
 }: Readonly<CaptionsProps>) {
   const [remoteCaption, setRemoteCaption] = useState("");
+  const { userPreferences } = useUserPreferences();
 
   const dataChannel = useRef<RTCDataChannel | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,7 +75,7 @@ export default function Captions({
 
     recognition.current = new SpeechRecognition();
     recognition.current.continuous = true;
-    recognition.current.lang = "fr-FR"; // Change as needed
+    getSpeechLocaleFromUserPrefs(userPreferences?.general?.lang);
     recognition.current.interimResults = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

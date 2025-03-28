@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { UserAuthContext, UserAuthContextType } from "./contexts";
 import { apiClient } from "@openapi/zodiosClient";
+import LoadingPage from "@pages/generic/LoadingPage";
+import { applyUserPreferences } from "@utils/userPreferencesUtil";
 
 interface UserAuthContextProps {
   children: ReactNode;
@@ -21,6 +23,8 @@ export default function UserAuthContextProvider({ children }: Readonly<UserAuthC
           apiClient.getCurrentUserPreferences(),
         ]);
 
+        applyUserPreferences(preferences);
+
         setUserAuth({
           user,
           userPreferences: preferences,
@@ -40,6 +44,9 @@ export default function UserAuthContextProvider({ children }: Readonly<UserAuthC
     const refreshUserPreferences = async () => {
       try {
         const preferences = await apiClient.getCurrentUserPreferences();
+
+        applyUserPreferences(preferences);
+
         setUserAuth((curr) => ({
           ...curr,
           userPreferences: preferences,
@@ -55,6 +62,6 @@ export default function UserAuthContextProvider({ children }: Readonly<UserAuthC
   return userAuth.status === "idle" ? (
     <UserAuthContext.Provider value={userAuth}>{children}</UserAuthContext.Provider>
   ) : (
-    <p>connecting</p>
+    <LoadingPage />
   );
 }

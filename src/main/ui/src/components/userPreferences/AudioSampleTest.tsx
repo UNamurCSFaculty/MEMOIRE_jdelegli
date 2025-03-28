@@ -15,6 +15,7 @@ export default function AudioSampleTest({ eqBands, compression }: Readonly<Audio
     <div className="flex">
       <audio ref={audioRef} controls onPlay={handlePlay} crossOrigin="anonymous">
         {/* <source src={basePath + "/sample/phonecall.mp3"} type="audio/mp3" />*/}
+        {/* TODO : create dedicated backend route to serve it, otherwise mp3 content is blocked by Quinoa :/ */}
         <source src={"http://127.0.0.1:5173/elder-rings/sample/phonecall.mp3"} type="audio/mp3" />
         Your browser does not support the audio element.
       </audio>

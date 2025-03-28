@@ -42,6 +42,7 @@ public class UserPreferences {
     public static class AudioPreferences {
         private boolean compression;
         private List<FrequencyGain> filters;
+        private boolean playInterfaceSounds;
     }
 
     @Getter

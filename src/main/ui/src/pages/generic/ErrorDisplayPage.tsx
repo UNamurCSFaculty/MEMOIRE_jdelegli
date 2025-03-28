@@ -1,5 +1,6 @@
 import ErrorHandler from "@components/errors/ErrorHandler";
 import Col from "@components/layout/Col";
+import BackHomeButton from "@components/navigation/BackHomeButton";
 import { useAsyncError, useRouteError } from "react-router-dom";
 
 export default function ErrorDisplayPage() {
@@ -17,6 +18,7 @@ export default function ErrorDisplayPage() {
   return (
     <Col className="justify-center h-full w-full bg-white">
       <ErrorHandler error={error} />
+      <BackHomeButton shortcuts={["Enter"]} size="lg" color="primary" />
     </Col>
   );
 }

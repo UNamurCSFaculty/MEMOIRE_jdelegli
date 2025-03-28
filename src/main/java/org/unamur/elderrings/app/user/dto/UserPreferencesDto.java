@@ -26,11 +26,15 @@ public class UserPreferencesDto {
         private boolean isPublic;
     }
 
+    public enum TextSizeDto {
+      SM, MD, LG, XL, XXL
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
     public static class UserVisualPreferencesDto {
-        private String textSize; // e.g. "sm", "md", etc.
+        private TextSizeDto textSize; // e.g. "sm", "md", etc.
         private boolean readTextOnScreen;
     }
 
@@ -40,6 +44,7 @@ public class UserPreferencesDto {
     public static class UserAudioPreferencesDto {
         private boolean compression;
         private List<UserFrequencyGainDto> filters;
+        private boolean playInterfaceSounds;
     }
 
     @Getter

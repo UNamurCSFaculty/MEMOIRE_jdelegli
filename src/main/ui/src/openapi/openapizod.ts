@@ -44,11 +44,12 @@ const ContactRequestDto = z
   .partial()
   .passthrough();
 const UserGeneralPreferencesDto = z
-  .object({ lang: z.string(), isPublic: z.boolean(), public: z.boolean() })
+  .object({ lang: z.string(), isPublic: z.boolean() })
   .partial()
   .passthrough();
+const TextSizeDto = z.enum(["SM", "MD", "LG", "XL", "XXL"]);
 const UserVisualPreferencesDto = z
-  .object({ textSize: z.string(), readTextOnScreen: z.boolean() })
+  .object({ textSize: TextSizeDto, readTextOnScreen: z.boolean() })
   .partial()
   .passthrough();
 const UserFrequencyGainDto = z
@@ -56,7 +57,11 @@ const UserFrequencyGainDto = z
   .partial()
   .passthrough();
 const UserAudioPreferencesDto = z
-  .object({ compression: z.boolean(), filters: z.array(UserFrequencyGainDto) })
+  .object({
+    compression: z.boolean(),
+    filters: z.array(UserFrequencyGainDto),
+    playInterfaceSounds: z.boolean(),
+  })
   .partial()
   .passthrough();
 const UserPreferencesDto = z
@@ -101,6 +106,7 @@ export const schemas = {
   Instant,
   ContactRequestDto,
   UserGeneralPreferencesDto,
+  TextSizeDto,
   UserVisualPreferencesDto,
   UserFrequencyGainDto,
   UserAudioPreferencesDto,
@@ -203,6 +209,26 @@ const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/elder-rings/api/user/get",
+    alias: "getUser",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: ContactDto,
+  },
+  {
+    method: "get",
     path: "/elder-rings/api/user/get-contacts",
     alias: "getContact",
     requestFormat: "json",
@@ -221,6 +247,33 @@ const endpoints = makeApi([
     alias: "getCurrentUser",
     requestFormat: "json",
     response: UserDto,
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/me/picture",
+    alias: "getCurrentUserPicture",
+    requestFormat: "json",
+    response: z.string(),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/picture",
+    alias: "getUserPicture",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z.string(),
   },
   {
     method: "post",

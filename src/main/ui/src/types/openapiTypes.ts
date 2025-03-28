@@ -10,3 +10,7 @@ export type UserVisualPreferencesDto = z.infer<typeof schemas.UserVisualPreferen
 export type CallRoomDto = z.infer<typeof schemas.CallRoomDto>;
 export type ContactDto = z.infer<typeof schemas.ContactDto>;
 export type ContactRequestDto = z.infer<typeof schemas.ContactRequestDto>;
+export type TextSizeDto = z.infer<typeof schemas.TextSizeDto>;
+
+// Value list for enums
+export const textSizeDtoValues = schemas.TextSizeDto._def.values;

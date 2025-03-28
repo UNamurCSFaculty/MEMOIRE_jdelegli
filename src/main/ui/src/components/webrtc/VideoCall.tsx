@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import VideoCallActionBar from "./VideoCallActionBar";
 import Captions from "./Captions";
 import { useAudioFilters } from "../../hooks/useAudioFilters";
+import BackHomeButton from "@components/navigation/BackHomeButton";
 
 export interface VideoCallProps {
   roomId: string;
@@ -121,7 +122,14 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   }
 
   if (userLeft) {
-    return <div>{t("Pages.CallRoom.UserLeft")}</div>;
+    return (
+      <div className=" flex flex-col w-full h-full items-center justify-center grow gap-8">
+        <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
+          {t("Pages.CallRoom.UserLeft")}
+        </div>
+        <BackHomeButton variant="solid" size="lg" />
+      </div>
+    );
   }
 
   return (
