@@ -30,6 +30,12 @@
       "AcceptCall": "Accepter l'appel",
       "DeclineCall": "Refuser l'appel"
     },
+    "ContactRequestModal": {
+      "Title": "Vous avez une ou plusieurs demandes de contact",
+      "ContactPictureAlt": "Photo de {{name}}",
+      "Accept": "Accepter",
+      "Decline": "Refuser"
+    },
     "UserPreferencesForm": {
       "ProfilePicture": "Image de profil",
       "PersonalPicture": "Votre image",

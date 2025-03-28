@@ -1,11 +1,13 @@
 import ContactsCarousel from "@components/carousel/ContactsCarousel";
 import { apiClient } from "@openapi/zodiosClient";
-import { ContactDto, ContactRequestDto } from "@type/openapiTypes";
+import { ContactDto } from "@type/openapiTypes";
 import { useEffect, useState } from "react";
 import LoadingPage from "./generic/LoadingPage";
 import { useTranslation } from "react-i18next";
 import Col from "@components/layout/Col";
-import ContactRequestModal from "@components/addContact/ContactRequestModal";
+import ContactRequestModal, {
+  ContactRequestWithUser,
+} from "@components/addContact/ContactRequestModal";
 import BackHomeButton from "@components/navigation/BackHomeButton";
 
 export default function ContactPage() {
@@ -14,17 +16,37 @@ export default function ContactPage() {
   const [contacts, setContacts] = useState<ContactDto[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const [contactRequests, setContactRequests] = useState<ContactRequestDto[] | null>(null);
+  const [requestsWithUsers, setRequestsWithUsers] = useState<ContactRequestWithUser[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
 
   useEffect(() => {
-    apiClient
-      .getContact()
-      .then((resp) => setContacts(resp))
-      .finally(() => {
+    const fetchData = async () => {
+      try {
+        const [fetchedContacts, contactRequests] = await Promise.all([
+          apiClient.getContact(),
+          apiClient.getPendingRequests(),
+        ]);
+
+        setContacts(fetchedContacts);
+
+        const enriched = await Promise.all(
+          contactRequests.map(async (request) => {
+            const requester = await apiClient.getUser({
+              queries: { userId: request.requesterId },
+            });
+            return { request, requester };
+          })
+        );
+
+        setRequestsWithUsers(enriched);
+      } catch (err) {
+        console.error("Error fetching contact or request data:", err);
+      } finally {
         setIsLoading(false);
-      });
-    apiClient.getPendingRequests().then((resp) => setContactRequests(resp));
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (isLoading) {
@@ -32,12 +54,12 @@ export default function ContactPage() {
   } else {
     return (
       <div className="flex items-center justify-center">
-        {contactRequests !== null && contactRequests.length > 0 && (
+        {requestsWithUsers !== null && requestsWithUsers.length > 0 && (
           <ContactRequestModal
-            requests={contactRequests}
+            requests={requestsWithUsers}
             removeRequest={(requestId) =>
-              setContactRequests((prev) =>
-                prev !== null ? prev.filter((p) => p.id !== requestId) : prev
+              setRequestsWithUsers((prev) =>
+                prev !== null ? prev.filter((p) => p.request.id !== requestId) : prev
               )
             }
             isOpen={isModalOpen}
