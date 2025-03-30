@@ -31,7 +31,7 @@ export default function WeatherSnippet() {
         setWeather({
           tempC: current.temp_C,
           description: current.weatherDesc[0].value,
-          icon: conditionToIcon[current.weatherDesc[0].value],
+          icon: conditionToIcon[current.weatherDesc[0].value] ?? conditionToIcon.default,
           city: data.nearest_area[0]?.areaName[0]?.value,
         });
       } catch (err) {

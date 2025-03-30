@@ -5,6 +5,7 @@ import { IconContact, IconEvent, IconGear } from "@components/icons/favouriteIco
 import { useTranslation } from "react-i18next";
 import WeatherSnippet from "@components/weather/WeatherSnippet";
 import { useUserPreferences } from "../hooks/useUserPreferences";
+import { basePath } from "../../basepath.config";
 
 const options = [
   {
@@ -37,11 +38,8 @@ export default function HomeMenu() {
 
   const nbElementPerRow = 2;
 
-  // const navSound = new Audio("/sounds/nav.mp3");
-  // const selectSound = new Audio("/sounds/select.mp3");
-  // TODO : create dedicated backend route to serve it, otherwise mp3 content is blocked by Quinoa :/
-  const navSound = new Audio("http://127.0.0.1:5173/elder-rings/sounds/click.wav");
-  const selectSound = new Audio("http://127.0.0.1:5173/elder-rings/sounds/navigate.wav");
+  const navSound = new Audio(basePath + "/api/media/sounds/click.wav");
+  const selectSound = new Audio(basePath + "/api/media/sounds/navigate.mp3");
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

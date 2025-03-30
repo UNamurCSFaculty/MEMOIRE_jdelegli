@@ -3,7 +3,9 @@ package org.unamur.elderrings.infra.telecommunication;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,6 +17,7 @@ import org.unamur.elderrings.modules.telecommunication.internal.CallRoomReposito
 
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.validation.constraints.NotNull;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,7 @@ public class CallRoomRepositoryImpl implements CallRoomRepository  {
     return rooms.stream().filter(room -> room.id().equals(id)).findFirst();
   }
 
+
   @Override
   public CallRoom create(Set<CallRoomMember> members) {
     CallRoom room = new CallRoom(
@@ -43,7 +47,8 @@ public class CallRoomRepositoryImpl implements CallRoomRepository  {
       CallRoomCreationDate.now(), 
       members, 
       new HashMap<>(members.size()), 
-      new ArrayList<>()
+      new ArrayList<>(),
+      new HashSet<>()
     );
     rooms.add(room);
     return room;
@@ -72,6 +77,15 @@ public class CallRoomRepositoryImpl implements CallRoomRepository  {
     // Then we clean rooms every day, this might be subject to evolution
     rooms.removeIf(room -> room.creationDate().isOlderThan(1, ChronoUnit.DAYS));
 
+  }
+
+
+  @Override
+  public void markRejectedBy(CallRoomId id, CallRoomMember rejectedBy) {
+    var room = findById(id);
+    if(room.isPresent()) {
+      room.get().rejectedBy().add(rejectedBy);
+    }
   }
   
 }

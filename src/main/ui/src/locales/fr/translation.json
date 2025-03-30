@@ -84,6 +84,7 @@
     },
     "CallRoom": {
       "UserLeft": "Votre correspondant à quitté la conversation",
+      "UserRejectedCall": "Votre correspondant à refusé l'appel",
       "WaitingUserToJoin": "En attente de votre correspondant",
       "EndCall": "Raccrocher",
       "StopScreenShare": "Arrêter le partage d'écran",

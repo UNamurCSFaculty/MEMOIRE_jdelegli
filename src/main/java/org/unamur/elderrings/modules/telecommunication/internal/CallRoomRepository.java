@@ -2,6 +2,7 @@ package org.unamur.elderrings.modules.telecommunication.internal;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoom;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomId;
@@ -14,4 +15,6 @@ public interface CallRoomRepository {
     CallRoom create(Set<CallRoomMember> members);
 
     void delete(CallRoomId id);
+
+    void markRejectedBy(CallRoomId id, CallRoomMember rejectedBy);
 }

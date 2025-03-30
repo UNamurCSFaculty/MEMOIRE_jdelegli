@@ -51,11 +51,9 @@ If you are not running on windows, you can either make your own script, or use t
   - [x] Basic commands (mute, hide camera, ...)
   - [x] Transcript
   - [x] Audio filters
-  - [ ] Remote compatible (keyboard navigation)
-- [ ] Contact management
+  - [x] Remote compatible (keyboard navigation)
+- [x] Contact management
   - [x] Direct (self) management
-  - [ ] Tutor / Admin management
-- [ ] Role management
 - [x] User Preference
   - [x] General
     - [x] Picture
@@ -74,12 +72,17 @@ If you are not running on windows, you can either make your own script, or use t
 - [x] Home page
   - [x] Sounds
   - [x] Sounds preference
-- [ ] Add contact improvement
-  - [ ] popup
-- [ ] User setting improvement
-  - [ ] Upload picture
-    - [ ] Use webcam ?
-- [ ] Incoming call improvement
-  - [ ] Pop up
-  - [ ] Sound
+- [x] Add contact improvement
+  - [x] popup
+- [x] User setting improvement
+  - [x] Upload picture
+- [x] Incoming call improvement
+  - [x] Pop up
+  - [x] Sound
+- [x] Sound route media backend
+- [x] Call rejection
+- [ ] Contact online (implies knowing which user is online or not)
 - [ ] Décrochage auto
+- [ ] Role management
+- [ ] Delegation management
+- [ ] Audit

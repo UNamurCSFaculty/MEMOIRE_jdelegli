@@ -4,7 +4,7 @@ import {
   notificationSocketEventMessage,
 } from "@type/notificationSocketEventMessage";
 import { buildWsUrl } from "@utils/webSocketHelper";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { Button } from "@heroui/button";
@@ -24,6 +24,8 @@ export default function IncomingCallListener() {
 
   const { t } = useTranslation();
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
     if (lastJsonMessage) {
       const parsedSocketMessage = notificationSocketEventMessage.parse(lastJsonMessage);
@@ -41,6 +43,24 @@ export default function IncomingCallListener() {
         .then((resp) => setContact(resp));
     }
   }, [roomOffer]);
+
+  useEffect(() => {
+    if (roomOffer && contact) {
+      audioRef.current = new Audio(basePath + "/api/media/sounds/ringtone.wav");
+      audioRef.current.loop = true;
+
+      // Safe play attempt
+      audioRef.current.play().catch((e) => {
+        console.warn("[IncomingCall] Failed to play sound:", e);
+      });
+    }
+
+    // Stop sound when modal is closed
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, [roomOffer, contact]);
 
   if (roomOffer && contact) {
     return (
@@ -88,6 +108,7 @@ export default function IncomingCallListener() {
                     color="danger"
                     isIconOnly
                     onPress={() => {
+                      apiClient.rejectCallRoomInvitation({ roomId: roomOffer.roomId });
                       setRoomOffer(null);
                       setContact(null);
                     }}

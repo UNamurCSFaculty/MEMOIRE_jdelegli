@@ -24,6 +24,13 @@ const CallRoomDto = z
     ).uuid(),
   })
   .passthrough();
+const RejectCallRoomInvitationBody = z
+  .object({
+    roomId: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+  })
+  .passthrough();
 const ContactRequestStatusDto = z.enum(["PENDING", "ACCEPTED", "REJECTED"]);
 const Instant = z.string();
 const ContactRequestDto = z
@@ -102,6 +109,7 @@ export const schemas = {
   CreateCallRoomBody,
   UUID,
   CallRoomDto,
+  RejectCallRoomInvitationBody,
   ContactRequestStatusDto,
   Instant,
   ContactRequestDto,
@@ -129,6 +137,20 @@ const endpoints = makeApi([
       },
     ],
     response: CallRoomDto,
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/call-room/reject",
+    alias: "rejectCallRoomInvitation",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RejectCallRoomInvitationBody,
+      },
+    ],
+    response: z.void(),
   },
   {
     method: "post",
@@ -185,6 +207,20 @@ const endpoints = makeApi([
     alias: "getPendingRequests",
     requestFormat: "json",
     response: z.array(ContactRequestDto),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/media/sounds/:filename",
+    alias: "getElderRingsapimediasoundsFilename",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "filename",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
   },
   {
     method: "put",

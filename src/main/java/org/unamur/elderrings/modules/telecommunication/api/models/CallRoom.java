@@ -15,7 +15,8 @@ public record CallRoom(
     @NotNull CallRoomCreationDate creationDate,
     @NotNull Set<CallRoomMember> members,
     @NotNull Map<CallRoomMember, Session> sessions,
-    @NotNull List<String> messages
+    @NotNull List<String> messages,
+    @NotNull Set<CallRoomMember> rejectedBy
 ){
     
     public CallRoom {

@@ -6,6 +6,7 @@ export const webrtcWebSocketEventType = z.enum([
   "answer",
   "CALL_ROOM_MESSAGE_HISTORY",
   "CALL_ROOM_USER_LEFT",
+  "CALL_ROOM_USER_REJECTED_CALL",
 ]);
 
 export const webrtcWebSocketEventMessage = z

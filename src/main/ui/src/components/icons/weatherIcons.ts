@@ -24,6 +24,10 @@ export const conditionToIcon: Record<string, React.ComponentType<{ className?: s
   "Moderate rain": TwemojiCloudWithRain,
   "Heavy rain": TwemojiCloudWithRain,
   Rain: TwemojiCloudWithRain,
+  "Light drizzle": TwemojiSunBehindRainCloud,
+  "Moderate drizzle": TwemojiSunBehindRainCloud,
+  "Heavy drizzle": TwemojiSunBehindRainCloud,
+  Drizzle: TwemojiSunBehindRainCloud,
 
   // Snow
   "Light snow": TwemojiCloudWithSnow,

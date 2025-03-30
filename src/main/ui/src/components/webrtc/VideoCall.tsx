@@ -45,6 +45,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   const [isCallStarted, setIsCallStarted] = useState<boolean>(false);
   const [userConnected, setUserConnected] = useState<boolean>(false);
   const [userLeft, setUserLeft] = useState<boolean>(false);
+  const [userRejectedCall, setUserRejectedCall] = useState<boolean>(false);
 
   const closeAllConnectionsAndSessions = () => {
     closeAllConnections(peerConnection, remoteVideoRef, localVideoRef);
@@ -110,6 +111,12 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         case "CALL_ROOM_USER_LEFT": {
           setUserLeft(true);
           closeAllConnectionsAndSessions();
+          break;
+        }
+        case "CALL_ROOM_USER_REJECTED_CALL": {
+          setUserRejectedCall(true);
+          closeAllConnectionsAndSessions();
+          break;
         }
       }
     }
@@ -126,6 +133,17 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       <div className=" flex flex-col w-full h-full items-center justify-center grow gap-8">
         <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
           {t("Pages.CallRoom.UserLeft")}
+        </div>
+        <BackHomeButton variant="solid" size="lg" />
+      </div>
+    );
+  }
+
+  if (userRejectedCall) {
+    return (
+      <div className=" flex flex-col w-full h-full items-center justify-center grow gap-8">
+        <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
+          {t("Pages.CallRoom.UserRejectedCall")}
         </div>
         <BackHomeButton variant="solid" size="lg" />
       </div>
