@@ -34,12 +34,10 @@ services:
       - KC_DB_PASSWORD=K3YcL04KAdm%nD4a|a
       - KC_BOOTSTRAP_ADMIN_USERNAME=keycloak_master # Admin username
       - KC_BOOTSTRAP_ADMIN_PASSWORD=K3YcL04KAdm%n # Admin password
-      - KC_HOSTNAME=keycloak.local
       - KC_HTTP_RELATIVE_PATH=/auth
     command:
       - "start-dev" # This is the command to start Keycloak in development mode
       - "--import-realm" # Import default configuration from the dedicated mounted volume
-      - --hostname=https://keycloak.local/auth
       - "--http-relative-path=/auth"
     ports:
       - "8180:8080" # Keycloak web UI port
@@ -50,7 +48,7 @@ services:
       - ./keycloak/data:/opt/keycloak/data # Persist Keycloak data
       - ./keycloak/conf:/opt/keycloak/conf # Persist Keycloak conf
       - ./keycloak/realms:/opt/keycloak/realms # Persist Keycloak realms
-      - ./keycloak-config/https:/opt/keycloak/data/import # Retrieve configuration backup to import
+      - ./keycloak-config/http:/opt/keycloak/data/import # Retrieve configuration backup to import
     networks:
       - keycloak_network
 
@@ -65,22 +63,6 @@ services:
       - ./elderrings_postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx-proxy
-    ports:
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/certs:/etc/nginx/certs
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - keycloak_network
-      - default
-    depends_on:
-      - keycloak
 
 volumes:
   postgres_data: # Volume for PostgreSQL data

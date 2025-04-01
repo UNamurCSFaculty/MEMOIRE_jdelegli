@@ -1,3 +1,5 @@
+#This configuration exist in case you want to use http only in dev mode
+#As a result, webauthn will not work !
 quarkus:
   application:
     name: "elder-rings"
@@ -8,8 +10,6 @@ quarkus:
     port: 8080
     debug: true
     mime-types: audio-mpeg:.mp3
-    proxy:
-      proxy-address-forwarding: true
     cors:
       ~: true
       origin: "*"
@@ -85,7 +85,7 @@ quarkus:
       verification: none
     devservices:
       enabled: true
-    auth-server-url: https://keycloak.local/auth/realms/elderrings
+    auth-server-url: http://127.0.0.1:8180/auth/realms/elderrings
     client-id: elderrings
     credentials:
       secret: exvFhqRAZD6m0qKtszUCqN2mOxeX3SoH
@@ -94,11 +94,11 @@ quarkus:
       client-secret:
         method: post
     token:
-      issuer: https://keycloak.local/auth/realms/elderrings
+      issuer: http://127.0.0.1:8180/auth/realms/elderrings
     applications:
       - client:
           redirect-uris:
-            - https://elder-rings.local/elder-rings/
+            - http://127.0.0.1:8080/elder-rings/
     application-type: hybrid
     authentication:
       scopes: openid
@@ -106,7 +106,7 @@ quarkus:
       verify-access-token: true
       error-path: /error
       restore-path-after-redirect: true
-      cookie-domain: elder-rings.local
+      cookie-domain: 127.0.0.1
       cookie-path: /elder-rings
       cookie-same-site: LAX
     roles:
