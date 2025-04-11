@@ -3,7 +3,7 @@
 1. Install CEC utilities
 
 ```
-sudo dnf install cec-utils   # Fedora
+sudo dnf install libcec      # Fedora
 # OR
 sudo apt install cec-utils   # Raspberry Pi (Debian-based)
 ```
