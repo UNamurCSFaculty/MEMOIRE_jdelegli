@@ -67,12 +67,10 @@ async function start() {
       console.log("TV should be turning on...");
 
       // 2. Launch Chromium in kiosk mode
-      exec(
-        "chromium-browser --kiosk https://elder-rings.local/elder-rings/api/webauthn",
-        (err) => {
-          if (err) console.error("Failed to launch Chromium:", err);
-        }
-      );
+      const url = `https://elder-rings.local/elder-rings/api/webauthn?roomId=${message.value.roomId}`;
+      exec(`chromium-browser --kiosk "${url}"`, (err) => {
+        if (err) console.error("Failed to launch Chromium:", err);
+      });
     });
   });
 }
