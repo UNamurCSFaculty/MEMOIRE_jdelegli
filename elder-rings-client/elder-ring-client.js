@@ -61,13 +61,24 @@ async function start() {
 
     console.log("Received CALL_ROOM_INVITATION from", message.value.userId);
 
+    const url = `https://elder-rings.local/elder-rings/api/webauthn?roomId=${message.value.roomId}`;
+
+    // // Windows chrome version for testing purpose
+    // const chromePath = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"`;
+    // const cmd = `${chromePath} "${url}"`;
+
+    // exec(cmd, (err) => {
+    //   if (err) return console.error("Failed to launch Chrome:", err);
+    //   console.log("Chrome launched.");
+    // });
+
+    //"Unix" chromium version
     // 1. Turn on the TV
     exec('echo "on 0" | cec-client -s -d 1', (err) => {
       if (err) return console.error("CEC error:", err);
       console.log("TV should be turning on...");
 
       // 2. Launch Chromium in kiosk mode
-      const url = `https://elder-rings.local/elder-rings/api/webauthn?roomId=${message.value.roomId}`;
       exec(`chromium-browser --kiosk "${url}"`, (err) => {
         if (err) console.error("Failed to launch Chromium:", err);
       });
