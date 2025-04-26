@@ -1,0 +1,137 @@
+#This configuration exist in case you want to use http only in dev mode
+#As a result, webauthn will not work !
+quarkus:
+  application:
+    name: "elder-rings"
+    version: "0.0.1"
+
+  http:
+    host: 127.0.0.1
+    port: 8080
+    debug: true
+    mime-types: audio-mpeg:.mp3
+    cors:
+      ~: true
+      origin: "*"
+      # access-control-allow-credentials: true
+    root-path: /elder-rings/
+    non-application-root-path: /elder-rings/monitor
+    auth:
+      permission:
+        permit-webauthn:
+          paths:
+            - /elder-rings/api/webauthn
+          policy: permit
+        authenticated:
+          paths:
+            - /elder-rings/*
+          policy: authenticated
+        permit:
+          paths:
+            - /elder-rings/monitor/*
+          policy: permit
+
+  rest:
+    path: /api
+
+  # Logging configuration
+  log:
+    level: info
+    file:
+      path: "log/elder-rings.log"
+    console:
+      enable: true
+      json: false # Disable JSON logging for console output
+      format: "%d %p (%t) %m%n" # Log format
+
+  # Quinoa configuration (for serving frontend)
+  quinoa:
+    ui-dir: src/main/ui
+    enable-spa-routing: true
+    ui-build-dir: dist
+    ignored-path-prefixes:
+      - /elder-rings/api
+      - /elder-rings/ws
+      - /elder-rings/monitor
+    dev-server: # Dev server URL for live reload during development
+      host: "127.0.0.1"
+      port: 5173
+      managed: true
+
+  # Websockets
+  websocket:
+    dispatch-to-worker: true
+
+  # Jackson (json serialization)
+  jackson:
+    serialization-inclusion: NON_ABSENT
+    fail-on-unknown-properties: false
+    accept-case-insensitive-enums: true
+
+  # Metric configuration
+  smallrye-health:
+    root-path: health
+  micrometer:
+    export:
+      json:
+        enabled: true
+        path: "metrics/json"
+      prometheus:
+        path: "metrics/prometheus"
+
+  # OIDC related configurations
+  oidc:
+    tls:
+      verification: none
+    devservices:
+      enabled: true
+    auth-server-url: http://127.0.0.1:8180/auth/realms/elderrings
+    client-id: elderrings
+    credentials:
+      secret: exvFhqRAZD6m0qKtszUCqN2mOxeX3SoH
+      jwt:
+        signature-algorithm: RS256
+      client-secret:
+        method: post
+    token:
+      issuer: http://127.0.0.1:8180/auth/realms/elderrings
+    applications:
+      - client:
+          redirect-uris:
+            - http://127.0.0.1:8080/elder-rings/
+    application-type: hybrid
+    authentication:
+      scopes: openid
+      add-openid-scope: true
+      verify-access-token: true
+      error-path: /error
+      restore-path-after-redirect: true
+      cookie-domain: 127.0.0.1
+      cookie-path: /elder-rings
+      cookie-same-site: LAX
+    roles:
+      source: accesstoken
+    token-state-manager:
+      encryption-required: true
+      encryption-scecret: oi2jwOInZWza5wLzpi75sdihN7bb6hKs
+      split-tokens: true
+
+  ## Database related configuration
+  datasource:
+    db-kind: postgresql
+    username: elderrings_user
+    password: elderrings_p4ssw0rd
+    jdbc:
+      url: jdbc:postgresql://127.0.0.1:5432/elderrings
+    # Reactive PostgreSQL configuration
+    reactive:
+      url: postgresql://127.0.0.1:5432/elderrings
+  hibernate-orm:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    database:
+      generation: update # Automatically updates schema; change to 'none' in production
+
+# Custom application dedicated configurations
+application:
+  info:
+    env: "dev"

@@ -1,1 +1,0 @@
-# MEMOIRE_jdelegli

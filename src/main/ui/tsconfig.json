@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    "types": ["unplugin-icons/types/react", "jest"],
+
+    "esModuleInterop": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Custom app path */
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@openapi/*": ["./src/openapi/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@type/*": ["./src/types/*"],
+      "@contexts/*": ["./src/contexts/*"]
+    }
+  },
+  "includes": ["src", "basepath.config.d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

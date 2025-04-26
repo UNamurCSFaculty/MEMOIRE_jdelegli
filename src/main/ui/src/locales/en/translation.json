@@ -1,0 +1,83 @@
+{
+  "Components": {
+    "Errors": {
+      "ErrorHandler": {
+        "WhatHappened": "Que s'est-il passé",
+        "WhatNow": "Que faire ?",
+        "TechnicalDetailsHeader": "Informations techniques",
+        "UnknownError": "Erreur inconnue",
+        "Title": "Erreur",
+        "Summary": "Quelque chose d'imprévu s'est produit",
+        "Action": "Retour à <1>l'accueil</1>."
+      }
+    },
+    "UserPreferencesForm": {
+      "IsPublicProfile": "Profil public",
+      "PreferencesUpdated": "Préférences mises à jour !",
+      "GeneralTitle": "Préférences générales",
+      "Language": "Langue",
+      "VisualTitle": "Préférences visuelles",
+      "ReadTextOnScreen": "Lire le texte à l'écran",
+      "TextSize": "Taille du texte",
+      "AudioTitle": "Préférences audio",
+      "EnableAudioCompression": "Activer la compression audio",
+      "AudioFilters": "Filtres audio",
+      "FrequencyPlaceholder": "Fréquence (Hz)",
+      "GainPlaceholder": "Gain",
+      "RemoveFilter": "Supprimer",
+      "AddFilter": "Ajouter un filtre",
+      "TestConfigTitle": "Tester la configuration",
+      "SavePreferences": "Enregistrer les préférences"
+    }
+  },
+  "Pages": {
+    "Generic": {
+      "PageNotFound": {
+        "Title": "Page non trouvée",
+        "Message": "La page que vous cherchez n'existe pas ...",
+        "Action": "Retour à <1>l'accueil</1>."
+      },
+      "NotConnectedPage": {
+        "Title": "Oooops",
+        "Message": "Il semblerait que vous ne soyez pas connecté",
+        "Action": "Retour à <1>l'accueil</1>."
+      },
+      "Unauthorized": {
+        "Title": "Accès refusé",
+        "Message": "Vous n'avez pas les droits suffisants pour accéder à cette page",
+        "Action": "Retour à <1>l'accueil</1>."
+      }
+    },
+    "CallRoom": {
+      "UserLeft": "Votre correspondant à quitté la conversation",
+      "WaitingUserToJoin": "En attente de votre correspondant",
+      "EndCall": "Raccrocher",
+      "StopScreenShare": "Arrêter le partage d'écran",
+      "ShareScreen": "Partager l'écran",
+      "DisplayVideo": "Afficher la webcam",
+      "HideVideo": "Cacher la webcam",
+      "Mute": "Couper le micro",
+      "Unmute": "Activer le micro"
+    },
+    "ContactPage": {
+      "NoContactsFound": "Pas de contacts trouvés"
+    },
+    "AddContactPage": {
+      "NoVisibleUserFound": "Aucun utilisateur trouvé"
+    }
+  },
+  "Enums": {
+    "TextSizeDto": {
+      "SM": "Petit",
+      "MD": "Moyen",
+      "LG": "Grand",
+      "XL": "Très grand",
+      "XXL": "Extra grand"
+    },
+    "Language": {
+      "FR": "French",
+      "EN": "English",
+      "NL": "Dutch"
+    }
+  }
+}
