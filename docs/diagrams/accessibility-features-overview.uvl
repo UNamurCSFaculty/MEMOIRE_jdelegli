@@ -1,0 +1,9 @@
+features
+    Accessibility {abstract}
+        mandatory
+            "Visual Helpers" {abstract}
+            "Effortless Navigation" {abstract}
+            "Audio Alternatives" {abstract}
+            "Interface Inclusiveness" {abstract}
+            "Internationalization" {abstract}
+constraints

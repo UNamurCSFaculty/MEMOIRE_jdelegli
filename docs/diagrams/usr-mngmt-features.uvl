@@ -1,0 +1,11 @@
+//Example from FeatureIDE Book
+features
+    "User Management" {abstract}
+        optional
+            "User registration" {abstract}
+            "Advanced roles" {abstract}
+            "Right delegation" {abstract}
+        mandatory
+            "Basic roles" {abstract}
+            "User Preferences" {abstract}  
+constraints

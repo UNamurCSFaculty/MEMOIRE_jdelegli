@@ -7,8 +7,12 @@ export default {
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Atkinson Hyperlegible Next", "sans-serif"], // <-- DEFAULT
+      },
+    },
   },
   darkMode: "class",
- plugins: [heroui()],
+  plugins: [heroui()],
 };

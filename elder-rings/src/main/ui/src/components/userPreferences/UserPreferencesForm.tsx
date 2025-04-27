@@ -90,6 +90,10 @@ export default function UserPreferencesForm() {
   };
 
   const updateAudioFilter = (index: number, field: "frequency" | "gain", value: number) => {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      return;
+    }
+
     const updatedFilters = formData.audio?.filters ? [...formData.audio.filters] : [];
     updatedFilters[index] = { ...updatedFilters[index], [field]: value };
     setFormData((prev) => ({
@@ -246,6 +250,12 @@ export default function UserPreferencesForm() {
               <h3 className="text-md font-semibold">
                 {t("Components.UserPreferencesForm.AudioFilters")}
               </h3>
+              {formData.audio?.filters?.length && formData.audio?.filters?.length > 0 && (
+                <div className="grid grid-cols-2 italic">
+                  <p>{t("Components.UserPreferencesForm.FrequencyPlaceholder")}</p>
+                  <p>{t("Components.UserPreferencesForm.GainPlaceholder")}</p>
+                </div>
+              )}
               {formData.audio?.filters?.map((filter, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <NumberInput

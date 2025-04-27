@@ -1,0 +1,20 @@
+features
+    System {abstract}
+        mandatory
+            Security {abstract}
+                mandatory
+                    "Authentication" {abstract}
+            "User Management" {abstract}
+                mandatory
+                    "User Preferences" {abstract}
+                    "Basic roles" {abstract}
+            "Contact management"  {abstract}
+            Accessibility {abstract}
+                mandatory
+                    "Visual" {abstract}
+                    "Auditory" {abstract}
+                    "Physical" {abstract}
+                    "Cognitive" {abstract}
+            "Video Call" {abstract}
+            "TV control" {abstract}   
+constraints

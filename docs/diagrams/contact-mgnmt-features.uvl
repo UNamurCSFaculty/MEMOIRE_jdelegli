@@ -1,0 +1,10 @@
+features
+    "Contact management"  {abstract}
+        optional
+            "Remove contact" {abstract}
+            "View contact status" {abstract}
+            "Contact configuration" {abstract}
+        mandatory
+            "Add contact" {abstract}
+            "Accept contact" {abstract}
+constraints

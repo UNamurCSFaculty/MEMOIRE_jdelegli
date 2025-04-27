@@ -1,0 +1,37 @@
+//Example from FeatureIDE Book
+features
+    System {abstract}
+        mandatory
+            Security {abstract}
+                optional
+                    "Audit" {abstract}
+                mandatory
+                    "Authentication" {abstract}
+            "User Management" {abstract}
+                optional
+                    "User registration" {abstract}
+                    "Advanced roles" {abstract}
+                    "Right delegation" {abstract}
+                mandatory
+                    "Basic roles" {abstract}
+                    "User Preferences" {abstract}
+            "Contact management"  {abstract}
+                optional
+                    "Remove contact" {abstract}
+                    "View contact status" {abstract}
+                mandatory
+                    "Add contact" {abstract}
+                    "Accept contact" {abstract}
+            Accessibility {abstract}
+                mandatory
+                    "Visual" {abstract}
+                    "Auditory" {abstract}
+                    "Physical" {abstract}
+                    "Cognitive" {abstract}
+            "Video Call" {abstract}
+            "TV control" {abstract}
+        optional
+            "Information Hub" {abstract}
+            "Healthcare reminders" {abstract}
+            "Social engagements tools" {abstract}        
+constraints

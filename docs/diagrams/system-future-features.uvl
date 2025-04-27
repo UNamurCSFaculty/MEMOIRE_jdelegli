@@ -1,0 +1,16 @@
+features
+    System {abstract}
+        mandatory
+            Security {abstract}
+                optional
+                    "Audit" {abstract}
+            "User Management" {abstract}
+                optional
+                    "User registration" {abstract}
+                    "Advanced roles" {abstract}
+                    "Right delegation" {abstract}
+        optional
+            "Information Hub" {abstract}
+            "Healthcare reminders" {abstract}
+            "Social engagements tools" {abstract}        
+constraints

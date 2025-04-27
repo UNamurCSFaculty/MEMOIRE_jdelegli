@@ -1,0 +1,120 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" version="26.0.16">
+  <diagram name="Page-1" id="Aqv31xwFPgqs0Owytahe">
+    <mxGraphModel dx="1562" dy="845" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-1" value="TV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="550" y="20" width="211" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-2" value="Raspberry PI" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="551" y="200" width="210" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-14" value="Microphone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="740" y="400" width="84" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-15" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.865;entryY=0.997;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="7HeY-nPYopmR_uiWvRdc-14" target="7HeY-nPYopmR_uiWvRdc-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="370" as="sourcePoint" />
+            <mxPoint x="445" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-16" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;exitX=0.25;exitY=0;exitDx=0;exitDy=0;" parent="1" source="7HeY-nPYopmR_uiWvRdc-2" target="7HeY-nPYopmR_uiWvRdc-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="395" y="260" as="sourcePoint" />
+            <mxPoint x="445" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-17" value="&lt;div&gt;HDMI&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="7HeY-nPYopmR_uiWvRdc-16" vertex="1" connectable="0">
+          <mxGeometry x="-0.087" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-18" value="Main application" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="130" y="214" width="215" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-39" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" parent="1" source="7HeY-nPYopmR_uiWvRdc-2" target="7HeY-nPYopmR_uiWvRdc-1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="716" y="200" as="sourcePoint" />
+            <mxPoint x="445" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-42" value="Start TV /&amp;nbsp;&lt;div&gt;Switch chanel&lt;div&gt;(HDMI CEC)&lt;/div&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="7HeY-nPYopmR_uiWvRdc-39" vertex="1" connectable="0">
+          <mxGeometry x="0.5748" y="-1" relative="1" as="geometry">
+            <mxPoint y="31" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-50" value="External User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="226" y="10" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-54" value="" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="145" y="100" width="185" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-57" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.517;entryY=-0.008;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="7HeY-nPYopmR_uiWvRdc-18" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="100" as="sourcePoint" />
+            <mxPoint x="234.304347826087" y="250" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7HeY-nPYopmR_uiWvRdc-58" value="Access through Internet&lt;div&gt;(Via User - Password)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="7HeY-nPYopmR_uiWvRdc-57" vertex="1" connectable="0">
+          <mxGeometry x="-0.0626" relative="1" as="geometry">
+            <mxPoint x="-3" y="-13" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-5" value="Identity and Access&amp;nbsp;&lt;div&gt;Management&amp;nbsp;&lt;/div&gt;&lt;div&gt;application&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="130" y="370" width="215" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-7" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="7HeY-nPYopmR_uiWvRdc-18" target="WUUe-V5xhN7_af_iM9Fy-5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="355" y="252" as="sourcePoint" />
+            <mxPoint x="560" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-8" value="" style="endArrow=classic;html=1;rounded=0;exitX=1.003;exitY=0.328;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.005;entryY=0.359;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="7HeY-nPYopmR_uiWvRdc-18" target="7HeY-nPYopmR_uiWvRdc-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="570" y="300" as="sourcePoint" />
+            <mxPoint x="620" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-9" value="notifiy" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="WUUe-V5xhN7_af_iM9Fy-8" vertex="1" connectable="0">
+          <mxGeometry x="0.2797" relative="1" as="geometry">
+            <mxPoint x="-29" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-10" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.996;entryY=0.855;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="551" y="270.1" as="sourcePoint" />
+            <mxPoint x="344.1399999999999" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-11" value="use" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="WUUe-V5xhN7_af_iM9Fy-10" vertex="1" connectable="0">
+          <mxGeometry x="0.2797" relative="1" as="geometry">
+            <mxPoint x="31" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.093;exitY=1.008;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" source="7HeY-nPYopmR_uiWvRdc-2" target="WUUe-V5xhN7_af_iM9Fy-15" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="565" y="309" as="sourcePoint" />
+            <mxPoint x="536.9999999999998" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-15" value="Webcam" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="480" y="400" width="90" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-16" value="TV remote" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="596" y="400" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-17" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="WUUe-V5xhN7_af_iM9Fy-16" target="7HeY-nPYopmR_uiWvRdc-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="620" y="350" as="sourcePoint" />
+            <mxPoint x="792" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WUUe-V5xhN7_af_iM9Fy-18" value="Local application" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" parent="1" vertex="1">
+          <mxGeometry x="595.5" y="234" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,9 @@
+features
+    "Visual Helpers" {abstract}
+        mandatory
+            "Text-to-Speech"
+            "Readable fonts"
+            "Adjustable text size"
+            "High contrast"
+            "Clear focus"
+constraints

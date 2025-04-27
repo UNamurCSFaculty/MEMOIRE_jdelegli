@@ -1,78 +1,113 @@
 {
+  "Common": {
+    "LoadingSuspension": "Bezig met laden...",
+    "Back": "Terug",
+    "GoBackHome": "Terug naar de startpagina."
+  },
   "Components": {
     "Errors": {
       "ErrorHandler": {
-        "WhatHappened": "Que s'est-il passé",
-        "WhatNow": "Que faire ?",
-        "TechnicalDetailsHeader": "Informations techniques",
-        "UnknownError": "Erreur inconnue",
-        "Title": "Erreur",
-        "Summary": "Quelque chose d'imprévu s'est produit",
-        "Action": "Retour à <1>l'accueil</1>."
+        "WhatHappened": "Wat is er gebeurd",
+        "WhatNow": "Wat nu?",
+        "TechnicalDetailsHeader": "Technische informatie",
+        "UnknownError": "Onbekende fout",
+        "Title": "Fout",
+        "Summary": "Er is iets onverwachts gebeurd",
+        "Action": "Terug naar <1>de startpagina</1>."
       }
     },
+    "ContactsCarousel": {
+      "ContactPictureAlt": "Foto van {{name}}",
+      "CallContact": "Start een oproep met {{name}}",
+      "PreviousSlide": "Vorige contactpersoon",
+      "NextSlide": "Volgende contactpersoon",
+      "GoToSlide": "Ga naar contactpersoon {{index}}"
+    },
+    "IncomingCallListener": {
+      "IncomingCall": "Inkomend gesprek",
+      "CallRequest": "{{name}} wil je bellen",
+      "ContactPictureAlt": "Foto van {{name}}",
+      "AcceptCall": "Oproep accepteren",
+      "DeclineCall": "Oproep weigeren"
+    },
+    "ContactRequestModal": {
+      "Title": "Je hebt een of meerdere contactverzoeken",
+      "ContactPictureAlt": "Foto van {{name}}",
+      "Accept": "Accepteren",
+      "Decline": "Weigeren"
+    },
     "UserPreferencesForm": {
-      "IsPublicProfile": "Profil public",
-      "PreferencesUpdated": "Préférences mises à jour !",
-      "GeneralTitle": "Préférences générales",
-      "Language": "Langue",
-      "VisualTitle": "Préférences visuelles",
-      "ReadTextOnScreen": "Lire le texte à l'écran",
-      "TextSize": "Taille du texte",
-      "AudioTitle": "Préférences audio",
-      "EnableAudioCompression": "Activer la compression audio",
-      "AudioFilters": "Filtres audio",
-      "FrequencyPlaceholder": "Fréquence (Hz)",
+      "ProfilePicture": "Profielfoto",
+      "PersonalPicture": "Jouw foto",
+      "IsPublicProfile": "Openbaar profiel",
+      "PreferencesUpdated": "Voorkeuren bijgewerkt!",
+      "GeneralTitle": "Algemene voorkeuren",
+      "Language": "Taal",
+      "VisualTitle": "Visuele voorkeuren",
+      "ReadTextOnScreen": "Tekst op scherm voorlezen",
+      "TextSize": "Tekstgrootte",
+      "AudioTitle": "Audiovoorkeuren",
+      "EnableAudioCompression": "Audiocompressie inschakelen",
+      "PlayInterfaceSounds": "Interfacegeluiden afspelen",
+      "AudioFilters": "Audiofilters",
+      "FrequencyPlaceholder": "Frequentie (Hz)",
       "GainPlaceholder": "Gain",
-      "RemoveFilter": "Supprimer",
-      "AddFilter": "Ajouter un filtre",
-      "TestConfigTitle": "Tester la configuration",
-      "SavePreferences": "Enregistrer les préférences"
+      "RemoveFilter": "Verwijderen",
+      "AddFilter": "Filter toevoegen",
+      "TestConfigTitle": "Configuratie testen",
+      "SavePreferences": "Voorkeuren opslaan"
     }
   },
   "Pages": {
     "Generic": {
       "PageNotFound": {
-        "Title": "Page non trouvée",
-        "Message": "La page que vous cherchez n'existe pas ...",
-        "Action": "Retour à <1>l'accueil</1>."
+        "Title": "Pagina niet gevonden",
+        "Message": "De pagina die je zoekt bestaat niet...",
+        "Action": "Terug naar <1>de startpagina</1>."
       },
       "NotConnectedPage": {
-        "Title": "Oooops",
-        "Message": "Il semblerait que vous ne soyez pas connecté",
-        "Action": "Retour à <1>l'accueil</1>."
+        "Title": "Oeps",
+        "Message": "Je lijkt niet verbonden te zijn",
+        "Action": "Terug naar <1>de startpagina</1>."
       },
       "Unauthorized": {
-        "Title": "Accès refusé",
-        "Message": "Vous n'avez pas les droits suffisants pour accéder à cette page",
-        "Action": "Retour à <1>l'accueil</1>."
+        "Title": "Toegang geweigerd",
+        "Message": "Je hebt onvoldoende rechten om deze pagina te openen",
+        "Action": "Terug naar <1>de startpagina</1>."
       }
     },
+    "HomeMenu": {
+      "Contacts": "Contacten",
+      "Events": "Evenementen",
+      "Preference": "Voorkeuren",
+      "Weather": "Weer"
+    },
     "CallRoom": {
-      "UserLeft": "Votre correspondant à quitté la conversation",
-      "WaitingUserToJoin": "En attente de votre correspondant",
-      "EndCall": "Raccrocher",
-      "StopScreenShare": "Arrêter le partage d'écran",
-      "ShareScreen": "Partager l'écran",
-      "DisplayVideo": "Afficher la webcam",
-      "HideVideo": "Cacher la webcam",
-      "Mute": "Couper le micro",
-      "Unmute": "Activer le micro"
+      "UserLeft": "Je gesprekspartner heeft het gesprek verlaten",
+      "UserRejectedCall": "Je gesprekspartner heeft het gesprek geweigerd",
+      "WaitingUserToJoin": "Wachten tot je gesprekspartner meedoet",
+      "EndCall": "Oproep beëindigen",
+      "StopScreenShare": "Scherm delen stoppen",
+      "ShareScreen": "Scherm delen",
+      "DisplayVideo": "Webcam tonen",
+      "HideVideo": "Webcam verbergen",
+      "Mute": "Microfoon dempen",
+      "Unmute": "Microfoon aanzetten"
     },
     "ContactPage": {
-      "NoContactsFound": "Pas de contacts trouvés"
+      "NoContactsFound": "Geen contacten gevonden"
     },
     "AddContactPage": {
-      "NoVisibleUserFound": "Aucun utilisateur trouvé"
+      "NoVisibleUserFound": "Geen gebruikers gevonden"
     }
   },
   "Enums": {
     "TextSizeDto": {
-      "SM": "Petit",
-      "MD": "Moyen",
-      "LG": "Grand",
-      "XL": "Très grand",
-      "XXL": "Extra grand"
+      "SM": "Klein",
+      "MD": "Middelgroot",
+      "LG": "Groot",
+      "XL": "Zeer groot",
+      "XXL": "Extra groot"
     },
     "Language": {
       "FR": "Frans",

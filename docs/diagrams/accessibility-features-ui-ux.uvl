@@ -1,0 +1,11 @@
+features
+    "Interface Inclusiveness" {abstract}
+        mandatory
+            "Simple language"
+            "Consistent UI"
+            "ARIA attributes"
+        optional
+            "Clear instructions"
+            "Minimized distractions"
+            "Responsive design"
+constraints

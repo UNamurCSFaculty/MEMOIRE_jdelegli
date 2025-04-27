@@ -1,0 +1,13 @@
+//Example from FeatureIDE Book
+features
+    "Video Call" {abstract}
+        mandatory
+            "Basic Controls"
+                mandatory
+                    "Mute microphone"
+                    "Hide camera"
+                    "End call"
+            "Screen sharing" {abstract}
+            "Audio filters" {abstract}
+            "Subtitle and captions" {abstract}
+constraints

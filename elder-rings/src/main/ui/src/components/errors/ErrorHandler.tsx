@@ -45,21 +45,21 @@ export default function ErrorHandler({ error }: Readonly<ErrorHandlerProps>) {
     <Col className="m-2 rounded-lg border border-danger-400 bg-danger-50 p-5 text-base text-danger-700">
       <Row className="items-center gap-2">
         <IconErrorCircleRounded className="h-6 w-6" />
-        <p className="text-xl font-bold">{"Components.Errors.ErrorHandler.Title"}</p>
+        <p className="text-xl font-bold">{t("Components.Errors.ErrorHandler.Title")}</p>
       </Row>
-      <Row className="gap-2">
-        <p className="text-sm italic">{"Components.Errors.ErrorHandler.Summary"}</p>
+      <Col className="gap-2">
+        <p className="text-sm italic">{t("Components.Errors.ErrorHandler.Summary")}</p>
         {error && typeof error === "object" && (
           <Col className="gap-1">
             <div className="rounded bg-danger-800/80 px-4 py-1 text-sm uppercase text-danger-100">
-              {"Components.Errors.ErrorHandler.WhatHappened"}
+              {t("Components.Errors.ErrorHandler.WhatHappened")}
             </div>
             <p className="pl-8 italic">{errorName}</p>
           </Col>
         )}
         <Col className="gap-1">
           <div className="rounded bg-danger-800/80 px-4 py-1 text-sm uppercase text-danger-100">
-            {"Components.Errors.ErrorHandler.WhatNow"}
+            {t("Components.Errors.ErrorHandler.WhatNow")}
           </div>
           <div className="pl-8">
             <Trans i18nKey={"Components.Errors.ErrorHandler.Action"}>
@@ -73,26 +73,30 @@ export default function ErrorHandler({ error }: Readonly<ErrorHandlerProps>) {
         </Col>
         <hr className="border-danger-500" />
         <details>
-          <summary>{"Components.Errors.ErrorHandler.TechnicalDetailsHeader"}</summary>
-          <Row className="w-full rounded bg-danger-900/80">
+          <Row className="w-full rounded gap-2 items-center">
+            <summary>{t("Components.Errors.ErrorHandler.TechnicalDetailsHeader")}</summary>
             <Button
               onPress={() => navigator.clipboard.writeText(error.message + serverResponseText)}
               color="default"
+              variant="light"
               size="sm"
+              isIconOnly
             >
               <IconCopyToClipBoard />
             </Button>
           </Row>
+          <Col className="w-full rounded bg-danger-900/80 p-2">
+            <pre className="flex-wrap whitespace-pre-wrap rounded px-4 pt-0 text-white">
+              {error.message && error.message instanceof Object
+                ? JSON.stringify(error.message, null, 2)
+                : error.message}
+            </pre>
+            <pre className="flex-wrap whitespace-pre-wrap rounded px-4 pt-0 pb-8 text-white">
+              {serverResponseText}
+            </pre>
+          </Col>
         </details>
-        <pre className="flex-wrap whitespace-pre-wrap rounded px-4 pt-0 text-white">
-          {error.message && error.message instanceof Object
-            ? JSON.stringify(error.message, null, 2)
-            : error.message}
-        </pre>
-        <pre className="flex-wrap whitespace-pre-wrap rounded px-4 pt-0 pb-8 text-white">
-          {serverResponseText}
-        </pre>
-      </Row>
+      </Col>
     </Col>
   );
 }

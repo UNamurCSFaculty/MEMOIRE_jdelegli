@@ -1,78 +1,113 @@
 {
+  "Common": {
+    "LoadingSuspension": "Loading...",
+    "Back": "Back",
+    "GoBackHome": "Go back home."
+  },
   "Components": {
     "Errors": {
       "ErrorHandler": {
-        "WhatHappened": "Que s'est-il passé",
-        "WhatNow": "Que faire ?",
-        "TechnicalDetailsHeader": "Informations techniques",
-        "UnknownError": "Erreur inconnue",
-        "Title": "Erreur",
-        "Summary": "Quelque chose d'imprévu s'est produit",
-        "Action": "Retour à <1>l'accueil</1>."
+        "WhatHappened": "What happened",
+        "WhatNow": "What now?",
+        "TechnicalDetailsHeader": "Technical information",
+        "UnknownError": "Unknown error",
+        "Title": "Error",
+        "Summary": "Something unexpected happened",
+        "Action": "Back to <1>home</1>."
       }
     },
+    "ContactsCarousel": {
+      "ContactPictureAlt": "{{name}}'s photo",
+      "CallContact": "Start a call with {{name}}",
+      "PreviousSlide": "Previous contact",
+      "NextSlide": "Next contact",
+      "GoToSlide": "Go to contact {{index}}"
+    },
+    "IncomingCallListener": {
+      "IncomingCall": "Incoming call",
+      "CallRequest": "{{name}} wants to call you",
+      "ContactPictureAlt": "{{name}}'s photo",
+      "AcceptCall": "Accept call",
+      "DeclineCall": "Decline call"
+    },
+    "ContactRequestModal": {
+      "Title": "You have one or more contact requests",
+      "ContactPictureAlt": "{{name}}'s photo",
+      "Accept": "Accept",
+      "Decline": "Decline"
+    },
     "UserPreferencesForm": {
-      "IsPublicProfile": "Profil public",
-      "PreferencesUpdated": "Préférences mises à jour !",
-      "GeneralTitle": "Préférences générales",
-      "Language": "Langue",
-      "VisualTitle": "Préférences visuelles",
-      "ReadTextOnScreen": "Lire le texte à l'écran",
-      "TextSize": "Taille du texte",
-      "AudioTitle": "Préférences audio",
-      "EnableAudioCompression": "Activer la compression audio",
-      "AudioFilters": "Filtres audio",
-      "FrequencyPlaceholder": "Fréquence (Hz)",
+      "ProfilePicture": "Profile picture",
+      "PersonalPicture": "Your picture",
+      "IsPublicProfile": "Public profile",
+      "PreferencesUpdated": "Preferences updated!",
+      "GeneralTitle": "General preferences",
+      "Language": "Language",
+      "VisualTitle": "Visual preferences",
+      "ReadTextOnScreen": "Read text on screen",
+      "TextSize": "Text size",
+      "AudioTitle": "Audio preferences",
+      "EnableAudioCompression": "Enable audio compression",
+      "PlayInterfaceSounds": "Play interface sounds",
+      "AudioFilters": "Audio filters",
+      "FrequencyPlaceholder": "Frequency (Hz)",
       "GainPlaceholder": "Gain",
-      "RemoveFilter": "Supprimer",
-      "AddFilter": "Ajouter un filtre",
-      "TestConfigTitle": "Tester la configuration",
-      "SavePreferences": "Enregistrer les préférences"
+      "RemoveFilter": "Remove",
+      "AddFilter": "Add a filter",
+      "TestConfigTitle": "Test configuration",
+      "SavePreferences": "Save preferences"
     }
   },
   "Pages": {
     "Generic": {
       "PageNotFound": {
-        "Title": "Page non trouvée",
-        "Message": "La page que vous cherchez n'existe pas ...",
-        "Action": "Retour à <1>l'accueil</1>."
+        "Title": "Page not found",
+        "Message": "The page you are looking for does not exist...",
+        "Action": "Back to <1>home</1>."
       },
       "NotConnectedPage": {
         "Title": "Oooops",
-        "Message": "Il semblerait que vous ne soyez pas connecté",
-        "Action": "Retour à <1>l'accueil</1>."
+        "Message": "It looks like you are not connected",
+        "Action": "Back to <1>home</1>."
       },
       "Unauthorized": {
-        "Title": "Accès refusé",
-        "Message": "Vous n'avez pas les droits suffisants pour accéder à cette page",
-        "Action": "Retour à <1>l'accueil</1>."
+        "Title": "Access denied",
+        "Message": "You do not have sufficient rights to access this page",
+        "Action": "Back to <1>home</1>."
       }
     },
+    "HomeMenu": {
+      "Contacts": "Contacts",
+      "Events": "Events",
+      "Preference": "Preferences",
+      "Weather": "Weather"
+    },
     "CallRoom": {
-      "UserLeft": "Votre correspondant à quitté la conversation",
-      "WaitingUserToJoin": "En attente de votre correspondant",
-      "EndCall": "Raccrocher",
-      "StopScreenShare": "Arrêter le partage d'écran",
-      "ShareScreen": "Partager l'écran",
-      "DisplayVideo": "Afficher la webcam",
-      "HideVideo": "Cacher la webcam",
-      "Mute": "Couper le micro",
-      "Unmute": "Activer le micro"
+      "UserLeft": "Your contact left the conversation",
+      "UserRejectedCall": "Your contact declined the call",
+      "WaitingUserToJoin": "Waiting for your contact to join",
+      "EndCall": "Hang up",
+      "StopScreenShare": "Stop screen sharing",
+      "ShareScreen": "Share screen",
+      "DisplayVideo": "Show webcam",
+      "HideVideo": "Hide webcam",
+      "Mute": "Mute",
+      "Unmute": "Unmute"
     },
     "ContactPage": {
-      "NoContactsFound": "Pas de contacts trouvés"
+      "NoContactsFound": "No contacts found"
     },
     "AddContactPage": {
-      "NoVisibleUserFound": "Aucun utilisateur trouvé"
+      "NoVisibleUserFound": "No users found"
     }
   },
   "Enums": {
     "TextSizeDto": {
-      "SM": "Petit",
-      "MD": "Moyen",
-      "LG": "Grand",
-      "XL": "Très grand",
-      "XXL": "Extra grand"
+      "SM": "Small",
+      "MD": "Medium",
+      "LG": "Large",
+      "XL": "Very large",
+      "XXL": "Extra large"
     },
     "Language": {
       "FR": "French",

@@ -1,0 +1,21 @@
+features
+    Security {abstract}
+        mandatory
+            "Authentication Method" {abstract}
+                or
+                    "Username & Password"
+                    "Device-based Authentication"
+                        alternative
+                            "Trusted Device Login"
+                            "Biometric Authentication"
+                                alternative
+                                    "Face Recognition"
+                                    "Voice Recognition"
+                                    "Fingerprint"
+                    "Automated Client Login" {abstract}
+                        alternative
+                            "Client Username & Password"
+                            "Client Certificate"
+        optional
+            "Audit"
+constraints

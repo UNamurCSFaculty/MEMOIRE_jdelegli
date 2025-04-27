@@ -1,0 +1,34 @@
+features
+    Accessibility {abstract}
+        mandatory
+            "Visual Helpers" {abstract}
+                mandatory
+                    "Text-to-Speech"
+                    "Readable fonts"
+                    "Adjustable text size"
+                    "High contrast"
+                    "Clear focus"
+            "Effortless Navigation" {abstract}
+                mandatory
+                    "TV remote-friendly navigation"
+                    "Single-press actions"
+                optional
+                    "Skip links & shortcuts"
+                    "Voice control"
+             "Audio Alternatives" {abstract}
+                mandatory
+                    "Subtitles and captions"
+                    "Audio filters"
+                optional
+                    "Visual alerts"
+            "Interface Accessibility and Inclusiveness" {abstract}
+                mandatory
+                    "Simple language"
+                    "Consistent UI"
+                    "ARIA attributes"
+                optional
+                    "Clear instructions"
+                    "Minimized distractions"
+                    "Responsive design"
+            "Internationalization" {abstract}
+constraints

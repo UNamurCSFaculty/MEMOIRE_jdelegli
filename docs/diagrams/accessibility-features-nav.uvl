@@ -1,0 +1,9 @@
+features
+    "Effortless Navigation" {abstract}
+        mandatory
+            "TV remote-friendly navigation"
+            "Single-press actions"
+        optional
+            "Skip links & shortcuts"
+            "Voice control"
+constraints

@@ -1,0 +1,20 @@
+features
+    Security {abstract}
+        mandatory
+            Roles {abstract}
+                alternative
+                    "Healthcare professionnals"
+                    "Nursing home staff"
+                    "Residents"
+                    "Resident's contacts"
+                    "Resident's tutors"
+            "User registration" {abstract}
+                alternative
+                    "Manual"
+                    "Self registration With validation"
+constraints
+    "Healthcare professionnals" => "Manual"
+    "Residents" => "Manual"
+    "Nursing home staff" => "Manual"
+    "Resident's contacts" => "Self registration With validation"
+    "Resident's contacts" => "Manual"
