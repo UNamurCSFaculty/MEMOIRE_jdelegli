@@ -105,6 +105,7 @@ export default function VideoCallActionBar({
             onKeyDown={handleKeyNavigation}
             disabled={disabled}
             ref={registerButtonRef(0)}
+            aria-label={t("Pages.CallRoom.EndCall")}
           >
             <IconEndCall />
           </Button>
@@ -130,6 +131,11 @@ export default function VideoCallActionBar({
             onKeyDown={handleKeyNavigation}
             disabled={disabled}
             ref={registerButtonRef(1)}
+            aria-label={
+              isScreenSharing
+                ? t("Pages.CallRoom.StopScreenShare")
+                : t("Pages.CallRoom.ShareScreen")
+            }
           >
             {isScreenSharing ? <IconScreenShareStop /> : <IconScreenShare />}
           </Button>
@@ -147,6 +153,7 @@ export default function VideoCallActionBar({
             onKeyDown={handleKeyNavigation}
             disabled={disabled}
             ref={registerButtonRef(2)}
+            aria-label={isAudioMuted ? t("Pages.CallRoom.Unmute") : t("Pages.CallRoom.Mute")}
           >
             {isAudioMuted ? <IconUnmute /> : <IconMute />}
           </Button>
@@ -166,6 +173,9 @@ export default function VideoCallActionBar({
             onKeyDown={handleKeyNavigation}
             disabled={disabled}
             ref={registerButtonRef(3)}
+            aria-label={
+              isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")
+            }
           >
             {isVideoHidden ? <IconStartVideo /> : <IconStopVideo />}
           </Button>

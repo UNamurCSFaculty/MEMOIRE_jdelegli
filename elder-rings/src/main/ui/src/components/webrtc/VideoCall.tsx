@@ -179,8 +179,8 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
           userConnected ? "hidden" : ""
         )}
       >
-        <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-400/80 mx-auto" />
-        <p className="text-center font-semibold text-xl text-gray-500">
+        <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-600/80 mx-auto" />
+        <p className="text-center font-semibold text-xl text-gray-700">
           {t("Pages.CallRoom.WaitingUserToJoin")}
         </p>
       </Col>

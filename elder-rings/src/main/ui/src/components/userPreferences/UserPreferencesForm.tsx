@@ -147,6 +147,7 @@ export default function UserPreferencesForm() {
               className="w-64 object-contain"
             />
             <Input
+              label={t("Components.UserPreferencesForm.PersonalPicture")}
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
