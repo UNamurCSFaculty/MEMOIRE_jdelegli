@@ -92,9 +92,7 @@ And you need to launch the application with `application-http.yml` instead of th
   - [x] General
     - [x] Picture
     - [x] Lang
-      - [ ] Do all translations
     - [x] Public
-      - [x] filter on this for getAllUsers
     - [x] Text to speech
   - [x] Audio
     - [x] Frequency filters
@@ -115,8 +113,8 @@ And you need to launch the application with `application-http.yml` instead of th
   - [x] Sound
 - [x] Sound route media backend
 - [x] Call rejection
-- [ ] Contact online (implies knowing which user is online or not)
-- [ ] Décrochage auto
+- [ ] Contact online (info is provided through notification WebSocket, but not implemented in front end)
+- [ ] Décrochage auto (Actually implemented directly in client app, but not configurable on server, work to be done)
 - [ ] Role management
 - [ ] Delegation management
 - [ ] Audit
