@@ -75,7 +75,7 @@ export default function Captions({
 
     recognition.current = new SpeechRecognition();
     recognition.current.continuous = true;
-    getSpeechLocaleFromUserPrefs(userPreferences?.general?.lang);
+    recognition.current.lang = getSpeechLocaleFromUserPrefs(userPreferences?.general?.lang);
     recognition.current.interimResults = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
