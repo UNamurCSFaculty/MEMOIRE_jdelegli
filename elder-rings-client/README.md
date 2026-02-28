@@ -47,10 +47,10 @@ scp rootCA.crt pi@raspberrypi.local:/tmp/
 ssh pi@raspberrypi.local
 sudo cp /tmp/rootCA.crt /usr/local/share/ca-certificates/
 sudo update-ca-certificates
-echo -e "192.168.0.164 elder-rings.local\n192.168.0.164 keycloak.local" | sudo tee -a /etc/hosts > /dev/null
+echo -e "192.168.0.79 elder-rings.local\n192.168.0.79 keycloak.local" | sudo tee -a /etc/hosts > /dev/null
 ```
 
-> /!\ in my case 192.168.0.164 is the host on which the elder-rings application run, change it depending on your network
+> /!\ in my case 192.168.0.79 is the host on which the elder-rings application run, change it depending on your network
 
 ### Configure chromium
 

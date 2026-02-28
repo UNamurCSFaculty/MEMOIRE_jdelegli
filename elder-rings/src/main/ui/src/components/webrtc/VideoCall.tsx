@@ -32,6 +32,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   const navigate = useNavigate();
 
   const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const localStreamRef = useRef<MediaStream | null>(null);
 
   const { getWebSocket, lastJsonMessage, sendJsonMessage } = useWebSocket(
     buildWsUrl("call-room", roomId)
@@ -59,6 +60,11 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       peerConnection.current.ontrack = (evt) => onTrackHandler(evt, remoteVideoRef);
     }
 
+    // Request camera/mic permissions early so the popup doesn't interrupt WebRTC negotiation
+    navigator.mediaDevices
+      .getUserMedia({ audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true }, video: true })
+      .then((stream) => { localStreamRef.current = stream; });
+
     // To ensure to close the socket if the user close the window
     window.addEventListener("beforeunload", closeAllConnectionsAndSessions);
 
@@ -68,13 +74,18 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       window.removeEventListener("beforeunload", closeAllConnectionsAndSessions);
       // Manually close the socket as it's not part of the window event listener
       closeAllConnectionsAndSessions();
+      // Stop tracks from early permission request if the call never started
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
+        localStreamRef.current = null;
+      }
     };
   }, []);
 
   useEffect(() => {
     function startCall() {
       setIsCallStarted(true);
-      initiateCall(peerConnection, localVideoRef, sendJsonMessage);
+      initiateCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
     }
 
     if (lastJsonMessage) {
@@ -99,7 +110,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
                 const parsedMessage = JSON.parse(message);
                 proccessWebRTCMessage(parsedMessage, peerConnection);
                 if (parsedMessage.type === "offer") {
-                  answerCall(peerConnection, localVideoRef, sendJsonMessage);
+                  answerCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
                   setUserConnected(true);
                   setIsCallStarted(true);
                 }

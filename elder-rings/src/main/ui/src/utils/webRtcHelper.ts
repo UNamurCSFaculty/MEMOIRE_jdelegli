@@ -9,7 +9,7 @@ import { WebrtcWebSocketEventMessage } from "../types/rtcWebSocketEventMessage";
 export function onIceCandidateHandler(
   evt: RTCPeerConnectionIceEvent,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void
+  sendJsonMessage: (params: any) => void,
 ) {
   if (!evt?.candidate) return;
   else sendJsonMessage({ type: "ice-candidate", value: evt.candidate });
@@ -18,7 +18,7 @@ export function onIceCandidateHandler(
 export function closeAllConnections(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
   remoteVideoRef: RefObject<HTMLVideoElement>,
-  localVideoRef: RefObject<HTMLVideoElement>
+  localVideoRef: RefObject<HTMLVideoElement>,
 ) {
   // 1. close all WebRTC peer connections
   if (peerConnection.current && peerConnection.current.signalingState !== "closed") {
@@ -57,34 +57,33 @@ export function initiateCall(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
   localVideoRef: RefObject<HTMLVideoElement>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void
+  sendJsonMessage: (params: any) => void,
+  localStreamRef?: MutableRefObject<MediaStream | null>,
 ) {
   if (!peerConnection?.current) {
     console.error("Cannot initiate a call before the connection is ready");
   } else {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: {
-          noiseSuppression: true,
-          echoCancellation: true,
-          autoGainControl: true,
-        },
-        video: true,
-      })
-      .then((stream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
-        // we can ignore the "is possibly null" issue on current as already tested in if condition
-        stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-        createAndSendOffer(peerConnection, sendJsonMessage);
-      });
+    const streamPromise = localStreamRef?.current
+      ? Promise.resolve(localStreamRef.current)
+      : navigator.mediaDevices.getUserMedia({
+          audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true },
+          video: true,
+        });
+
+    streamPromise.then((stream) => {
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+      // we can ignore the "is possibly null" issue on current as already tested in if condition
+      stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
+      createAndSendOffer(peerConnection, sendJsonMessage);
+    });
   }
 }
 
 export function stopScreenShare(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>
+  localVideoRef: RefObject<HTMLVideoElement>,
 ) {
   if (!peerConnection.current) {
     console.error("Cannot stop screen share before the connection is established.");
@@ -120,7 +119,7 @@ export function stopScreenShare(
 
 export function startScreenShare(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>
+  localVideoRef: RefObject<HTMLVideoElement>,
 ) {
   if (!peerConnection.current) {
     console.error("Cannot share screen before the connection is established.");
@@ -156,35 +155,34 @@ export function answerCall(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
   localVideoRef: RefObject<HTMLVideoElement>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void
+  sendJsonMessage: (params: any) => void,
+  localStreamRef?: MutableRefObject<MediaStream | null>,
 ) {
   if (!peerConnection?.current) {
     console.error("Cannot answer a call before the connection is ready");
   } else {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: {
-          noiseSuppression: true,
-          echoCancellation: true,
-          autoGainControl: true,
-        },
-        video: true,
-      })
-      .then((stream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
-        // we can ignore the "is possibly null" issue on current as already tested in if condition
-        stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-        createAndSendAnswer(peerConnection, sendJsonMessage);
-      });
+    const streamPromise = localStreamRef?.current
+      ? Promise.resolve(localStreamRef.current)
+      : navigator.mediaDevices.getUserMedia({
+          audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true },
+          video: true,
+        });
+
+    streamPromise.then((stream) => {
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+      // we can ignore the "is possibly null" issue on current as already tested in if condition
+      stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
+      createAndSendAnswer(peerConnection, sendJsonMessage);
+    });
   }
 }
 
 export function terminateCall(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
   localVideoRef: RefObject<HTMLVideoElement>,
-  remoteVideoRef: RefObject<HTMLVideoElement>
+  remoteVideoRef: RefObject<HTMLVideoElement>,
 ) {
   if (!peerConnection?.current) {
     console.error("Cannot end a call before the connection is ready");
@@ -212,7 +210,7 @@ export function toggleVideo(peerConnection: MutableRefObject<RTCPeerConnection |
 function createAndSendOffer(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void
+  sendJsonMessage: (params: any) => void,
 ) {
   if (!peerConnection.current) {
     console.error("Peer connection not established");
@@ -240,7 +238,7 @@ function createAndSendOffer(
 function createAndSendAnswer(
   peerConnection: MutableRefObject<RTCPeerConnection | null>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void
+  sendJsonMessage: (params: any) => void,
 ) {
   if (!peerConnection.current) {
     console.error("Peer connection not established");
@@ -265,7 +263,7 @@ function createAndSendAnswer(
 
 export function proccessWebRTCMessage(
   message: WebrtcWebSocketEventMessage,
-  peerConnection: MutableRefObject<RTCPeerConnection | null>
+  peerConnection: MutableRefObject<RTCPeerConnection | null>,
 ) {
   if (!peerConnection.current) {
     console.error("Peer connection not established");
