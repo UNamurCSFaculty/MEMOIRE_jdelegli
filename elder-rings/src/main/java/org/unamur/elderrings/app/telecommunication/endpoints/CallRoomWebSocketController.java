@@ -2,12 +2,12 @@ package org.unamur.elderrings.app.telecommunication.endpoints;
 
 import org.unamur.elderrings.app.core.Routes;
 import org.unamur.elderrings.app.telecommunication.ws.OnCloseCallRoomSession;
-import org.unamur.elderrings.app.telecommunication.ws.OnErrorCallRoomSession;
 import org.unamur.elderrings.app.telecommunication.ws.OnMessageCallRoomSession;
 import org.unamur.elderrings.app.telecommunication.ws.OnOpenCallRoomSession;
 import org.unamur.elderrings.utils.JSONEncoder;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -27,7 +27,6 @@ public class CallRoomWebSocketController {
   private final OnOpenCallRoomSession onOpenCallRoomSession;
   private final OnCloseCallRoomSession onCloseCallRoomSession;
   private final OnMessageCallRoomSession onMessageCallRoomSession;
-  private final OnErrorCallRoomSession onErrorCallRoomSession;
 
   @OnOpen
   public void onOpen(Session session, @PathParam("roomId") String roomId){
@@ -36,11 +35,12 @@ public class CallRoomWebSocketController {
 
   @OnError
   public void onError(Session session, Throwable throwable, @PathParam("roomId") String roomId){
-    onErrorCallRoomSession.onError(roomId);
+    log.error("WebSocket error in room {}: {}", roomId, throwable.getMessage());
   }
 
   @OnClose
-  public void onClose(Session session, @PathParam("roomId") String roomId){
+  public void onClose(Session session, CloseReason closeReason, @PathParam("roomId") String roomId){
+    log.info("WebSocket closed for room {} - code: {}, reason: {}", roomId, closeReason.getCloseCode(), closeReason.getReasonPhrase());
     onCloseCallRoomSession.onClose(roomId);
   }
 
