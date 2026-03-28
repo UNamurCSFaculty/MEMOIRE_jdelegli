@@ -22,6 +22,7 @@ public class UserPreferences {
     public static class GeneralPreferences {
         private String lang;
         private boolean isPublic;
+        private boolean doNotDisturb;
     }
 
     public enum TextSize {

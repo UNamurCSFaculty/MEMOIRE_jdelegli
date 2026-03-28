@@ -24,6 +24,8 @@ public class UserPreferencesDto {
         private String lang;
         @JsonProperty("isPublic")
         private boolean isPublic;
+        @JsonProperty("doNotDisturb")
+        private boolean doNotDisturb;
     }
 
     public enum TextSizeDto {

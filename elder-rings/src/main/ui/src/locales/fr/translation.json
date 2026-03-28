@@ -21,7 +21,9 @@
       "CallContact": "Démarrer un appel avec {{name}}",
       "PreviousSlide": "Contact précédent",
       "NextSlide": "Contact suivant",
-      "GoToSlide": "Aller au contact {{index}}"
+      "GoToSlide": "Aller au contact {{index}}",
+      "ContactDoNotDisturb": "{{name}} a activé le mode ne pas déranger",
+      "ContactDoNotDisturbLabel": "Ne pas déranger"
     },
     "IncomingCallListener": {
       "IncomingCall": "Appel entrant",
@@ -80,7 +82,13 @@
       "Contacts": "Contacts",
       "Events": "Événements",
       "Preference": "Préférences",
-      "Weather": "Météo"
+      "Weather": "Météo",
+      "DoNotDisturbButton": {
+        "Label": "Ne pas déranger",
+        "notification": "Le mode ne pas déranger est maintenant {{status}}",
+        "Enabled": "activé",
+        "Disabled": "désactivé"
+      }
     },
     "CallRoom": {
       "UserLeft": "Votre correspondant à quitté la conversation",

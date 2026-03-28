@@ -24,7 +24,7 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
                 .map(UserPreferencesEntityMapper::toModel)
                 .orElseGet(() -> new UserPreferences(
                   userId,
-                  new UserPreferences.GeneralPreferences("fr", false),
+                  new UserPreferences.GeneralPreferences("fr", false, false),
                   new UserPreferences.VisualPreferences(TextSize.MD, false),
                   new UserPreferences.AudioPreferences(false, List.of(), false)
               ));

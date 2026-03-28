@@ -14,6 +14,7 @@ export default function ContactPage() {
   const { t } = useTranslation();
 
   const [contacts, setContacts] = useState<ContactDto[] | null>(null);
+  const [doNotDisturbMap, setDoNotDisturbMap] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [requestsWithUsers, setRequestsWithUsers] = useState<ContactRequestWithUser[]>([]);
@@ -29,13 +30,23 @@ export default function ContactPage() {
 
         setContacts(fetchedContacts);
 
+        const preferencesEntries = await Promise.all(
+          fetchedContacts.map(async (contact) => {
+            const prefs = await apiClient.getUserGeneralPreferences({
+              queries: { userId: contact.id },
+            });
+            return [contact.id, prefs.doNotDisturb] as [string, boolean];
+          }),
+        );
+        setDoNotDisturbMap(Object.fromEntries(preferencesEntries));
+
         const enriched = await Promise.all(
           contactRequests.map(async (request) => {
             const requester = await apiClient.getUser({
               queries: { userId: request.requesterId },
             });
             return { request, requester };
-          })
+          }),
         );
 
         setRequestsWithUsers(enriched);
@@ -59,7 +70,7 @@ export default function ContactPage() {
             requests={requestsWithUsers}
             removeRequest={(requestId) =>
               setRequestsWithUsers((prev) =>
-                prev !== null ? prev.filter((p) => p.request.id !== requestId) : prev
+                prev !== null ? prev.filter((p) => p.request.id !== requestId) : prev,
               )
             }
             isOpen={isModalOpen}
@@ -74,7 +85,7 @@ export default function ContactPage() {
               variant="solid"
               className="absolute top-4 left-4 z-10"
             />
-            <ContactsCarousel contacts={contacts} />
+            <ContactsCarousel contacts={contacts} doNotDisturbMap={doNotDisturbMap} />
           </>
         ) : (
           <Col className="h-full w-full items-center justify-center gap-4">

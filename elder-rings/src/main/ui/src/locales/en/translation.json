@@ -21,7 +21,9 @@
       "CallContact": "Start a call with {{name}}",
       "PreviousSlide": "Previous contact",
       "NextSlide": "Next contact",
-      "GoToSlide": "Go to contact {{index}}"
+      "GoToSlide": "Go to contact {{index}}",
+      "ContactDoNotDisturb": "{{name}} does not want to be disturbed at the moment",
+      "ContactDoNotDisturbLabel": "Do Not Disturb"
     },
     "IncomingCallListener": {
       "IncomingCall": "Incoming call",
@@ -80,7 +82,13 @@
       "Contacts": "Contacts",
       "Events": "Events",
       "Preference": "Preferences",
-      "Weather": "Weather"
+      "Weather": "Weather",
+      "DoNotDisturbButton": {
+        "Label": "Do Not Disturb",
+        "notification": "Do Not Disturb is now {{status}}",
+        "Enabled": "enabled",
+        "Disabled": "disabled"
+      }
     },
     "CallRoom": {
       "UserLeft": "Your contact left the conversation",
