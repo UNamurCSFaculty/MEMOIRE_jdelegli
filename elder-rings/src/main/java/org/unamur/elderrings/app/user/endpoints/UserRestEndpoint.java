@@ -17,12 +17,15 @@ import org.jboss.resteasy.reactive.RestResponse;
 import org.unamur.elderrings.app.core.Routes;
 import org.unamur.elderrings.app.user.dto.ContactDto;
 import org.unamur.elderrings.app.user.dto.UserDto;
+import org.unamur.elderrings.app.user.dto.UserPreferencesDto;
 import org.unamur.elderrings.app.user.mappers.ContactMapper;
 import org.unamur.elderrings.app.user.mappers.UserMapper;
+import org.unamur.elderrings.app.user.mappers.UserPreferencesDtoMapper;
 import org.unamur.elderrings.modules.user.api.GetAllVisibleUsers;
 import org.unamur.elderrings.modules.user.api.GetUser;
 import org.unamur.elderrings.modules.user.api.GetUserContacts;
 import org.unamur.elderrings.modules.user.api.GetUserPicture;
+import org.unamur.elderrings.modules.user.api.GetUserPreferences;
 import org.unamur.elderrings.modules.user.api.SetUserPicture;
 import org.unamur.elderrings.modules.user.api.UpdateUserFromToken;
 
@@ -50,6 +53,7 @@ public class UserRestEndpoint {
   private final GetUser getUser;
   private final GetUserContacts getUserContacts;
   private final GetAllVisibleUsers getAllVisibleUsers;
+  private final GetUserPreferences getUserPreferences;
 
   @GET
   @Path("/me")
@@ -119,6 +123,15 @@ public class UserRestEndpoint {
   @PermitAll
   public RestResponse<List<ContactDto>> getVisibleUsers(){
     return RestResponse.ok(getAllVisibleUsers.getAllVisibleUsers().stream().map(ContactMapper::toDto).toList());
+  }
+
+  @GET
+  @Path("/general-preferences")
+  @Operation(operationId = "getUserGeneralPreferences")
+  @PermitAll
+  public RestResponse<UserPreferencesDto.UserGeneralPreferencesDto> getUserGeneralPreferences(@QueryParam("userId") UUID userId) {
+    var preferences = getUserPreferences.getPreferencesForUser(userId);
+    return RestResponse.ok(UserPreferencesDtoMapper.toDto(preferences).getGeneral());
   }
 
   @POST

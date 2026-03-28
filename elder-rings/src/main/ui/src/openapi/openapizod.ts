@@ -7,10 +7,8 @@ const CreateCallRoomBody = z
       .array(
         z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
-          .uuid()
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .uuid(),
       )
       .min(1)
       .max(1),
@@ -20,14 +18,14 @@ const UUID = z.string();
 const CallRoomDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
   })
   .passthrough();
 const RejectCallRoomInvitationBody = z
   .object({
     roomId: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
   })
   .passthrough();
@@ -36,13 +34,13 @@ const Instant = z.string();
 const ContactRequestDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
     requesterId: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
     targetId: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
     status: ContactRequestStatusDto,
     createdAt: Instant.datetime({ offset: true }),
@@ -51,7 +49,7 @@ const ContactRequestDto = z
   .partial()
   .passthrough();
 const UserGeneralPreferencesDto = z
-  .object({ lang: z.string(), isPublic: z.boolean() })
+  .object({ lang: z.string(), isPublic: z.boolean(), doNotDisturb: z.boolean() })
   .partial()
   .passthrough();
 const TextSizeDto = z.enum(["SM", "MD", "LG", "XL", "XXL"]);
@@ -82,7 +80,7 @@ const UserPreferencesDto = z
 const ContactDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
     username: z.string(),
     firstName: z.string(),
@@ -95,7 +93,7 @@ const ContactDto = z
 const UserDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
     ).uuid(),
     username: z.string(),
     firstName: z.string(),
@@ -163,18 +161,14 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
           .uuid()
           .optional(),
       },
     ],
     response: z
       .string()
-      .regex(
-        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-      )
+      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
       .uuid(),
   },
   {
@@ -188,9 +182,7 @@ const endpoints = makeApi([
         type: "Path",
         schema: z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
           .uuid(),
       },
       {
@@ -234,7 +226,7 @@ const endpoints = makeApi([
         schema: UserPreferencesDto,
       },
     ],
-    response: z.void(),
+    response: UserPreferencesDto,
   },
   {
     method: "get",
@@ -254,9 +246,7 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
           .uuid()
           .optional(),
       },
@@ -269,6 +259,24 @@ const endpoints = makeApi([
     alias: "getContact",
     requestFormat: "json",
     response: z.array(ContactDto),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/general-preferences",
+    alias: "getUserGeneralPreferences",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: UserGeneralPreferencesDto,
   },
   {
     method: "get",
@@ -302,9 +310,7 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .string()
-          .regex(
-            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-          )
+          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
           .uuid()
           .optional(),
       },
@@ -328,9 +334,7 @@ const endpoints = makeApi([
     ],
     response: z
       .string()
-      .regex(
-        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-      )
+      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
       .uuid(),
   },
 ]);

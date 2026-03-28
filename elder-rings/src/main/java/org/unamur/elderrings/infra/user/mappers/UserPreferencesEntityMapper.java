@@ -22,7 +22,8 @@ public class UserPreferencesEntityMapper {
                 entity.getUser().getId(),
                 new UserPreferences.GeneralPreferences(
                         entity.getGeneral().getLang(),
-                        entity.getGeneral().isPublic()
+                        entity.getGeneral().isPublic(),
+                        entity.getGeneral().isDoNotDisturb()
                 ),
                 new UserPreferences.VisualPreferences(
                         TextSize.valueOf(entity.getVisual().getTextSize().name()),
@@ -45,6 +46,7 @@ public class UserPreferencesEntityMapper {
         var general = new GeneralPreferencesEmbeddableEntity();
         general.setLang(model.getGeneral().getLang());
         general.setPublic(model.getGeneral().isPublic());
+        general.setDoNotDisturb(model.getGeneral().isDoNotDisturb());
         entity.setGeneral(general);
 
         var visual = new VisualPreferencesEmbeddableEntity();

@@ -7,12 +7,18 @@ import { Button } from "@heroui/button";
 import { IconChevonLeft, IconChevonRight, IconStartCall } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 import { useTTS } from "../../hooks/useTTS";
+import { AxiosError } from "axios";
+import { notifyError } from "@utils/notifyUtil";
 
 interface ContactsCarouselProps {
   contacts: ContactDto[];
+  doNotDisturbMap: Record<string, boolean>;
 }
 
-export default function ContactsCarousel({ contacts }: Readonly<ContactsCarouselProps>) {
+export default function ContactsCarousel({
+  contacts,
+  doNotDisturbMap,
+}: Readonly<ContactsCarouselProps>) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -26,7 +32,9 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
       } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
         prevSlide();
       } else if (event.key === "Enter") {
-        callContact(contacts[currentIndex]);
+        if (!doNotDisturbMap[contacts[currentIndex].id!]) {
+          callContact(contacts[currentIndex]);
+        }
       }
     };
 
@@ -39,9 +47,21 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
   }, [currentIndex]);
 
   function callContact(contact: ContactDto) {
-    apiClient.createCallRoom({ userIds: [contact.id!] }).then((resp) => {
-      navigate("../call-room/" + resp.id);
-    });
+    apiClient
+      .createCallRoom({ userIds: [contact.id!] })
+      .then((resp) => {
+        navigate("../call-room/" + resp.id);
+      })
+      .catch((err) => {
+        const axiosError = err as AxiosError<{ errorCode: string }>;
+        if (axiosError.response?.data?.errorCode === "DO_NOT_DISTURB") {
+          notifyError(
+            t("Components.ContactsCarousel.ContactDoNotDisturb", {
+              name: `${contact.firstName} ${contact.lastName}`,
+            }),
+          );
+        }
+      });
   }
 
   const nextSlide = () => {
@@ -79,11 +99,12 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
             />
 
             {/* Call button */}
-            <div className="absolute bottom-28 left-1/2 transform -translate-x-1/2 text-white p-2 text-center w-full">
+            <div className="absolute flex flex-col gap-4 items-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-2 text-center">
               <Button
                 color="success"
                 isIconOnly
                 size="lg"
+                isDisabled={doNotDisturbMap[contact.id!]}
                 onPress={() => callContact(contact)}
                 aria-label={t("Components.ContactsCarousel.CallContact", {
                   name: `${contact.firstName} ${contact.lastName}`,
@@ -91,10 +112,12 @@ export default function ContactsCarousel({ contacts }: Readonly<ContactsCarousel
               >
                 <IconStartCall className="text-white" />
               </Button>
-            </div>
-
-            {/* Name */}
-            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-white p-2 text-center w-full">
+              {doNotDisturbMap[contact.id!] && (
+                <p className="inline-flex items-center gap-2 bg-black bg-opacity-60 py-1 px-3 rounded-full text-sm">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
+                  {t("Components.ContactsCarousel.ContactDoNotDisturbLabel")}
+                </p>
+              )}
               <p className="capitalize inline-block bg-black bg-opacity-60 py-1 px-4 rounded-full text-4xl">
                 {contact.firstName} {contact.lastName}
               </p>

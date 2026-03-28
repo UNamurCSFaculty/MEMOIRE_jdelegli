@@ -21,7 +21,9 @@
       "CallContact": "Start een oproep met {{name}}",
       "PreviousSlide": "Vorige contactpersoon",
       "NextSlide": "Volgende contactpersoon",
-      "GoToSlide": "Ga naar contactpersoon {{index}}"
+      "GoToSlide": "Ga naar contactpersoon {{index}}",
+      "ContactDoNotDisturb": "{{name}} wil momenteel niet gestoord worden",
+      "ContactDoNotDisturbLabel": "Niet storen"
     },
     "IncomingCallListener": {
       "IncomingCall": "Inkomend gesprek",
@@ -80,7 +82,13 @@
       "Contacts": "Contacten",
       "Events": "Evenementen",
       "Preference": "Voorkeuren",
-      "Weather": "Weer"
+      "Weather": "Weer",
+      "DoNotDisturbButton": {
+        "Label": "Niet storen",
+        "notification": "Niet storen is nu {{status}}",
+        "Enabled": "ingeschakeld",
+        "Disabled": "uitgeschakeld"
+      }
     },
     "CallRoom": {
       "UserLeft": "Je gesprekspartner heeft het gesprek verlaten",

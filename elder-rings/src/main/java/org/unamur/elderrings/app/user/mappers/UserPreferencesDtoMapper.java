@@ -15,7 +15,8 @@ public class UserPreferencesDtoMapper {
                 userId,
                 new UserPreferences.GeneralPreferences(
                         dto.getGeneral().getLang(),
-                        dto.getGeneral().isPublic()
+                        dto.getGeneral().isPublic(),
+                        dto.getGeneral().isDoNotDisturb()
                 ),
                 new UserPreferences.VisualPreferences(
                         TextSize.valueOf(dto.getVisual().getTextSize().name()),
@@ -35,7 +36,8 @@ public class UserPreferencesDtoMapper {
         return new UserPreferencesDto(
                 new UserPreferencesDto.UserGeneralPreferencesDto(
                         model.getGeneral().getLang(),
-                        model.getGeneral().isPublic()
+                        model.getGeneral().isPublic(),
+                        model.getGeneral().isDoNotDisturb()
                 ),
                 new UserPreferencesDto.UserVisualPreferencesDto(
                         TextSizeDto.valueOf(model.getVisual().getTextSize().name()),

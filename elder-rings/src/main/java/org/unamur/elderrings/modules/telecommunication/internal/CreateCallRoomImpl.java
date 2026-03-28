@@ -1,6 +1,7 @@
 package org.unamur.elderrings.modules.telecommunication.internal;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,8 +11,13 @@ import org.unamur.elderrings.modules.telecommunication.api.CreateCallRoomInterfa
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoom;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomMember;
 import org.unamur.elderrings.modules.telecommunication.internal.messages.CallRoomInvitationMessage;
+import org.unamur.elderrings.modules.telecommunication.exceptions.DoNotDisturbException;
+import org.unamur.elderrings.modules.user.api.GetUserPreferences;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,19 +27,31 @@ import lombok.extern.slf4j.Slf4j;
 public class CreateCallRoomImpl implements CreateCallRoomInterface {
 
   private final ConnectedUser user;
-  
   private final CallRoomRepository repository;
-
   private final SendNotificationInterface sendNotification;
+  private final GetUserPreferences getUserPreferences;
   
   @Override
   public CallRoom createCallRoom(Set<UUID> userIds) {
+
+    //filter out users with do not disturb enabled
+    Set<UUID> reachableUsers = new HashSet<>();
+    for (UUID userId: userIds) {
+      if (!getUserPreferences.getPreferencesForUser(userId).getGeneral().isDoNotDisturb()) {
+        reachableUsers.add(userId);
+      }
+    }
+
+    if (reachableUsers.isEmpty()) {
+      log.info("All recipients have do not disturb enabled, call room not created");
+      throw new DoNotDisturbException();
+    }
 
     Set<CallRoomMember> members = new HashSet<>();
     //add the user in the room members
     members.add(CallRoomMember.of(user));
     //add the other users in the room members
-    for(UUID userId : userIds) {
+    for(UUID userId : reachableUsers) {
       members.add(new CallRoomMember(userId));
     }
     
@@ -43,7 +61,7 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
 
     // notify all users
     sendNotification.send(
-      userIds,
+      reachableUsers,
       CallRoomInvitationMessage.builder()
                                 .type("CALL_ROOM_INVITATION")
                                 .value(CallRoomInvitationMessage.CallRoomInvitationMessageValue.builder()
@@ -52,7 +70,6 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
                                                                                                   .build())
                                 .build()
     );
-
 
     return room;
   }

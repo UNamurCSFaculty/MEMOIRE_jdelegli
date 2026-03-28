@@ -6,29 +6,9 @@ import { useTranslation } from "react-i18next";
 import WeatherSnippet from "@components/weather/WeatherSnippet";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { basePath } from "../../basepath.config";
-
-const options = [
-  {
-    label: "Contacts",
-    route: "/contacts",
-    icon: IconContact,
-  },
-  {
-    label: "Events",
-    route: "/events",
-    icon: IconEvent,
-  },
-  {
-    label: "Preference",
-    route: "/user-preferences",
-    icon: IconGear,
-  },
-  {
-    label: "Weather",
-    route: "/weather",
-    render: () => <WeatherSnippet />,
-  },
-];
+import { apiClient } from "@openapi/zodiosClient";
+import { notifySuccess } from "@utils/notifyUtil";
+import { IconDoNotDisturb } from "@components/icons/favouriteIcons";
 
 export default function HomeMenu() {
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -40,6 +20,55 @@ export default function HomeMenu() {
 
   const navSound = new Audio(basePath + "/api/media/sounds/click.wav");
   const selectSound = new Audio(basePath + "/api/media/sounds/navigate.mp3");
+
+  const options = [
+    {
+      label: "Contacts",
+      onClick: () => navigate("/contacts"),
+      icon: IconContact,
+    },
+    {
+      label: "Events",
+      onClick: () => navigate("/events"),
+      icon: IconEvent,
+    },
+    {
+      label: "Preference",
+      onClick: () => navigate("/user-preferences"),
+      icon: IconGear,
+    },
+    {
+      label: "Weather",
+      onClick: () => navigate("/weather"),
+      render: () => <WeatherSnippet />,
+    },
+    {
+      label: "DoNotDisturbButton.Label",
+      onClick: () => toggleDoNotDisturb(),
+      icon: IconDoNotDisturb,
+    },
+  ];
+
+  async function toggleDoNotDisturb() {
+    const current = await apiClient.getCurrentUserPreferences();
+    await apiClient
+      .updateCurrentUserPreferences({
+        ...current,
+        general: {
+          ...current?.general,
+          doNotDisturb: !current?.general?.doNotDisturb || false,
+        },
+      })
+      .then((resp) => {
+        notifySuccess(
+          t(`Pages.HomeMenu.DoNotDisturbButton.notification`, {
+            status: resp.general?.doNotDisturb
+              ? t("Pages.HomeMenu.DoNotDisturbButton.Enabled")
+              : t("Pages.HomeMenu.DoNotDisturbButton.Disabled"),
+          }),
+        );
+      });
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -77,7 +106,7 @@ export default function HomeMenu() {
           setFocusedIndex((prev) => (row === 0 ? prev + nbElementPerRow : prev - nbElementPerRow));
           break;
         case "Enter":
-          navigate(options[focusedIndex].route);
+          options[focusedIndex].onClick();
           break;
       }
     };
@@ -88,15 +117,15 @@ export default function HomeMenu() {
 
   return (
     <div className="flex items-center justify-center w-screen h-screen p-12">
-      <div className="grid grid-cols-2 grid-rows-2 gap-8 w-full h-full ">
+      <div className="grid grid-cols-2 gap-8 w-full h-full ">
         {options.map((option, index) => {
           return (
             <button
               key={option.label}
-              onClick={() => navigate(option.route)}
+              onClick={option.onClick}
               className={twMerge(
                 "transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
-                focusedIndex === index && "ring-4 ring-white scale-105 bg-white/20"
+                focusedIndex === index && "ring-4 ring-white scale-105 bg-white/20",
               )}
             >
               {option.render ? (

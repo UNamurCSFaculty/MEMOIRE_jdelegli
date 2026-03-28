@@ -38,9 +38,9 @@ public class UserPreferencesEndpoint {
     @PUT
     @PermitAll
     @Operation(operationId = "updateCurrentUserPreferences")
-    public RestResponse<Void> updateCurrentUserPreferences(UserPreferencesDto dto) {
+    public UserPreferencesDto updateCurrentUserPreferences(UserPreferencesDto dto) {
         var model = UserPreferencesDtoMapper.toModel(dto, connectedUser.getId());
         saveUserPreferences.savePreferences(connectedUser.getId(), model);
-        return RestResponse.ok();
+        return UserPreferencesDtoMapper.toDto(model);
     }
 }
