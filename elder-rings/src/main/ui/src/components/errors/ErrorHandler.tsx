@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 import { ZodError } from "zod";
 import IconErrorCircleRounded from "~icons/material-symbols/error-circle-rounded";
 import IconCopyToClipBoard from "~icons/tabler/copy";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 
 interface ErrorHandlerProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,8 +77,7 @@ export default function ErrorHandler({ error }: Readonly<ErrorHandlerProps>) {
             <summary>{t("Components.Errors.ErrorHandler.TechnicalDetailsHeader")}</summary>
             <Button
               onPress={() => navigator.clipboard.writeText(error.message + serverResponseText)}
-              color="default"
-              variant="light"
+              variant="ghost"
               size="sm"
               isIconOnly
             >

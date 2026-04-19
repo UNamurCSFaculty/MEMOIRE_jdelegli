@@ -82,7 +82,7 @@ export default function ContactPage() {
             <BackHomeButton
               size="lg"
               color="default"
-              variant="solid"
+              variant="primary"
               className="absolute top-4 left-4 z-10"
             />
             <ContactsCarousel contacts={contacts} doNotDisturbMap={doNotDisturbMap} />
@@ -92,7 +92,7 @@ export default function ContactPage() {
             <p className="text-center text-4xl text-white font-semibold ">
               {t("Pages.ContactPage.NoContactsFound")}
             </p>
-            <BackHomeButton shortcuts={["Enter"]} size="lg" color="default" variant="solid" />
+            <BackHomeButton shortcuts={["Enter"]} size="lg" color="default" variant="primary" />
           </Col>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@heroui/button";
+import { Button, ButtonProps } from "@heroui/react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -31,10 +31,10 @@ export default function BackHomeButton({
     <Button
       onPress={() => navigate("/")}
       className="items-center gap-2"
-      variant="light"
-      startContent={<MdiHomeOutline />}
+      variant="ghost"
       {...rest}
     >
+      <MdiHomeOutline />
       {t("Common.GoBackHome")}
     </Button>
   );

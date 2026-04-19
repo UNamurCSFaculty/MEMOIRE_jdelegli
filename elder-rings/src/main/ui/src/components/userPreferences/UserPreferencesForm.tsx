@@ -7,7 +7,16 @@ import { useTranslation } from "react-i18next";
 import { SupportedLanguage } from "../../locales/i18n";
 import { notifySuccess } from "@utils/notifyUtil";
 import isEqual from "lodash/isEqual";
-import { Button, Checkbox, Divider, Input, NumberInput, Select, SelectItem } from "@heroui/react";
+import {
+  Button,
+  Checkbox,
+  Input,
+  Label,
+  ListBox,
+  NumberField,
+  Select,
+  Separator,
+} from "@heroui/react";
 import { IconAdd, IconRemove } from "@components/icons/favouriteIcons";
 import { basePath } from "../../../basepath.config";
 import BackHomeButton from "@components/navigation/BackHomeButton";
@@ -39,11 +48,11 @@ export default function UserPreferencesForm() {
       ? SectionType extends object
         ? SectionType[keyof SectionType]
         : never
-      : never
+      : never,
   >(
     section: Section,
     key: keyof NonNullable<UserPreferencesDto[Section]>,
-    value: Value
+    value: Value,
   ) => {
     setFormData((prev) => {
       const currentSection = prev![section];
@@ -74,7 +83,7 @@ export default function UserPreferencesForm() {
         fetch("/elder-rings/api/user/set-picture", {
           method: "POST",
           body: formDataObj,
-        })
+        }),
       );
     }
 
@@ -89,7 +98,11 @@ export default function UserPreferencesForm() {
     }
   };
 
-  const updateAudioFilter = (index: number, field: "frequency" | "gain", value: number) => {
+  const updateAudioFilter = (
+    index: number,
+    field: "frequency" | "gain",
+    value: number | undefined,
+  ) => {
     if (typeof value !== "number" || !Number.isFinite(value)) {
       return;
     }
@@ -131,12 +144,12 @@ export default function UserPreferencesForm() {
     <form onSubmit={handleSubmit} className="flex flex-col grow h-full overflow-auto p-4">
       {/* Profile Picture */}
       <div className="flex flex-wrap gap-8 justify-start">
-        <section className="w-1/3">
+        <section className="flex-1">
           <div className="flex flex-col gap-2">
             <h2 className="text-lg font-semibold">
               {t("Components.UserPreferencesForm.ProfilePicture")}
             </h2>
-            <Divider className="" />
+            <Separator />
             <img
               src={
                 userPicture
@@ -146,8 +159,11 @@ export default function UserPreferencesForm() {
               alt={t("Components.UserPreferencesForm.PersonalPicture")}
               className="w-64 object-contain"
             />
+            <Label htmlFor="personal-picture-input">
+              {t("Components.UserPreferencesForm.PersonalPicture")}
+            </Label>
             <Input
-              label={t("Components.UserPreferencesForm.PersonalPicture")}
+              id="personal-picture-input"
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
@@ -156,37 +172,57 @@ export default function UserPreferencesForm() {
           </div>
         </section>
 
-        <div className="flex flex-col gap-4 w-1/3">
+        <div className="flex flex-col gap-4 flex-1">
           {/* General */}
           <section>
             <div className="flex flex-col gap-2">
               <h2 className="text-lg font-semibold">
                 {t("Components.UserPreferencesForm.GeneralTitle")}
               </h2>
-              <Divider className="" />
+              <Separator />
               <Checkbox
                 isSelected={formData.general?.isPublic}
-                onValueChange={(e) => handleChange("general", "isPublic", e)}
+                onChange={(isSelected: boolean) => handleChange("general", "isPublic", isSelected)}
                 aria-label={t("Components.UserPreferencesForm.IsPublicProfile")}
               >
-                {t("Components.UserPreferencesForm.IsPublicProfile")}
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  {t("Components.UserPreferencesForm.IsPublicProfile")}
+                </Checkbox.Content>
               </Checkbox>
               <Select
                 className="max-w-xs"
-                label={t("Components.UserPreferencesForm.Language")}
-                aria-label={t("Components.UserPreferencesForm.Language")}
-                selectedKeys={formData.general?.lang ? [formData.general?.lang] : []}
-                variant="flat"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  handleChange("general", "lang", e.target.value);
+                value={formData.general?.lang ?? null}
+                variant="secondary"
+                onChange={(value) => {
+                  if (value == null || Array.isArray(value)) return;
+                  handleChange(
+                    "general",
+                    "lang",
+                    value as NonNullable<UserPreferencesDto["general"]>["lang"],
+                  );
                 }}
               >
-                {Object.values(SupportedLanguage).map((lang) => (
-                  <SelectItem key={lang} textValue={t(`Enums.Language.${lang.toUpperCase()}`)}>
-                    {t(`Enums.Language.${lang.toUpperCase()}`)}
-                  </SelectItem>
-                ))}
+                <Label>{t("Components.UserPreferencesForm.Language")}</Label>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    {Object.values(SupportedLanguage).map((lang) => (
+                      <ListBox.Item
+                        key={lang}
+                        id={lang}
+                        textValue={t(`Enums.Language.${lang.toUpperCase()}`)}
+                      >
+                        {t(`Enums.Language.${lang.toUpperCase()}`)}
+                      </ListBox.Item>
+                    ))}
+                  </ListBox>
+                </Select.Popover>
               </Select>
             </div>
           </section>
@@ -197,108 +233,161 @@ export default function UserPreferencesForm() {
               <h2 className="text-lg font-semibold">
                 {t("Components.UserPreferencesForm.VisualTitle")}
               </h2>
-              <Divider className="" />
+              <Separator />
               <Checkbox
                 isSelected={formData.visual?.readTextOnScreen}
-                onValueChange={(e) => handleChange("visual", "readTextOnScreen", e)}
+                onChange={(isSelected: boolean) =>
+                  handleChange("visual", "readTextOnScreen", isSelected)
+                }
                 aria-label={t("Components.UserPreferencesForm.ReadTextOnScreen")}
               >
-                {t("Components.UserPreferencesForm.ReadTextOnScreen")}
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  {t("Components.UserPreferencesForm.ReadTextOnScreen")}
+                </Checkbox.Content>
               </Checkbox>
               <Select
                 className="max-w-xs"
-                label={t("Components.UserPreferencesForm.TextSize")}
-                aria-label={t("Components.UserPreferencesForm.TextSize")}
-                selectedKeys={formData.visual?.textSize ? [formData.visual?.textSize] : []}
-                variant="flat"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  handleChange("visual", "textSize", e.target.value);
+                value={formData.visual?.textSize ?? null}
+                variant="secondary"
+                onChange={(value) => {
+                  if (value == null || Array.isArray(value)) return;
+                  handleChange(
+                    "visual",
+                    "textSize",
+                    value as NonNullable<UserPreferencesDto["visual"]>["textSize"],
+                  );
                 }}
               >
-                {textSizeDtoValues.map((value) => (
-                  <SelectItem key={value} textValue={t(`Enums.TextSizeDto.${value}`)}>
-                    {t(`Enums.TextSizeDto.${value}`)}
-                  </SelectItem>
-                ))}
+                <Label>{t("Components.UserPreferencesForm.TextSize")}</Label>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    {textSizeDtoValues.map((value) => (
+                      <ListBox.Item
+                        key={value}
+                        id={value}
+                        textValue={t(`Enums.TextSizeDto.${value}`)}
+                      >
+                        {t(`Enums.TextSizeDto.${value}`)}
+                      </ListBox.Item>
+                    ))}
+                  </ListBox>
+                </Select.Popover>
               </Select>
             </div>
           </section>
         </div>
 
         {/* Audio */}
-        <section>
+        <section className="flex-1">
           <div className="flex flex-col gap-2">
             <h2 className="text-lg font-semibold">
               {t("Components.UserPreferencesForm.AudioTitle")}
             </h2>
-            <Divider className="" />
+            <Separator />
             <Checkbox
               isSelected={formData.audio?.compression}
-              onValueChange={(e) => handleChange("audio", "compression", e)}
+              onChange={(isSelected: boolean) => handleChange("audio", "compression", isSelected)}
               aria-label={t("Components.UserPreferencesForm.EnableAudioCompression")}
             >
-              {t("Components.UserPreferencesForm.EnableAudioCompression")}
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Checkbox.Content>
+                {t("Components.UserPreferencesForm.EnableAudioCompression")}
+              </Checkbox.Content>
             </Checkbox>
             <Checkbox
               isSelected={formData.audio?.playInterfaceSounds}
-              onValueChange={(e) => handleChange("audio", "playInterfaceSounds", e)}
+              onChange={(isSelected: boolean) =>
+                handleChange("audio", "playInterfaceSounds", isSelected)
+              }
               aria-label={t("Components.UserPreferencesForm.PlayInterfaceSounds")}
             >
-              {t("Components.UserPreferencesForm.PlayInterfaceSounds")}
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+              <Checkbox.Content>
+                {t("Components.UserPreferencesForm.PlayInterfaceSounds")}
+              </Checkbox.Content>
             </Checkbox>
-            <div className="flex flex-col gap-2 pl-2">
-              <h3 className="text-md font-semibold">
-                {t("Components.UserPreferencesForm.AudioFilters")}
-              </h3>
+            <div className="flex flex-col gap-3 rounded-lg bg-white/70 p-3 dark:bg-black/30">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-md font-semibold">
+                  {t("Components.UserPreferencesForm.AudioFilters")}
+                </h3>
+                <Button
+                  onPress={addAudioFilter}
+                  aria-label={t("Components.UserPreferencesForm.AddFilter")}
+                  variant="secondary"
+                >
+                  <IconAdd />
+                  {t("Components.UserPreferencesForm.AddFilter")}
+                </Button>
+              </div>
               {formData.audio?.filters?.length && formData.audio?.filters?.length > 0 && (
-                <div className="grid grid-cols-2 italic">
+                <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-3 text-sm italic text-slate-700 sm:grid dark:text-slate-200">
                   <p>{t("Components.UserPreferencesForm.FrequencyPlaceholder")}</p>
                   <p>{t("Components.UserPreferencesForm.GainPlaceholder")}</p>
+                  <span className="sr-only">
+                    {t("Components.UserPreferencesForm.RemoveFilter")}
+                  </span>
                 </div>
               )}
               {formData.audio?.filters?.map((filter, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <NumberInput
-                    placeholder={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
+                <div
+                  key={index}
+                  className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center"
+                >
+                  <NumberField
                     value={filter.frequency}
-                    onValueChange={(e) => updateAudioFilter(index, "frequency", e)}
+                    onChange={(value) => updateAudioFilter(index, "frequency", value)}
                     aria-label={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
-                    size="sm"
                     minValue={100}
                     maxValue={20000}
-                    className="w-32"
-                  />
-                  <NumberInput
-                    placeholder={t("Components.UserPreferencesForm.GainPlaceholder")}
+                    className="min-w-28 w-full"
+                  >
+                    <NumberField.Group>
+                      <NumberField.DecrementButton />
+                      <NumberField.Input
+                        placeholder={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
+                      />
+                      <NumberField.IncrementButton />
+                    </NumberField.Group>
+                  </NumberField>
+                  <NumberField
                     value={filter.gain}
-                    onValueChange={(e) => updateAudioFilter(index, "gain", e)}
+                    onChange={(value) => updateAudioFilter(index, "gain", value)}
                     aria-label={t("Components.UserPreferencesForm.GainPlaceholder")}
-                    size="sm"
                     minValue={-100}
                     maxValue={100}
-                    className="w-32"
-                  />
+                    className="min-w-28 w-full"
+                  >
+                    <NumberField.Group>
+                      <NumberField.DecrementButton />
+                      <NumberField.Input
+                        placeholder={t("Components.UserPreferencesForm.GainPlaceholder")}
+                      />
+                      <NumberField.IncrementButton />
+                    </NumberField.Group>
+                  </NumberField>
                   <Button
                     onPress={() => removeAudioFilter(index)}
                     isIconOnly
                     aria-label={t("Components.UserPreferencesForm.RemoveFilter")}
-                    color="danger"
-                    variant="light"
+                    variant="danger-soft"
+                    className="justify-self-start sm:justify-self-center"
                   >
                     <IconRemove />
                   </Button>
                 </div>
               ))}
-              <Button
-                onPress={addAudioFilter}
-                aria-label={t("Components.UserPreferencesForm.AddFilter")}
-                variant="light"
-                startContent={<IconAdd />}
-                color="primary"
-              >
-                {t("Components.UserPreferencesForm.AddFilter")}
-              </Button>
             </div>
             <div className="flex flex-col gap-2 pl-2">
               <h3 className="text-md font-semibold">
@@ -317,12 +406,11 @@ export default function UserPreferencesForm() {
         <Button
           type="submit"
           aria-label={t("Components.UserPreferencesForm.SavePreferences")}
-          color="primary"
           size="lg"
         >
           {t("Components.UserPreferencesForm.SavePreferences")}
         </Button>
-        <BackHomeButton variant="solid" size="lg" color="primary" />
+        <BackHomeButton size="lg" />
       </div>
     </form>
   );

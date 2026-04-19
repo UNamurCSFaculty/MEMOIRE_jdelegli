@@ -18,7 +18,7 @@ export default function ErrorDisplayPage() {
   return (
     <Col className="justify-center h-full w-full bg-white">
       <ErrorHandler error={error} />
-      <BackHomeButton shortcuts={["Enter"]} size="lg" color="primary" />
+      <BackHomeButton shortcuts={["Enter"]} size="lg" variant="primary" />
     </Col>
   );
 }

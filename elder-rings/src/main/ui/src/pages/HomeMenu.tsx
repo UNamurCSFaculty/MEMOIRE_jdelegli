@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { IconContact, IconEvent, IconGear } from "@components/icons/favouriteIcons";
@@ -18,45 +18,17 @@ export default function HomeMenu() {
 
   const nbElementPerRow = 2;
 
-  const navSound = new Audio(basePath + "/api/media/sounds/click.wav");
-  const selectSound = new Audio(basePath + "/api/media/sounds/navigate.mp3");
+  const navSound = useMemo(() => new Audio(basePath + "/api/media/sounds/click.wav"), []);
+  const selectSound = useMemo(() => new Audio(basePath + "/api/media/sounds/navigate.mp3"), []);
 
-  const options = [
-    {
-      label: "Contacts",
-      onClick: () => navigate("/contacts"),
-      icon: IconContact,
-    },
-    {
-      label: "Events",
-      onClick: () => navigate("/events"),
-      icon: IconEvent,
-    },
-    {
-      label: "Preference",
-      onClick: () => navigate("/user-preferences"),
-      icon: IconGear,
-    },
-    {
-      label: "Weather",
-      onClick: () => navigate("/weather"),
-      render: () => <WeatherSnippet />,
-    },
-    {
-      label: "DoNotDisturbButton.Label",
-      onClick: () => toggleDoNotDisturb(),
-      icon: IconDoNotDisturb,
-    },
-  ];
-
-  async function toggleDoNotDisturb() {
+  const toggleDoNotDisturb = useCallback(async () => {
     const current = await apiClient.getCurrentUserPreferences();
     await apiClient
       .updateCurrentUserPreferences({
         ...current,
         general: {
           ...current?.general,
-          doNotDisturb: !current?.general?.doNotDisturb || false,
+          doNotDisturb: !current?.general?.doNotDisturb,
         },
       })
       .then((resp) => {
@@ -68,7 +40,38 @@ export default function HomeMenu() {
           }),
         );
       });
-  }
+  }, [t]);
+
+  const options = useMemo(
+    () => [
+      {
+        label: "Contacts",
+        onClick: () => navigate("/contacts"),
+        icon: IconContact,
+      },
+      {
+        label: "Events",
+        onClick: () => navigate("/events"),
+        icon: IconEvent,
+      },
+      {
+        label: "Preference",
+        onClick: () => navigate("/user-preferences"),
+        icon: IconGear,
+      },
+      {
+        label: "Weather",
+        onClick: () => navigate("/weather"),
+        render: () => <WeatherSnippet />,
+      },
+      {
+        label: "DoNotDisturbButton.Label",
+        onClick: () => toggleDoNotDisturb(),
+        icon: IconDoNotDisturb,
+      },
+    ],
+    [navigate, toggleDoNotDisturb],
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -113,7 +116,7 @@ export default function HomeMenu() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedIndex, navigate]);
+  }, [focusedIndex, navSound, options, selectSound, userPreferences?.audio?.playInterfaceSounds]);
 
   return (
     <div className="flex items-center justify-center w-screen h-screen p-12">

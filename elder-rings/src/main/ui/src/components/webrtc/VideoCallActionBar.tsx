@@ -8,8 +8,7 @@ import {
   IconStopVideo,
 } from "@components/icons/favouriteIcons";
 import Row from "@components/layout/Row";
-import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
+import { Button, Tooltip } from "@heroui/react";
 import {
   stopScreenShare,
   startScreenShare,
@@ -45,7 +44,6 @@ export default function VideoCallActionBar({
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const handleKeyNavigation = useCallback((e: React.KeyboardEvent) => {
-    console.log("E", e);
     if (e.defaultPrevented) return;
     if (e.key === "ArrowRight") {
       e.preventDefault();
@@ -96,89 +94,99 @@ export default function VideoCallActionBar({
   return (
     <div className={className ?? ""}>
       <Row className="gap-4 mx-auto">
-        <Tooltip content={t("Pages.CallRoom.EndCall")}>
-          <Button
-            isIconOnly
-            size="lg"
-            color="danger"
-            onPress={endCall}
-            onKeyDown={handleKeyNavigation}
-            disabled={disabled}
-            ref={registerButtonRef(0)}
-            aria-label={t("Pages.CallRoom.EndCall")}
-          >
-            <IconEndCall />
-          </Button>
+        <Tooltip delay={0}>
+          <Tooltip.Trigger>
+            <Button
+              isIconOnly
+              variant="danger"
+              size="lg"
+              onPress={endCall}
+              onKeyDown={handleKeyNavigation}
+              ref={registerButtonRef(0)}
+              aria-label={t("Pages.CallRoom.EndCall")}
+            >
+              <IconEndCall />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content>{t("Pages.CallRoom.EndCall")}</Tooltip.Content>
         </Tooltip>
 
-        <Tooltip
-          content={
-            isScreenSharing ? t("Pages.CallRoom.StopScreenShare") : t("Pages.CallRoom.ShareScreen")
-          }
-        >
-          <Button
-            isIconOnly
-            size="lg"
-            color="default"
-            onPress={() => {
-              if (isScreenSharing) {
-                stopScreenShare(peerConnection, localVideoRef);
-              } else {
-                startScreenShare(peerConnection, localVideoRef);
+        <Tooltip delay={0}>
+          <Tooltip.Trigger>
+            <Button
+              isIconOnly
+              size="lg"
+              onPress={() => {
+                if (isScreenSharing) {
+                  stopScreenShare(peerConnection, localVideoRef);
+                } else {
+                  startScreenShare(peerConnection, localVideoRef);
+                }
+                setIsScreenSharing(!isScreenSharing);
+              }}
+              onKeyDown={handleKeyNavigation}
+              isDisabled={disabled}
+              ref={registerButtonRef(1)}
+              aria-label={
+                isScreenSharing
+                  ? t("Pages.CallRoom.StopScreenShare")
+                  : t("Pages.CallRoom.ShareScreen")
               }
-              setIsScreenSharing(!isScreenSharing);
-            }}
-            onKeyDown={handleKeyNavigation}
-            disabled={disabled}
-            ref={registerButtonRef(1)}
-            aria-label={
-              isScreenSharing
-                ? t("Pages.CallRoom.StopScreenShare")
-                : t("Pages.CallRoom.ShareScreen")
-            }
-          >
-            {isScreenSharing ? <IconScreenShareStop /> : <IconScreenShare />}
-          </Button>
+            >
+              {isScreenSharing ? <IconScreenShareStop /> : <IconScreenShare />}
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            {isScreenSharing
+              ? t("Pages.CallRoom.StopScreenShare")
+              : t("Pages.CallRoom.ShareScreen")}
+          </Tooltip.Content>
         </Tooltip>
 
-        <Tooltip content={isAudioMuted ? t("Pages.CallRoom.Unmute") : t("Pages.CallRoom.Mute")}>
-          <Button
-            isIconOnly
-            size="lg"
-            color="default"
-            onPress={() => {
-              toggleMuteAudio(peerConnection);
-              setIsAudioMuted(!isAudioMuted);
-            }}
-            onKeyDown={handleKeyNavigation}
-            disabled={disabled}
-            ref={registerButtonRef(2)}
-            aria-label={isAudioMuted ? t("Pages.CallRoom.Unmute") : t("Pages.CallRoom.Mute")}
-          >
-            {isAudioMuted ? <IconUnmute /> : <IconMute />}
-          </Button>
+        <Tooltip delay={0}>
+          <Tooltip.Trigger>
+            <Button
+              isIconOnly
+              size="lg"
+              onPress={() => {
+                toggleMuteAudio(peerConnection);
+                setIsAudioMuted(!isAudioMuted);
+              }}
+              onKeyDown={handleKeyNavigation}
+              isDisabled={disabled}
+              ref={registerButtonRef(2)}
+              aria-label={isAudioMuted ? t("Pages.CallRoom.Unmute") : t("Pages.CallRoom.Mute")}
+            >
+              {isAudioMuted ? <IconUnmute /> : <IconMute />}
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            {isAudioMuted ? t("Pages.CallRoom.Unmute") : t("Pages.CallRoom.Mute")}
+          </Tooltip.Content>
         </Tooltip>
 
-        <Tooltip
-          content={isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")}
-        >
-          <Button
-            isIconOnly
-            size="lg"
-            color="default"
-            onPress={() => {
-              toggleVideo(peerConnection);
-              setIsVideoHidden(!isVideoHidden);
-            }}
-            onKeyDown={handleKeyNavigation}
-            disabled={disabled}
-            ref={registerButtonRef(3)}
-            aria-label={
-              isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")
-            }
-          >
-            {isVideoHidden ? <IconStartVideo /> : <IconStopVideo />}
-          </Button>
+        <Tooltip delay={0}>
+          <Tooltip.Trigger>
+            <Button
+              isIconOnly
+              size="lg"
+              onPress={() => {
+                toggleVideo(peerConnection);
+                setIsVideoHidden(!isVideoHidden);
+              }}
+              onKeyDown={handleKeyNavigation}
+              isDisabled={disabled}
+              ref={registerButtonRef(3)}
+              aria-label={
+                isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")
+              }
+            >
+              {isVideoHidden ? <IconStartVideo /> : <IconStopVideo />}
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            {isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")}
+          </Tooltip.Content>
         </Tooltip>
       </Row>
     </div>

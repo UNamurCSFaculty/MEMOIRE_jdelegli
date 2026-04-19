@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@heroui/button";
+import { Button, ButtonProps } from "@heroui/react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -28,12 +28,8 @@ export default function PreviousButton({
   }, [navigate, shortcuts]);
 
   return (
-    <Button
-      onPress={() => navigate(-1)}
-      className="items-center gap-2"
-      {...rest}
-      startContent={<MdiArrowLeft />}
-    >
+    <Button onPress={() => navigate(-1)} className="items-center gap-2" {...rest}>
+      <MdiArrowLeft />
       {t("Common.Back")}
     </Button>
   );
