@@ -1,25 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { IconContact, IconEvent, IconGear } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 import WeatherSnippet from "@components/weather/WeatherSnippet";
-import { useUserPreferences } from "../hooks/useUserPreferences";
-import { basePath } from "../../basepath.config";
 import { apiClient } from "@openapi/zodiosClient";
 import { notifySuccess } from "@utils/notifyUtil";
 import { IconDoNotDisturb } from "@components/icons/favouriteIcons";
+import { Button } from "@heroui/react";
 
 export default function HomeMenu() {
-  const [focusedIndex, setFocusedIndex] = useState(0);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { userPreferences } = useUserPreferences();
-
-  const nbElementPerRow = 2;
-
-  const navSound = useMemo(() => new Audio(basePath + "/api/media/sounds/click.wav"), []);
-  const selectSound = useMemo(() => new Audio(basePath + "/api/media/sounds/navigate.mp3"), []);
 
   const toggleDoNotDisturb = useCallback(async () => {
     const current = await apiClient.getCurrentUserPreferences();
@@ -73,62 +65,72 @@ export default function HomeMenu() {
     [navigate, toggleDoNotDisturb],
   );
 
+  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const COLS = 2;
+
+  useEffect(() => {
+    buttonsRef.current[0]?.focus();
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const row = Math.floor(focusedIndex / nbElementPerRow);
+      const total = options.length;
+      const currentIdx = buttonsRef.current.findIndex(
+        (b) => b === document.activeElement,
+      );
+      if (currentIdx === -1) return;
 
-      // Navigation sounds
-      if (userPreferences?.audio?.playInterfaceSounds) {
-        switch (e.key) {
-          case "ArrowRight":
-          case "ArrowLeft":
-          case "ArrowDown":
-          case "ArrowUp":
-            navSound.currentTime = 0;
-            navSound.play().catch((e) => {
-              console.error(e);
-            });
-            break;
-          case "Enter":
-            selectSound.play().catch(() => {});
+      const totalRows = Math.ceil(total / COLS);
+      const row = Math.floor(currentIdx / COLS);
+      const col = currentIdx % COLS;
+      let targetIdx: number | null = null;
+
+      switch (e.key) {
+        case "ArrowRight":
+          targetIdx = (currentIdx + 1) % total;
+          break;
+        case "ArrowLeft":
+          targetIdx = (currentIdx - 1 + total) % total;
+          break;
+        case "ArrowDown": {
+          const nextRow = (row + 1) % totalRows;
+          targetIdx = Math.min(nextRow * COLS + col, total - 1);
+          break;
+        }
+        case "ArrowUp": {
+          const prevRow = (row - 1 + totalRows) % totalRows;
+          targetIdx = Math.min(prevRow * COLS + col, total - 1);
+          break;
         }
       }
 
-      // Navigation actions
-      switch (e.key) {
-        case "ArrowRight":
-          setFocusedIndex((prev) => (prev >= options.length - 1 ? 0 : prev + 1));
-          break;
-        case "ArrowLeft":
-          setFocusedIndex((prev) => (prev === 0 ? options.length - 1 : prev - 1));
-          break;
-        case "ArrowDown":
-          setFocusedIndex((prev) => (row === 1 ? prev - nbElementPerRow : prev + nbElementPerRow));
-          break;
-        case "ArrowUp":
-          setFocusedIndex((prev) => (row === 0 ? prev + nbElementPerRow : prev - nbElementPerRow));
-          break;
-        case "Enter":
-          options[focusedIndex].onClick();
-          break;
+      if (targetIdx !== null) {
+        e.preventDefault();
+        buttonsRef.current[targetIdx]?.focus();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedIndex, navSound, options, selectSound, userPreferences?.audio?.playInterfaceSounds]);
+  }, [options]);
 
   return (
-    <div className="flex items-center justify-center w-screen h-screen p-12">
-      <div className="grid grid-cols-2 gap-8 w-full h-full ">
+    <div className="flex items-center justify-center w-screen h-screen p-6">
+      <div className="grid grid-cols-2 auto-rows-fr gap-4 w-full h-full">
         {options.map((option, index) => {
+          const isAloneOnRow = index === options.length - 1 && options.length % 2 === 1;
           return (
-            <button
+            <Button
+              ref={(el) => {
+                buttonsRef.current[index] = el;
+              }}
+              variant="ghost"
+              fullWidth
               key={option.label}
               onClick={option.onClick}
               className={twMerge(
-                "transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
-                focusedIndex === index && "ring-4 ring-white scale-105 bg-white/20",
+                "h-full transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
+                isAloneOnRow && "col-span-2",
               )}
             >
               {option.render ? (
@@ -139,7 +141,7 @@ export default function HomeMenu() {
               <span className="text-3xl font-semibold drop-shadow">
                 {t(`Pages.HomeMenu.${option.label}`)}
               </span>
-            </button>
+            </Button>
           );
         })}
       </div>
