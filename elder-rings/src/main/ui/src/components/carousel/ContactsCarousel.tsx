@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { basePath } from "../../../basepath.config";
 import { apiClient } from "@openapi/zodiosClient";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { IconChevonLeft, IconChevonRight, IconStartCall } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 import { useTTS } from "../../hooks/useTTS";
@@ -101,7 +101,8 @@ export default function ContactsCarousel({
             {/* Call button */}
             <div className="absolute flex flex-col gap-4 items-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-2 text-center">
               <Button
-                color="success"
+                variant="primary"
+                className="bg-success"
                 isIconOnly
                 size="lg"
                 isDisabled={doNotDisturbMap[contact.id!]}

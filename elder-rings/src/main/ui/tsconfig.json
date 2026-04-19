@@ -33,6 +33,6 @@
       "@contexts/*": ["./src/contexts/*"]
     }
   },
-  "includes": ["src", "basepath.config.d.ts"],
+  "include": ["src", "basepath.config.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

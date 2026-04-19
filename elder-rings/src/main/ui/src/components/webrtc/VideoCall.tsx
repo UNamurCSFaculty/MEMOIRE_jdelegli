@@ -35,7 +35,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
   const localStreamRef = useRef<MediaStream | null>(null);
 
   const { getWebSocket, lastJsonMessage, sendJsonMessage } = useWebSocket(
-    buildWsUrl("call-room", roomId)
+    buildWsUrl("call-room", roomId),
   );
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -62,8 +62,13 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
 
     // Request camera/mic permissions early so the popup doesn't interrupt WebRTC negotiation
     navigator.mediaDevices
-      .getUserMedia({ audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true }, video: true })
-      .then((stream) => { localStreamRef.current = stream; });
+      .getUserMedia({
+        audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true },
+        video: true,
+      })
+      .then((stream) => {
+        localStreamRef.current = stream;
+      });
 
     // To ensure to close the socket if the user close the window
     window.addEventListener("beforeunload", closeAllConnectionsAndSessions);
@@ -145,7 +150,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
           {t("Pages.CallRoom.UserLeft")}
         </div>
-        <BackHomeButton variant="solid" size="lg" />
+        <BackHomeButton size="lg" />
       </div>
     );
   }
@@ -156,7 +161,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
           {t("Pages.CallRoom.UserRejectedCall")}
         </div>
-        <BackHomeButton variant="solid" size="lg" />
+        <BackHomeButton size="lg" />
       </div>
     );
   }
@@ -179,7 +184,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         muted={true}
         className={twMerge(
           "w-[20%] absolute bottom-4 right-4 border-2 border-gray-100 rounded-lg",
-          userConnected ? "" : "hidden"
+          userConnected ? "" : "hidden",
         )}
       />
 
@@ -187,7 +192,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
       <Col
         className={twMerge(
           "h-full w-full bg-gray-200 rounded-xl flex items-center justify-center",
-          userConnected ? "hidden" : ""
+          userConnected ? "hidden" : "",
         )}
       >
         <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-600/80 mx-auto" />

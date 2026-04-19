@@ -1,17 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import Icons from "unplugin-icons/vite";
+import tailwindcss from "@tailwindcss/vite";
 import { basePath } from "./basepath.config";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
   base: basePath,
-  plugins: [react(), tsconfigPaths(), Icons({ compiler: "jsx", jsx: "react" })],
+  plugins: [react(), tsconfigPaths(), tailwindcss(), Icons({ compiler: "jsx", jsx: "react" })],
   server: {
     cors: {
       origin: "*",
     },
+    allowedHosts: ["elder-rings.local"],
     host: "127.0.0.1",
     port: 5173,
     strictPort: true,

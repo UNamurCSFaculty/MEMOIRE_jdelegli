@@ -6,8 +6,7 @@ import {
 import { buildWsUrl } from "@utils/webSocketHelper";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
-import { Button } from "@heroui/button";
+import { Modal, Button } from "@heroui/react";
 import Row from "@components/layout/Row";
 import { IconEndCall, IconStartCall } from "@components/icons/favouriteIcons";
 import { useNavigate } from "react-router-dom";
@@ -64,14 +63,16 @@ export default function IncomingCallListener() {
 
   if (roomOffer && contact) {
     return (
-      <Modal isOpen={true}>
-        <ModalContent>
-          {() => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {t("Components.IncomingCallListener.IncomingCall")}
-              </ModalHeader>
-              <ModalBody>
+      <Modal>
+        <Modal.Backdrop isOpen={true} isDismissable={false} isKeyboardDismissDisabled>
+          <Modal.Container>
+            <Modal.Dialog>
+              <Modal.Header className="flex flex-col gap-1">
+                <Modal.Heading>
+                  {t("Components.IncomingCallListener.IncomingCall")}
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
                 <p className="flex flex-col items-center gap-4">
                   <img
                     src={
@@ -88,11 +89,11 @@ export default function IncomingCallListener() {
                     name: `${contact.firstName} ${contact.lastName}`,
                   })}
                 </p>
-              </ModalBody>
-              <ModalFooter>
+              </Modal.Body>
+              <Modal.Footer>
                 <Row className="items-center gap-12 justify-center w-full">
                   <Button
-                    color="success"
+                    variant="primary"
                     isIconOnly
                     onPress={() => {
                       setRoomOffer(null);
@@ -105,7 +106,7 @@ export default function IncomingCallListener() {
                     <IconStartCall />
                   </Button>
                   <Button
-                    color="danger"
+                    variant="danger"
                     isIconOnly
                     onPress={() => {
                       apiClient.rejectCallRoomInvitation({ roomId: roomOffer.roomId });
@@ -118,10 +119,10 @@ export default function IncomingCallListener() {
                     <IconEndCall />
                   </Button>
                 </Row>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     );
   } else {

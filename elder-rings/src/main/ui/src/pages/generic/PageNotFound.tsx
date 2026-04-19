@@ -11,7 +11,7 @@ export default function PageNotFound() {
         {t("Pages.Generic.PageNotFound.Title")}
       </div>
       <div className="font-semibold">{t("Pages.Generic.PageNotFound.Message")}</div>
-      <BackHomeButton shortcuts={["Enter"]} size="lg" color="primary" />
+      <BackHomeButton shortcuts={["Enter"]} size="lg" />
     </Col>
   );
 }
