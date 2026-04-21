@@ -150,7 +150,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
           {t("Pages.CallRoom.UserLeft")}
         </div>
-        <BackHomeButton size="lg" />
+        <BackHomeButton size="lg" shortcuts={["Enter"]} autoFocus />
       </div>
     );
   }
@@ -161,7 +161,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
           {t("Pages.CallRoom.UserRejectedCall")}
         </div>
-        <BackHomeButton size="lg" />
+        <BackHomeButton size="lg" shortcuts={["Enter"]} autoFocus />
       </div>
     );
   }
