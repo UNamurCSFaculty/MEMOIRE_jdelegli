@@ -4,7 +4,7 @@ import {
   notificationSocketEventMessage,
 } from "@type/notificationSocketEventMessage";
 import { buildWsUrl } from "@utils/webSocketHelper";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { Modal, Button } from "@heroui/react";
 import Row from "@components/layout/Row";
@@ -24,6 +24,20 @@ export default function IncomingCallListener() {
   const { t } = useTranslation();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const focusedIndex = useRef(0);
+
+  const acceptCall = useCallback(() => {
+    setRoomOffer(null);
+    setContact(null);
+    navigate("call-room/" + roomOffer?.roomId);
+  }, [navigate, roomOffer]);
+
+  const declineCall = useCallback(() => {
+    if (roomOffer) apiClient.rejectCallRoomInvitation({ roomId: roomOffer.roomId });
+    setRoomOffer(null);
+    setContact(null);
+  }, [roomOffer]);
 
   useEffect(() => {
     if (lastJsonMessage) {
@@ -61,6 +75,24 @@ export default function IncomingCallListener() {
     };
   }, [roomOffer, contact]);
 
+  useEffect(() => {
+    if (!roomOffer || !contact) return;
+
+    focusedIndex.current = 0;
+    buttonRefs.current[0]?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        focusedIndex.current = focusedIndex.current === 0 ? 1 : 0;
+        buttonRefs.current[focusedIndex.current]?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
+  }, [roomOffer, contact]);
+
   if (roomOffer && contact) {
     return (
       <Modal>
@@ -93,26 +125,20 @@ export default function IncomingCallListener() {
               <Modal.Footer>
                 <Row className="items-center gap-12 justify-center w-full">
                   <Button
+                    ref={(el) => { buttonRefs.current[0] = el; }}
                     variant="primary"
                     isIconOnly
-                    onPress={() => {
-                      setRoomOffer(null);
-                      setContact(null);
-                      navigate("call-room/" + roomOffer.roomId);
-                    }}
+                    onPress={acceptCall}
                     size="lg"
                     aria-label={t("Components.IncomingCallListener.AcceptCall")}
                   >
                     <IconStartCall />
                   </Button>
                   <Button
+                    ref={(el) => { buttonRefs.current[1] = el; }}
                     variant="danger"
                     isIconOnly
-                    onPress={() => {
-                      apiClient.rejectCallRoomInvitation({ roomId: roomOffer.roomId });
-                      setRoomOffer(null);
-                      setContact(null);
-                    }}
+                    onPress={declineCall}
                     size="lg"
                     aria-label={t("Components.IncomingCallListener.DeclineCall")}
                   >
