@@ -1,7 +1,7 @@
 import ContactsCarousel from "@components/carousel/ContactsCarousel";
 import { apiClient } from "@openapi/zodiosClient";
 import { ContactDto } from "@type/openapiTypes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingPage from "./generic/LoadingPage";
 import { useTranslation } from "react-i18next";
 import Col from "@components/layout/Col";
@@ -19,6 +19,19 @@ export default function ContactPage() {
 
   const [requestsWithUsers, setRequestsWithUsers] = useState<ContactRequestWithUser[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
+
+  const backHomeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown" && document.activeElement === backHomeRef.current) {
+        e.preventDefault();
+        backHomeRef.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,7 +77,7 @@ export default function ContactPage() {
     return <LoadingPage />;
   } else {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center h-full w-full">
         {requestsWithUsers !== null && requestsWithUsers.length > 0 && (
           <ContactRequestModal
             requests={requestsWithUsers}
@@ -78,21 +91,20 @@ export default function ContactPage() {
           />
         )}
         {contacts && contacts.length > 0 ? (
-          <>
-            <BackHomeButton
-              size="lg"
-              color="default"
-              variant="primary"
-              className="absolute top-4 left-4 z-10"
+          <div className="flex items-center justify-center w-full">
+            <BackHomeButton ref={backHomeRef} size="lg" className="absolute top-4 left-4 z-10" />
+            <ContactsCarousel
+              contacts={contacts}
+              doNotDisturbMap={doNotDisturbMap}
+              onNavigateUp={() => backHomeRef.current?.focus()}
             />
-            <ContactsCarousel contacts={contacts} doNotDisturbMap={doNotDisturbMap} />
-          </>
+          </div>
         ) : (
           <Col className="h-full w-full items-center justify-center gap-4">
             <p className="text-center text-4xl text-white font-semibold ">
               {t("Pages.ContactPage.NoContactsFound")}
             </p>
-            <BackHomeButton shortcuts={["Enter"]} size="lg" color="default" variant="primary" />
+            <BackHomeButton shortcuts={["Enter"]} size="lg" variant="primary" />
           </Col>
         )}
       </div>
