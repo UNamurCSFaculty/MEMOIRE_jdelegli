@@ -1,15 +1,17 @@
 import { Button, ButtonProps } from "@heroui/react";
-import { useEffect } from "react";
+import { Ref, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import MdiHomeOutline from "~icons/mdi/home-outline";
 
 interface BackHomeButtonProps extends Partial<ButtonProps> {
   shortcuts?: string[];
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export default function BackHomeButton({
   shortcuts = ["h"],
+  ref,
   ...rest
 }: Readonly<BackHomeButtonProps>) {
   const navigate = useNavigate();
@@ -29,9 +31,10 @@ export default function BackHomeButton({
 
   return (
     <Button
+      ref={ref}
       onPress={() => navigate("/")}
       className="items-center gap-2"
-      variant="ghost"
+      variant="secondary"
       {...rest}
     >
       <MdiHomeOutline />

@@ -1,5 +1,5 @@
 import { ContactDto } from "@type/openapiTypes";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { basePath } from "../../../basepath.config";
 import { apiClient } from "@openapi/zodiosClient";
 import { useNavigate } from "react-router-dom";
@@ -13,11 +13,13 @@ import { notifyError } from "@utils/notifyUtil";
 interface ContactsCarouselProps {
   contacts: ContactDto[];
   doNotDisturbMap: Record<string, boolean>;
+  onNavigateUp?: () => void;
 }
 
 export default function ContactsCarousel({
   contacts,
   doNotDisturbMap,
+  onNavigateUp,
 }: Readonly<ContactsCarouselProps>) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
@@ -25,12 +27,48 @@ export default function ContactsCarousel({
 
   const tts = useTTS();
 
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % contacts.length);
+  }, [contacts.length]);
+
+  const prevSlide = useCallback(
+    () => setCurrentIndex((prevIndex) => (prevIndex - 1 + contacts.length) % contacts.length),
+    [contacts.length],
+  );
+
+  const callContact = useCallback(
+    (contact: ContactDto) => {
+      apiClient
+        .createCallRoom({ userIds: [contact.id!] })
+        .then((resp) => {
+          navigate("../call-room/" + resp.id);
+        })
+        .catch((err) => {
+          const axiosError = err as AxiosError<{ errorCode: string }>;
+          if (axiosError.response?.data?.errorCode === "DO_NOT_DISTURB") {
+            notifyError(
+              t("Components.ContactsCarousel.ContactDoNotDisturb", {
+                name: `${contact.firstName} ${contact.lastName}`,
+              }),
+            );
+          }
+        });
+    },
+    [navigate, t],
+  );
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      if (document.activeElement !== document.body) {
+        return;
+      }
+      if (event.key === "ArrowRight") {
         nextSlide();
-      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      } else if (event.key === "ArrowLeft") {
         prevSlide();
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        onNavigateUp?.();
       } else if (event.key === "Enter") {
         if (!doNotDisturbMap[contacts[currentIndex].id!]) {
           callContact(contacts[currentIndex]);
@@ -40,36 +78,11 @@ export default function ContactsCarousel({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, contacts]);
+  }, [currentIndex, contacts, nextSlide, prevSlide, doNotDisturbMap, callContact, onNavigateUp]);
 
   useEffect(() => {
     tts(contacts[currentIndex].firstName + " " + contacts[currentIndex].lastName);
-  }, [currentIndex]);
-
-  function callContact(contact: ContactDto) {
-    apiClient
-      .createCallRoom({ userIds: [contact.id!] })
-      .then((resp) => {
-        navigate("../call-room/" + resp.id);
-      })
-      .catch((err) => {
-        const axiosError = err as AxiosError<{ errorCode: string }>;
-        if (axiosError.response?.data?.errorCode === "DO_NOT_DISTURB") {
-          notifyError(
-            t("Components.ContactsCarousel.ContactDoNotDisturb", {
-              name: `${contact.firstName} ${contact.lastName}`,
-            }),
-          );
-        }
-      });
-  }
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % contacts.length);
-  };
-
-  const prevSlide = () =>
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + contacts.length) % contacts.length);
+  }, [contacts, currentIndex, tts]);
 
   return (
     <div className="relative max-w-4xl mx-auto overflow-hidden h-full w-full rounded-lg">
@@ -80,51 +93,53 @@ export default function ContactsCarousel({
           transform: `translateX(-${currentIndex * 100}%)`,
         }}
       >
-        {contacts.map((contact, index) => (
-          <div
-            key={index}
-            className="relative flex-shrink-0 h-full w-full flex justify-center items-center"
-          >
-            {/* Image */}
-            <img
-              src={
-                contact.picture
-                  ? `data:image/*;base64,${contact.picture}`
-                  : basePath + "/picture-user-default.jpg"
-              }
-              alt={t("Components.ContactsCarousel.ContactPictureAlt", {
-                name: `${contact.firstName} ${contact.lastName}`,
-              })}
-              className="max-w-full max-h-full object-contain"
-            />
-
-            {/* Call button */}
-            <div className="absolute flex flex-col gap-4 items-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-2 text-center">
-              <Button
-                variant="primary"
-                className="bg-success"
-                isIconOnly
-                size="lg"
-                isDisabled={doNotDisturbMap[contact.id!]}
-                onPress={() => callContact(contact)}
-                aria-label={t("Components.ContactsCarousel.CallContact", {
+        {contacts.map((contact, index) => {
+          return (
+            <div
+              key={index}
+              className="relative shrink-0 h-full w-full flex justify-center items-center"
+            >
+              {/* Image */}
+              <img
+                src={
+                  contact.picture
+                    ? `data:image/*;base64,${contact.picture}`
+                    : basePath + "/picture-user-default.jpg"
+                }
+                alt={t("Components.ContactsCarousel.ContactPictureAlt", {
                   name: `${contact.firstName} ${contact.lastName}`,
                 })}
-              >
-                <IconStartCall className="text-white" />
-              </Button>
-              {doNotDisturbMap[contact.id!] && (
-                <p className="inline-flex items-center gap-2 bg-black bg-opacity-60 py-1 px-3 rounded-full text-sm">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
-                  {t("Components.ContactsCarousel.ContactDoNotDisturbLabel")}
+                className="max-w-full max-h-full object-contain"
+              />
+
+              {/* Call button */}
+              <div className="absolute flex flex-col gap-4 items-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white p-2 text-center">
+                <Button
+                  variant="primary"
+                  className="bg-success"
+                  isIconOnly
+                  size="lg"
+                  isDisabled={doNotDisturbMap[contact.id!]}
+                  onPress={() => callContact(contact)}
+                  aria-label={t("Components.ContactsCarousel.CallContact", {
+                    name: `${contact.firstName} ${contact.lastName}`,
+                  })}
+                >
+                  <IconStartCall className="text-white" />
+                </Button>
+                {doNotDisturbMap[contact.id!] && (
+                  <p className="inline-flex items-center gap-2 bg-black bg-opacity-60 py-1 px-3 rounded-full text-sm">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
+                    {t("Components.ContactsCarousel.ContactDoNotDisturbLabel")}
+                  </p>
+                )}
+                <p className="capitalize inline-block bg-black bg-opacity-60 py-1 px-4 rounded-full text-4xl">
+                  {contact.firstName} {contact.lastName}
                 </p>
-              )}
-              <p className="capitalize inline-block bg-black bg-opacity-60 py-1 px-4 rounded-full text-4xl">
-                {contact.firstName} {contact.lastName}
-              </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Navigation Buttons */}
