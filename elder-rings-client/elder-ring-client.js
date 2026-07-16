@@ -1,8 +1,19 @@
 import fetch from "node-fetch";
 import WebSocket from "ws";
 import { exec } from "child_process";
+import https from "https";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const cert = readFileSync(join(__dirname, "certs/room1.crt"));
+const key = readFileSync(join(__dirname, "certs/room1.key"));
+const ca = readFileSync(join(__dirname, "certs/rootCA.crt"));
+
+// HTTPS agent that presents the Pi's X.509 client certificate
+const httpsAgent = new https.Agent({ cert, key, ca });
 
 async function start() {
   const tokenRes = await fetch(
@@ -11,12 +22,11 @@ async function start() {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        client_id: "elderrings",
-        username: "room1",
-        password: "test",
+        client_id: "elderrings-pi",
+        client_secret: "piSecretElderRings2024xK9mQzR",
         grant_type: "password",
-        client_secret: "exvFhqRAZD6m0qKtszUCqN2mOxeX3SoH",
       }),
+      agent: httpsAgent,
     }
   );
 
@@ -36,7 +46,10 @@ async function start() {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      rejectUnauthorized: false,
+      cert,
+      key,
+      ca,
+      rejectUnauthorized: true,
     }
   );
 
@@ -61,19 +74,9 @@ async function start() {
 
     console.log("Received CALL_ROOM_INVITATION from", message.value.userId);
 
-    const url = `https://elder-rings.local/elder-rings/api/webauthn?roomId=${message.value.roomId}`;
+    const url = `https://elder-rings.local/elder-rings/api/room-login?roomId=${message.value.roomId}`;
 
-    // // Windows chrome version for testing purpose
-    // const chromePath = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"`;
-    // const cmd = `${chromePath} "${url}"`;
-
-    // exec(cmd, (err) => {
-    //   if (err) return console.error("Failed to launch Chrome:", err);
-    //   console.log("Chrome launched.");
-    // });
-
-    //"Unix" chromium version
-    // 1. Turn on the TV
+    // 1. Turn on the TV via HDMI-CEC
     exec('echo "on 0" | cec-client -s -d 1', (err) => {
       if (err) return console.error("CEC error:", err);
       console.log("TV should be turning on...");

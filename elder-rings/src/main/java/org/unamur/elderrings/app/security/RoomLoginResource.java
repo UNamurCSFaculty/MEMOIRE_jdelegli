@@ -13,16 +13,16 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
-@Path("/webauthn")
-public class WebAuthnLoginResource {
+@Path("/room-login")
+public class RoomLoginResource {
 
   @Inject
   OidcAppConfig oidcAppConfig;
 
   @GET
   @Produces(MediaType.TEXT_HTML)
-  public Response redirectToPasskeyLogin(@QueryParam("roomId") String roomId) {
-    Log.infof("Redirecting to key-only auth%s", 
+  public Response redirectToRoomLogin(@QueryParam("roomId") String roomId) {
+    Log.infof("Redirecting to room certificate auth%s",
         (roomId != null && !roomId.isBlank()) ? " for room " + roomId : "");
 
     String baseRedirectUri = oidcAppConfig.applications().get(0).client().redirectUris().get(0);
@@ -30,15 +30,14 @@ public class WebAuthnLoginResource {
             ? baseRedirectUri + "call-room/" + roomId
             : baseRedirectUri ;
     String encodedRedirectUri = URLEncoder.encode(finalRedirectUri, StandardCharsets.UTF_8);
-    String clientId = oidcAppConfig.clientId() + "-webauthn";
+    String clientId = oidcAppConfig.clientId() + "-room";
     String authUrl = oidcAppConfig.authServerUrl() + "/protocol/openid-connect/auth";
 
     URI uri = URI.create(authUrl+
       "?client_id=" + clientId +
       "&response_type=code" +
       "&scope=openid" +
-      "&redirect_uri=" + encodedRedirectUri +
-      "&kc_idp_hint=webauthn");
+      "&redirect_uri=" + encodedRedirectUri);
 
     return Response.seeOther(uri).build();
   }

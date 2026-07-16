@@ -260,6 +260,8 @@
       "admin-cli" : [ ],
       "elderrings" : [ ],
       "account-console" : [ ],
+      "elderrings-pi" : [ ],
+      "elderrings-room" : [ ],
       "broker" : [ {
         "id" : "cc0172fa-6a66-4f1d-bdbd-f54d2c653315",
         "name" : "read-token",
@@ -269,7 +271,6 @@
         "containerId" : "f199a45a-d615-4dd2-b20d-0eb43652f145",
         "attributes" : { }
       } ],
-      "elderrings-webauthn" : [ ],
       "account" : [ {
         "id" : "56f9e5bd-ea45-4410-9d2c-855ba99de8f6",
         "name" : "delete-account",
@@ -438,13 +439,6 @@
       "createdDate" : 1772226591786,
       "secretData" : "{\"value\":\"8j60jLMzWPTy7yfNzI6670qLifZrQsMkOsaAtJE0V20=\",\"salt\":\"lzRhs+zL2YecyF4xNXqAXw==\",\"additionalParameters\":{}}",
       "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
-    }, {
-      "id" : "311b889f-5285-4cb2-8fb7-27e28983d34a",
-      "type" : "webauthn-passwordless",
-      "userLabel" : "Passkey (Default Label)",
-      "createdDate" : 1772229258463,
-      "secretData" : "{}",
-      "credentialData" : "{\"aaguid\":\"fbfc3007-154e-4ecc-8c0b-6e020557d7bd\",\"credentialId\":\"nFvvfMSSLtya1/RFHirlocJT50E=\",\"counter\":0,\"credentialPublicKey\":\"pQECAyYgASFYIKmmgfebisYSLqahXc-YIUcuJLNULQN7lIquivzHyojIIlggL3nmqdrc6zOLQw6h1e99RPUmm1UJJsDe_-zgxLwkUU8\",\"attestationStatementFormat\":\"none\",\"transports\":[\"internal\",\"hybrid\"]}"
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
@@ -467,12 +461,12 @@
     "groups" : [ ]
   }, {
     "id" : "379ccfad-09c6-4612-898f-68f75e530ff6",
-    "username" : "service-account-elderrings-webauthn",
+    "username" : "service-account-elderrings-room",
     "emailVerified" : false,
     "enabled" : true,
     "createdTimestamp" : 1743507769081,
     "totp" : false,
-    "serviceAccountClientId" : "elderrings-webauthn",
+    "serviceAccountClientId" : "elderrings-room",
     "credentials" : [ ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
@@ -735,9 +729,42 @@
     "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "organization", "microprofile-jwt" ]
   }, {
+    "id" : "a9b8c7d6-e5f4-4321-a0b1-c2d3e4f56789",
+    "clientId" : "elderrings-pi",
+    "name" : "elderrings-pi",
+    "description" : "Dedicated client for Raspberry Pi rooms — authenticates via X.509 certificate",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "piSecretElderRings2024xK9mQzR",
+    "redirectUris" : [ ],
+    "webOrigins" : [ ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : false,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : true,
+    "serviceAccountsEnabled" : false,
+    "publicClient" : false,
+    "frontchannelLogout" : false,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "realm_client" : "false",
+      "post.logout.redirect.uris" : "+"
+    },
+    "authenticationFlowBindingOverrides" : {
+      "direct_grant" : "c1d2e3f4-a5b6-4789-8abc-def012345678"
+    },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
+    "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+  }, {
     "id" : "ea13da72-a361-4b94-977d-1d80ca47d54e",
-    "clientId" : "elderrings-webauthn",
-    "name" : "elderrings-webauthn",
+    "clientId" : "elderrings-room",
+    "name" : "elderrings-room",
     "description" : "",
     "rootUrl" : "https://elder-rings.local/elder-rings/",
     "adminUrl" : "",
@@ -760,27 +787,34 @@
     "frontchannelLogout" : true,
     "protocol" : "openid-connect",
     "attributes" : {
-      "client.secret.creation.time" : "1737887032",
-      "client.introspection.response.allow.jwt.claim.enabled" : "false",
-      "login_theme" : "keycloak",
       "post.logout.redirect.uris" : "http://elder-rings.local/elder-rings/##http://elder-rings.local/elder-rings/",
+      "frontchannel.logout.session.required" : "true",
       "oauth2.device.authorization.grant.enabled" : "false",
       "use.jwks.url" : "false",
       "backchannel.logout.revoke.offline.tokens" : "false",
       "use.refresh.tokens" : "true",
       "realm_client" : "false",
       "oidc.ciba.grant.enabled" : "false",
-      "client.use.lightweight.access.token.enabled" : "false",
       "backchannel.logout.session.required" : "true",
       "client_credentials.use_refresh_token" : "false",
-      "acr.loa.map" : "{}",
       "require.pushed.authorization.requests" : "false",
+      "dpop.bound.access.tokens" : "false",
+      "logout.confirmation.enabled" : "false",
+      "id.token.as.detached.signature" : "false",
+      "client.secret.creation.time" : "1737887032",
+      "client.introspection.response.allow.jwt.claim.enabled" : "false",
+      "standard.token.exchange.enabled" : "false",
+      "login_theme" : "keycloak",
+      "client.use.lightweight.access.token.enabled" : "false",
+      "request.object.required" : "not required",
+      "access.token.header.type.rfc9068" : "false",
+      "acr.loa.map" : "{}",
       "tls.client.certificate.bound.access.tokens" : "false",
       "display.on.consent.screen" : "false",
       "token.response.type.bearer.lower-case" : "false"
     },
     "authenticationFlowBindingOverrides" : {
-      "browser" : "4df40def-b5f2-4b41-a466-7402d49ca77c"
+      "browser" : "e2f3a4b5-c6d7-8901-efab-cd1234567890"
     },
     "fullScopeAllowed" : true,
     "nodeReRegistrationTimeout" : -1,
@@ -830,7 +864,7 @@
         "jsonType.label" : "String"
       }
     } ],
-    "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
+    "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "organization", "microprofile-jwt" ]
   }, {
     "id" : "4519240d-c827-4d0e-bcda-e6405c200aa7",
@@ -1040,8 +1074,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "clientHost",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "clientHost",
         "jsonType.label" : "String"
@@ -1054,8 +1089,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "clientAddress",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "clientAddress",
         "jsonType.label" : "String"
@@ -1068,8 +1104,9 @@
       "consentRequired" : false,
       "config" : {
         "user.session.note" : "client_id",
-        "id.token.claim" : "true",
         "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "client_id",
         "jsonType.label" : "String"
@@ -1587,7 +1624,7 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "oidc-usermodel-property-mapper", "saml-user-property-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "saml-user-attribute-mapper", "oidc-address-mapper", "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper" ]
+        "allowed-protocol-mapper-types" : [ "saml-role-list-mapper", "saml-user-property-mapper", "oidc-sha256-pairwise-sub-mapper", "oidc-usermodel-property-mapper", "oidc-address-mapper", "oidc-full-name-mapper", "saml-user-attribute-mapper", "oidc-usermodel-attribute-mapper" ]
       }
     }, {
       "id" : "39ed626a-5608-48b5-9fa2-2f07a646e70e",
@@ -1621,7 +1658,7 @@
       "subType" : "authenticated",
       "subComponents" : { },
       "config" : {
-        "allowed-protocol-mapper-types" : [ "saml-user-attribute-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-full-name-mapper", "oidc-address-mapper", "saml-user-property-mapper" ]
+        "allowed-protocol-mapper-types" : [ "oidc-address-mapper", "saml-role-list-mapper", "oidc-usermodel-attribute-mapper", "oidc-usermodel-property-mapper", "oidc-sha256-pairwise-sub-mapper", "saml-user-attribute-mapper", "saml-user-property-mapper", "oidc-full-name-mapper" ]
       }
     } ],
     "org.keycloak.keys.KeyProvider" : [ {
@@ -1862,29 +1899,6 @@
       "userSetupAllowed" : false
     } ]
   }, {
-    "id" : "a085b94b-ca18-4871-9fd2-d75b7bae5710",
-    "alias" : "Room auth flow",
-    "description" : "webauthn for rooms",
-    "providerId" : "basic-flow",
-    "topLevel" : false,
-    "builtIn" : false,
-    "authenticationExecutions" : [ {
-      "authenticatorConfig" : "is room",
-      "authenticator" : "conditional-user-role",
-      "authenticatorFlow" : false,
-      "requirement" : "REQUIRED",
-      "priority" : 0,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticator" : "webauthn-authenticator-passwordless",
-      "authenticatorFlow" : false,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 1,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    } ]
-  }, {
     "id" : "6abe513a-3162-4c52-ba45-45e14e95f749",
     "alias" : "User creation or linking",
     "description" : "Flow for the existing/non-existing user alternatives",
@@ -1970,93 +1984,6 @@
       "priority" : 30,
       "autheticatorFlow" : true,
       "flowAlias" : "forms",
-      "userSetupAllowed" : false
-    } ]
-  }, {
-    "id" : "476c0b29-9c5d-42cf-bbb6-09c8f438820a",
-    "alias" : "browser with WebAuthn",
-    "description" : "Browser based authentication",
-    "providerId" : "basic-flow",
-    "topLevel" : true,
-    "builtIn" : false,
-    "authenticationExecutions" : [ {
-      "authenticator" : "auth-cookie",
-      "authenticatorFlow" : false,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 10,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticator" : "auth-spnego",
-      "authenticatorFlow" : false,
-      "requirement" : "DISABLED",
-      "priority" : 20,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticator" : "identity-provider-redirector",
-      "authenticatorFlow" : false,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 25,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticatorFlow" : true,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 31,
-      "autheticatorFlow" : true,
-      "flowAlias" : "Room auth flow",
-      "userSetupAllowed" : false
-    }, {
-      "authenticatorFlow" : true,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 32,
-      "autheticatorFlow" : true,
-      "flowAlias" : "browser with WebAuthn forms",
-      "userSetupAllowed" : false
-    } ]
-  }, {
-    "id" : "81450a1f-c548-487a-8528-b9430ed2fb88",
-    "alias" : "browser with WebAuthn Browser - Conditional OTP",
-    "description" : "Flow to determine if the OTP is required for the authentication",
-    "providerId" : "basic-flow",
-    "topLevel" : false,
-    "builtIn" : false,
-    "authenticationExecutions" : [ {
-      "authenticator" : "conditional-user-configured",
-      "authenticatorFlow" : false,
-      "requirement" : "REQUIRED",
-      "priority" : 10,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticator" : "auth-otp-form",
-      "authenticatorFlow" : false,
-      "requirement" : "REQUIRED",
-      "priority" : 20,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    } ]
-  }, {
-    "id" : "b1586870-10e8-4600-9f5e-96ae7854fb30",
-    "alias" : "browser with WebAuthn forms",
-    "description" : "Username, password, otp and other auth forms.",
-    "providerId" : "basic-flow",
-    "topLevel" : false,
-    "builtIn" : false,
-    "authenticationExecutions" : [ {
-      "authenticator" : "auth-username-password-form",
-      "authenticatorFlow" : false,
-      "requirement" : "REQUIRED",
-      "priority" : 10,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticatorFlow" : true,
-      "requirement" : "CONDITIONAL",
-      "priority" : 20,
-      "autheticatorFlow" : true,
-      "flowAlias" : "browser with WebAuthn Browser - Conditional OTP",
       "userSetupAllowed" : false
     } ]
   }, {
@@ -2192,35 +2119,6 @@
       "userSetupAllowed" : false
     } ]
   }, {
-    "id" : "4df40def-b5f2-4b41-a466-7402d49ca77c",
-    "alias" : "passkey-only",
-    "description" : "Browser based webauthnt passkey authentication",
-    "providerId" : "basic-flow",
-    "topLevel" : true,
-    "builtIn" : false,
-    "authenticationExecutions" : [ {
-      "authenticator" : "auth-cookie",
-      "authenticatorFlow" : false,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 10,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticator" : "identity-provider-redirector",
-      "authenticatorFlow" : false,
-      "requirement" : "ALTERNATIVE",
-      "priority" : 25,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    }, {
-      "authenticator" : "webauthn-authenticator-passwordless",
-      "authenticatorFlow" : false,
-      "requirement" : "REQUIRED",
-      "priority" : 26,
-      "autheticatorFlow" : false,
-      "userSetupAllowed" : false
-    } ]
-  }, {
     "id" : "f1c86e2a-ff26-44fd-b527-ade858b3db9f",
     "alias" : "registration",
     "description" : "Registration flow",
@@ -2323,6 +2221,45 @@
       "autheticatorFlow" : false,
       "userSetupAllowed" : false
     } ]
+  }, {
+    "id" : "e2f3a4b5-c6d7-8901-efab-cd1234567890",
+    "alias" : "x509 browser",
+    "description" : "Browser flow with automatic X.509 certificate authentication — no user interaction",
+    "providerId" : "basic-flow",
+    "topLevel" : true,
+    "builtIn" : false,
+    "authenticationExecutions" : [ {
+      "authenticator" : "auth-cookie",
+      "authenticatorFlow" : false,
+      "requirement" : "ALTERNATIVE",
+      "priority" : 10,
+      "autheticatorFlow" : false,
+      "userSetupAllowed" : false
+    }, {
+      "authenticatorConfig" : "x509-browser-config",
+      "authenticator" : "auth-x509-client-username-form",
+      "authenticatorFlow" : false,
+      "requirement" : "REQUIRED",
+      "priority" : 20,
+      "autheticatorFlow" : false,
+      "userSetupAllowed" : false
+    } ]
+  }, {
+    "id" : "c1d2e3f4-a5b6-4789-8abc-def012345678",
+    "alias" : "x509 direct grant",
+    "description" : "OpenID Connect Resource Owner Grant with X.509 certificate identity extraction",
+    "providerId" : "basic-flow",
+    "topLevel" : true,
+    "builtIn" : false,
+    "authenticationExecutions" : [ {
+      "authenticatorConfig" : "x509-direct-grant-config",
+      "authenticator" : "direct-grant-auth-x509-username",
+      "authenticatorFlow" : false,
+      "requirement" : "REQUIRED",
+      "priority" : 10,
+      "autheticatorFlow" : false,
+      "userSetupAllowed" : false
+    } ]
   } ],
   "authenticatorConfig" : [ {
     "id" : "003eac91-9050-462c-9861-9e2e9f469e79",
@@ -2331,16 +2268,33 @@
       "require.password.update.after.registration" : "false"
     }
   }, {
-    "id" : "3764cb20-771a-4096-b48f-2ce5afd3d360",
-    "alias" : "is room",
-    "config" : {
-      "condUserRole" : "room"
-    }
-  }, {
     "id" : "028cfa75-dd50-45b6-a5ef-eaf57cdb480e",
     "alias" : "review profile config",
     "config" : {
       "update.profile.on.first.login" : "missing"
+    }
+  }, {
+    "id" : "5f99ccae-ca95-4127-b0f0-68566e0a3fb3",
+    "alias" : "x509-browser-config",
+    "config" : {
+      "x509-cert-auth.canonical-dn-enabled" : "false",
+      "x509-cert-auth.confirmation-page-disallowed" : "true",
+      "x509-cert-auth.serialnumber-hex-enabled" : "false",
+      "x509-cert-auth.backend-authenticator-type" : "usernamepassword",
+      "x509-cert-auth.user-mapper-selection" : "Username or Email",
+      "x509-cert-auth.mapping-source-selection" : "Subject's Common Name",
+      "x509-cert-auth.timestamp-validation-enabled" : "true"
+    }
+  }, {
+    "id" : "5ce497d2-e366-48ca-94aa-f2de49b723c5",
+    "alias" : "x509-direct-grant-config",
+    "config" : {
+      "x509-cert-auth.canonical-dn-enabled" : "false",
+      "x509-cert-auth.serialnumber-hex-enabled" : "false",
+      "x509-cert-auth.mapping-source-selection" : "Subject's Common Name",
+      "x509-cert-auth.backend-authenticator-type" : "usernamepassword",
+      "x509-cert-auth.timestamp-validation-enabled" : "true",
+      "x509-cert-auth.user-mapper-selection" : "Username or Email"
     }
   } ],
   "requiredActions" : [ {
@@ -2395,7 +2349,7 @@
     "alias" : "webauthn-register",
     "name" : "Webauthn Register",
     "providerId" : "webauthn-register",
-    "enabled" : true,
+    "enabled" : false,
     "defaultAction" : false,
     "priority" : 70,
     "config" : { }
@@ -2403,7 +2357,7 @@
     "alias" : "webauthn-register-passwordless",
     "name" : "Webauthn Register Passwordless",
     "providerId" : "webauthn-register-passwordless",
-    "enabled" : true,
+    "enabled" : false,
     "defaultAction" : false,
     "priority" : 80,
     "config" : { }
@@ -2440,7 +2394,7 @@
     "priority" : 1000,
     "config" : { }
   } ],
-  "browserFlow" : "browser with WebAuthn",
+  "browserFlow" : "browser",
   "registrationFlow" : "registration",
   "directGrantFlow" : "direct grant",
   "resetCredentialsFlow" : "reset credentials",
