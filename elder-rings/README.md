@@ -6,7 +6,7 @@ This repository contains the main components of the elder-rings server applicati
 - A quarkus app server, to provide the REST API of the application
 - A postregre database to store the application data
 - A react application, the frontend application (served by quarkus server with Quinoa)
-- A proxy to serve the application in HTTPS (optional)
+- A nginx proxy to serve the application in HTTPS
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ This repository contains the main components of the elder-rings server applicati
 
 ### Default : HTTPS
 
-> In order to allow webauthn authentication protocol, the default installation use HTTPS and thus require a bit of setup
+> In order to allow the room certificate authentication (mTLS), the default installation use HTTPS and thus require a bit of setup
 
 1. Edit you host file on your machine
 
@@ -41,7 +41,7 @@ On windows, double click on `/platform/nginx/certs/rootCA.crt` and install it in
 Start by setting up the application dependencies to run
 
 ```
-cd plateform
+cd platform
 docker compose up -d
 ```
 
@@ -49,7 +49,7 @@ This will create an empty database, a keycloak and its database and a nginx prox
 
 > The keycloak created contains the basic realm configuration
 > and 3 users : test_user, test_user2, room1
-> All their password are "test"
+> test_user and test_user2 use password "test". room1 authenticates via X.509 certificate (see elder-rings-client README)
 
 Then you can simply run the backend and frontend by running
 
@@ -113,6 +113,7 @@ And you need to launch the application with `application-http.yml` instead of th
   - [x] Sound
 - [x] Sound route media backend
 - [x] Call rejection
+- [x] X.509 certificate authentication for Pi devices (mTLS)
 - [ ] Contact online (info is provided through notification WebSocket, but not implemented in front end)
 - [ ] Décrochage auto (Actually implemented directly in client app, but not configurable on server, work to be done)
 - [ ] Role management
@@ -149,6 +150,24 @@ mkcert keycloak.local
 
 3. Copy the generated certificats under `platform/nginx/certs` to use them
 
+### Generating a room certificate
+
+Each Pi device needs its own X.509 client certificate signed by the root CA. Run these commands from `platform/nginx/certs` :
+
+```
+openssl genrsa -out <roomId>.key 4096
+openssl req -new -key <roomId>.key -out <roomId>.csr -subj "/CN=<roomId>/O=elder-rings/C=BE"
+openssl x509 -req -in <roomId>.csr -CA rootCA.crt -CAkey rootCA-key.crt -CAcreateserial -out <roomId>.crt -days 3650 -sha256
+openssl pkcs12 -export -in <roomId>.crt -inkey <roomId>.key -out <roomId>.p12 -name "<roomId> - elder-rings" -passout pass:elderrings -legacy
+rm <roomId>.csr
+```
+
+> /!\ The CN must match exactly the username of the corresponding Keycloak user (e.g. `room1`)
+
+> /!\ Keep `rootCA-key.crt` offline in production — anyone holding this file can issue valid certificates
+
+Copy the generated `.crt`, `.key`, `.p12` and `rootCA.crt` to the Pi (see elder-rings-client README)
+
 ### Updating keycloak config in this repo
 
 1. Do the changes on the keycloak admin interface, then launch the following commands :
@@ -164,4 +183,4 @@ docker cp keycloak:/opt/keycloak/data/export .\platform\keycloak-config
 
 https://keycloak.local/auth/admin/master/console
 https://elder-rings.local/elder-rings/
-https://elder-rings.local/elder-rings/api/webauthn
+https://elder-rings.local/elder-rings/api/room-login

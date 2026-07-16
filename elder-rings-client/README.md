@@ -42,68 +42,89 @@ v20.19.0
 > If you enabled SSH, with username pi, from root of elder-rings project
 
 ```
-cd platform\nginx\certs
+cd platform/nginx/certs
 scp rootCA.crt pi@raspberrypi.local:/tmp/
 ssh pi@raspberrypi.local
-sudo cp /tmp/rootCA.crt /usr/local/share/ca-certificates/
+sudo cp /tmp/rootCA.crt /usr/local/share/ca-certificates/elder-rings-rootCA.crt
 sudo update-ca-certificates
 echo -e "192.168.0.79 elder-rings.local\n192.168.0.79 keycloak.local" | sudo tee -a /etc/hosts > /dev/null
 ```
 
 > /!\ in my case 192.168.0.79 is the host on which the elder-rings application run, change it depending on your network
 
-### Configure chromium
+### Copy the script and certificates on the Pi
 
-> Chromium come by default with Respberry pi os install, so you don't need to do install it
-
-1. Launch Chromium and go to:
+From root of elder-rings-client project :
 
 ```
-chrome://settings/certificates
+scp package.json elder-ring-client.js pi@raspberrypi.local:~/elder-rings-client/
 ```
 
-2. Under "Authorities", click Import and select `rootCA.crt` from `/usr/local/share/ca-certificates/`
-
-3. Check: ✅ Trust this certificate for identifying websites
-
-Done — Chromium will now trust anything signed by your root CA
-
-### Setup user / password (or a better solution would be to have a certificate for this)
-
-Simply replace the user / password in the `elder-ring-client.js` script
-
-### Copy the script on the server
-
-from root of elder-rings-client project
+Copy the room certificate generated from the server (see elder-rings README, section "Generating a room certificate") :
 
 ```
-scp package.json elder-ring-client.js pi@raspberrypi.local:~/elder-ring-client/
+scp platform/nginx/certs/room1.crt pi@raspberrypi.local:~/elder-rings-client/certs/
+scp platform/nginx/certs/room1.key pi@raspberrypi.local:~/elder-rings-client/certs/
+scp platform/nginx/certs/rootCA.crt pi@raspberrypi.local:~/elder-rings-client/certs/
+scp platform/nginx/certs/room1.p12 pi@raspberrypi.local:~/elder-rings-client/certs/
 ```
 
-### Register your device for that user (manual step)
+Install dependencies :
 
-1. Go to the keycloak admin interface
+```
+cd ~/elder-rings-client && npm install
+```
 
-https://keycloak.local/auth/admin/master/console/
+### Configure X.509 client certificate for Chromium
 
-2. Setup the user to register the device on next auth
+The Pi authenticates to Keycloak using its X.509 certificate instead of a username and password. Chromium needs access to this certificate to handle the browser-based call flow without any user interaction.
 
-Under realm `elderrings`, go to `Users` tab, select your user and add a `Required user actions` of type `Webauthn Register Passwordless`
+1. Install NSS tools
 
-3. From your raspberry pi browser, connect
+```
+sudo apt-get install libnss3-tools -y
+```
 
-https://elder-rings.local/elder-rings/
+2. Create the NSS database with no password
 
-Enter the user credentials, then follow steps to register the device
+```
+rm -rf ~/.pki/nssdb
+mkdir -p ~/.pki/nssdb
+certutil -N -d sql:$HOME/.pki/nssdb -f /dev/null
+```
+
+3. Import the room certificate and trust the root CA
+
+```
+pk12util -i ~/elder-rings-client/certs/room1.p12 -d sql:$HOME/.pki/nssdb -W elderrings -K ""
+certutil -A -n "elder-rings rootCA" -t "C,," -i ~/elder-rings-client/certs/rootCA.crt -d sql:$HOME/.pki/nssdb -f /dev/null
+```
+
+4. Configure Chromium to auto-select the certificate for keycloak.local (no user prompt)
+
+```
+sudo mkdir -p /etc/chromium/policies/managed
+```
+
+```
+echo '{"AutoSelectCertificateForUrls":["{\"pattern\":\"https://keycloak.local\",\"filter\":{\"ISSUER\":{\"CN\":\"mkcert nedjed@Ned\"}}}"]}'  | sudo tee /etc/chromium/policies/managed/elderrings.json
+```
+
+> /!\ The CN value in the filter must match the issuer CN of the root CA. Check with : `openssl x509 -in certs/rootCA.crt -noout -issuer`
 
 ### Run the application
 
 > This require the elder-rings app to be running on your "server"
 
 ```
-node elder-ring-client.js
+node ~/elder-rings-client/elder-ring-client.js
 ```
 
-To test it, start a call from any account to the account you configured
+You should see :
 
-### Auto start the script on boot
+```
+Authenticated. Connecting to WebSocket...
+Connected to WebSocket
+```
+
+To test it, start a call from any account to the room account configured on this Pi. Chromium should open automatically and land directly on the call page without any authentication prompt.

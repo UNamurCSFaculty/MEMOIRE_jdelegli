@@ -36,6 +36,8 @@ services:
       #- KC_BOOTSTRAP_ADMIN_PASSWORD=K3YcL04KAdm%n # Admin password
       - KC_HOSTNAME=keycloak.local
       - KC_HTTP_RELATIVE_PATH=/auth
+      # Trust X-Forwarded-* headers from nginx (required for X.509 cert passthrough)
+      - KC_PROXY_HEADERS=xforwarded
     command:
       - "start-dev" # This is the command to start Keycloak in development mode
       - "--import-realm" # Import default configuration from the dedicated mounted volume

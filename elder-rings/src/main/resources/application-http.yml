@@ -1,5 +1,5 @@
 #This configuration exist in case you want to use http only in dev mode
-#As a result, webauthn will not work !
+#As a result, the room certificate authentication will not work (no TLS) !
 quarkus:
   application:
     name: "elder-rings"
@@ -18,9 +18,9 @@ quarkus:
     non-application-root-path: /elder-rings/monitor
     auth:
       permission:
-        permit-webauthn:
+        permit-room-login:
           paths:
-            - /elder-rings/api/webauthn
+            - /elder-rings/api/room-login
           policy: permit
         authenticated:
           paths:
