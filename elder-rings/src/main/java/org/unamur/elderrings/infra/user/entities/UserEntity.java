@@ -5,9 +5,12 @@ import java.util.UUID;
 import org.hibernate.annotations.Comment;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -24,7 +27,9 @@ import lombok.Setter;
 @Table(name = "app_user", uniqueConstraints = {
   @UniqueConstraint(columnNames = {"id"})
 })
-public class UserEntity {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type")
+public abstract class UserEntity {
 
   @Id
   @Column(name="id", unique = true, nullable = false)
@@ -38,9 +43,6 @@ public class UserEntity {
 
   @Column(name="last_name")
   protected String lastName;
-
-  @Column(name="is_room")
-  protected Boolean isRoom;
 
   @OneToOne
   @JoinColumn(name = "picture_id", nullable = true)

@@ -6,8 +6,14 @@ import java.util.UUID;
 
 import org.unamur.elderrings.infra.user.entities.UserEntity;
 import org.unamur.elderrings.infra.user.entities.UserPictureEntity;
+import org.unamur.elderrings.infra.user.entities.CallPolicyEntity;
+import org.unamur.elderrings.infra.user.entities.FamilyEntity;
+import org.unamur.elderrings.infra.user.entities.ResidentEntity;
+import org.unamur.elderrings.infra.user.entities.StaffEntity;
+import org.unamur.elderrings.modules.user.api.models.UserType;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -29,32 +35,45 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
 
   // Update user by ID
   @Transactional
-  public UserEntity createOrUpdateUser(UUID id, String username, String firstname, String lastname, Boolean isRoom) {
+  public UserEntity createOrUpdateUser(UUID id, String username, String firstname, String lastname, UserType type) {
     
     // Find the user by ID
     Optional<UserEntity> userOpt = getUserById(id);
 
     if (userOpt.isPresent()) {
       UserEntity user = userOpt.get();
+
+      if (!expectedClass(type).isInstance(user)) {
+        Log.warnf("User %s has type %s in token but was created as %s. Type change requires manual migration", username, type, user.getClass().getSimpleName());
+      }
           
       // Update fields
       user.setUsername(username);
       user.setFirstName(firstname);
       user.setLastName(lastname);
-      user.setIsRoom(isRoom);
           
       // Persist the updated user entity
       persist(user);
       return user;
     } else {
-      UserEntity user = new UserEntity();
+      // Create a new user entity based on the type from the token
+      UserEntity user = switch (type) {
+        case RESIDENT -> {
+          var resident = new ResidentEntity();
+          var policy = new CallPolicyEntity();
+          policy.setResident(resident);
+          resident.setCallPolicy(policy);
+          yield resident;
+        }
+        case STAFF -> new StaffEntity();
+        case FAMILY -> new FamilyEntity();
+      };
 
       // set fields
       user.setId(id);
       user.setUsername(username);
       user.setFirstName(firstname);
       user.setLastName(lastname);
-      user.setIsRoom(isRoom);
 
 
       // Create user entity
@@ -91,6 +110,13 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
         WHERE u.preferences.general.isPublic = true
         AND u.id <> ?1
     """, excludedUserId).list();
-}
+  }
   
+  private Class<? extends UserEntity> expectedClass(UserType type) {
+    return switch (type) {
+        case RESIDENT -> ResidentEntity.class;
+        case STAFF    -> StaffEntity.class;
+        case FAMILY   -> FamilyEntity.class;
+    };
+}
 }

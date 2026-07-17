@@ -47,9 +47,17 @@ docker compose up -d
 
 This will create an empty database, a keycloak and its database and a nginx proxy (for https)
 
-> The keycloak created contains the basic realm configuration
-> and 3 users : test_user, test_user2, room1
-> test_user and test_user2 use password "test". room1 authenticates via X.509 certificate (see elder-rings-client README)
+The keycloak realm comes preconfigured with the following test users :
+
+| Username | Password | Keycloak group | Role granted | App user type | Purpose |
+|----------|----------|----------------|--------------|---------------|---------|
+| `jhondoe` | `CbbOsuKPjtF16WEIMd8HwFWTBDGwPoUr` | — | — | `FAMILY` | External user (relative of a resident), connects through the web app |
+| `staff1` | `sZzLuz"d\|%[''xsZh%=vz7;j~uT:VyfX` | `staffs` | `staff` | `STAFF` | Care staff account, can configure residents |
+| `room1` | `test` | `rooms` | `room` | `RESIDENT` | Room account (TV) — authenticates with its X.509 certificate (see elder-rings-client README). The password is only kept as a dev convenience to log into the account from a browser |
+
+> User types are driven by Keycloak groups : members of the `rooms` group get the `room` role
+> (resident room), members of the `staffs` group get the `staff` role (care staff).
+> Users without any group are family accounts (this is the default type).
 
 Then you can simply run the backend and frontend by running
 
@@ -150,9 +158,17 @@ mkcert keycloak.local
 
 3. Copy the generated certificats under `platform/nginx/certs` to use them
 
-### Generating a room certificate
+### Provisioning a new room
 
-Each Pi device needs its own X.509 client certificate signed by the root CA. Run these commands from `platform/nginx/certs` :
+Each room needs a Keycloak account and an X.509 client certificate signed by the root CA.
+
+**1. Create the Keycloak user for the room** (admin console → Users → Add user) :
+
+- the username **must** be the room id (e.g. `room2`) — it has to match the certificate CN
+- no password is needed (the room authenticates with its certificate)
+- add the user to the **`rooms`** group (Groups tab → Join Group) : this grants the `room` role that identifies the account as a resident room
+
+**2. Generate the certificate.** Run these commands from `platform/nginx/certs` :
 
 ```
 openssl genrsa -out <roomId>.key 4096
@@ -166,7 +182,7 @@ rm <roomId>.csr
 
 > /!\ Keep `rootCA-key.crt` offline in production — anyone holding this file can issue valid certificates
 
-Copy the generated `.crt`, `.key`, `.p12` and `rootCA.crt` to the Pi (see elder-rings-client README)
+**3. Copy the generated `.crt`, `.key`, `.p12` and `rootCA.crt` to the Pi** (see elder-rings-client README)
 
 ### Updating keycloak config in this repo
 
