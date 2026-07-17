@@ -2,21 +2,12 @@ package org.unamur.elderrings.app.user.mappers;
 
 import org.unamur.elderrings.app.user.dto.UserDto;
 import org.unamur.elderrings.modules.user.api.models.User;
+import org.unamur.elderrings.modules.user.api.models.Resident;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class UserMapper {
-
-  public User toModel(UserDto dto){
-    return new User(
-      dto.getId(), 
-      dto.getUsername(),  
-      dto.getFirstName(), 
-      dto.getLastName(), 
-      dto.getIsRoom()
-    );
-  }
 
   public UserDto toDto(User model) {
     return new UserDto(
@@ -24,7 +15,7 @@ public class UserMapper {
       model.getUsername(),  
       model.getFirstName(), 
       model.getLastName(), 
-      model.getIsRoom()
+      model instanceof Resident
     );
   }
   

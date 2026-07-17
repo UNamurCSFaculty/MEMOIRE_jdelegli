@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class User {
+public abstract class User {
 
   private UUID id;
 
@@ -16,7 +16,4 @@ public class User {
   private String firstName;
 
   private String lastName;
-
-  private Boolean isRoom;
-
 }

@@ -27,7 +27,7 @@ public class UpdateUserFromTokenImpl implements UpdateUserFromToken {
         user.getUsername(), 
         user.getGivenName(), 
         user.getFamilyName(), 
-        user.isRoom()
+        user.getUserType()
       )
     );
   }

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.unamur.elderrings.app.user.dto.ContactDto;
 import org.unamur.elderrings.modules.user.api.models.Contact;
+import org.unamur.elderrings.modules.user.api.models.Resident;
 
 import lombok.experimental.UtilityClass;
 
@@ -19,7 +20,7 @@ public class ContactMapper {
       model.getUser().getUsername(),  
       model.getUser().getFirstName(), 
       model.getUser().getLastName(), 
-      model.getUser().getIsRoom(),
+      model.getUser() instanceof Resident,
       picture
     );
   }

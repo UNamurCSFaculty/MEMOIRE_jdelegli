@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.unamur.elderrings.modules.user.api.models.UserType;
 
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -45,9 +46,10 @@ public class ConnectedUser {
     return getOptionalClaim("email");
   }
 
-  public boolean isRoom() {
-    // Retrieves the email address; optional
-    return hasRole("room");
+  public UserType getUserType() {
+    if (hasRole("room")) return UserType.RESIDENT;
+    if (hasRole("staff")) return UserType.STAFF;
+    return UserType.FAMILY; // Default to FAMILY if no specific role is found
   }
 
   private String getMandatoryClaim(String claimName, String errorMessage) {

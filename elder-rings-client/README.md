@@ -60,7 +60,7 @@ From root of elder-rings-client project :
 scp package.json elder-ring-client.js pi@raspberrypi.local:~/elder-rings-client/
 ```
 
-Copy the room certificate generated from the server (see elder-rings README, section "Generating a room certificate") :
+Copy the room certificate generated from the server (see elder-rings README, section "Provisioning a new room") :
 
 ```
 scp platform/nginx/certs/room1.crt pi@raspberrypi.local:~/elder-rings-client/certs/
