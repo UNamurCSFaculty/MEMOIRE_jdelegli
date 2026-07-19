@@ -18,7 +18,13 @@ import { useTranslation } from "react-i18next";
 export default function IncomingCallListener() {
   const [roomOffer, setRoomOffer] = useState<CallRoomInvitationMessageContent | null>(null);
   const [contact, setContact] = useState<ContactDto | null>(null);
-  const { lastJsonMessage } = useWebSocket(buildWsUrl("notifications"));
+  const { lastJsonMessage } = useWebSocket(buildWsUrl("notifications"), {
+    // The kiosk browser on the room TV runs for days: the notification
+    // socket must survive server restarts and network drops
+    shouldReconnect: () => true,
+    reconnectInterval: 3000,
+    reconnectAttempts: Infinity,
+  });
   const navigate = useNavigate();
 
   const { t } = useTranslation();

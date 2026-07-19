@@ -12,10 +12,12 @@ const cert = readFileSync(join(__dirname, "certs/room1.crt"));
 const key = readFileSync(join(__dirname, "certs/room1.key"));
 const ca = readFileSync(join(__dirname, "certs/rootCA.crt"));
 
+const RECONNECT_DELAY_MS = 5000;
+
 // HTTPS agent that presents the Pi's X.509 client certificate
 const httpsAgent = new https.Agent({ cert, key, ca });
 
-async function start() {
+async function fetchToken() {
   const tokenRes = await fetch(
     "https://keycloak.local/auth/realms/elderrings/protocol/openid-connect/token",
     {
@@ -31,10 +33,30 @@ async function start() {
   );
 
   const tokenData = await tokenRes.json();
-  const token = tokenData.access_token;
 
-  if (!token) {
-    console.error("Authentication failed:", tokenData);
+  if (!tokenData.access_token) {
+    throw new Error("Authentication failed: " + JSON.stringify(tokenData));
+  }
+
+  return tokenData.access_token;
+}
+
+function turnOnTv() {
+  exec('echo "on 0" | cec-client -s -d 1', (err) => {
+    if (err) return console.error("CEC error:", err);
+    console.log("TV should be turning on...");
+  });
+}
+
+async function connect() {
+  let token;
+
+  // Access tokens are short-lived: fetch a fresh one on every attempt
+  try {
+    token = await fetchToken();
+  } catch (err) {
+    console.error(err.message);
+    setTimeout(connect, RECONNECT_DELAY_MS);
     return;
   }
 
@@ -74,19 +96,21 @@ async function start() {
 
     console.log("Received CALL_ROOM_INVITATION from", message.value.userId);
 
-    const url = `https://elder-rings.local/elder-rings/api/room-login?roomId=${message.value.roomId}`;
+    // The kiosk browser (running permanently) handles the whole call flow:
+    // incoming call dialog, call policy, WebRTC. This daemon only wakes
+    // the TV up through HDMI-CEC.
+    turnOnTv();
+  });
 
-    // 1. Turn on the TV via HDMI-CEC
-    exec('echo "on 0" | cec-client -s -d 1', (err) => {
-      if (err) return console.error("CEC error:", err);
-      console.log("TV should be turning on...");
+  ws.on("error", (err) => {
+    console.error("WebSocket error:", err.message);
+  });
 
-      // 2. Launch Chromium in kiosk mode
-      exec(`chromium --kiosk "${url}"`, (err) => {
-        if (err) console.error("Failed to launch Chromium:", err);
-      });
-    });
+  // "close" always follows "error", so reconnection is scheduled here only
+  ws.on("close", () => {
+    console.log(`WebSocket closed, reconnecting in ${RECONNECT_DELAY_MS / 1000}s...`);
+    setTimeout(connect, RECONNECT_DELAY_MS);
   });
 }
 
-start();
+connect();

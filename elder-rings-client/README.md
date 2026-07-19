@@ -39,12 +39,14 @@ v20.19.0
 
 ### Trust the root CA (see elder-rings project) and define elder-rings app hosts entries
 
-> If you enabled SSH, with username pi, from root of elder-rings project
+> If you enabled SSH, with username elder-rings, from root of elder-rings project
+
+> /!\ The Pi hostname (elder-rings.local through mDNS) is also the application vhost name. If scp/ssh reaches the wrong machine, your dev machine probably resolves elder-rings.local through its own /etc/hosts to the app server: use the Pi's IP address instead in the commands below.
 
 ```
 cd platform/nginx/certs
-scp rootCA.crt pi@raspberrypi.local:/tmp/
-ssh pi@raspberrypi.local
+scp rootCA.crt elder-rings@elder-rings.local:/tmp/
+ssh elder-rings@elder-rings.local
 sudo cp /tmp/rootCA.crt /usr/local/share/ca-certificates/elder-rings-rootCA.crt
 sudo update-ca-certificates
 echo -e "192.168.0.79 elder-rings.local\n192.168.0.79 keycloak.local" | sudo tee -a /etc/hosts > /dev/null
@@ -57,22 +59,23 @@ echo -e "192.168.0.79 elder-rings.local\n192.168.0.79 keycloak.local" | sudo tee
 From root of elder-rings-client project :
 
 ```
-scp package.json elder-ring-client.js pi@raspberrypi.local:~/elder-rings-client/
+scp package.json elder-ring-client.js elder-rings-cec.service elder-rings-kiosk.desktop elder-rings@elder-rings.local:~/Desktop/
 ```
 
 Copy the room certificate generated from the server (see elder-rings README, section "Provisioning a new room") :
 
 ```
-scp platform/nginx/certs/room1.crt pi@raspberrypi.local:~/elder-rings-client/certs/
-scp platform/nginx/certs/room1.key pi@raspberrypi.local:~/elder-rings-client/certs/
-scp platform/nginx/certs/rootCA.crt pi@raspberrypi.local:~/elder-rings-client/certs/
-scp platform/nginx/certs/room1.p12 pi@raspberrypi.local:~/elder-rings-client/certs/
+ssh elder-rings@elder-rings.local "mkdir -p ~/Desktop/certs"
+scp platform/nginx/certs/room1.crt elder-rings@elder-rings.local:~/Desktop/certs/
+scp platform/nginx/certs/room1.key elder-rings@elder-rings.local:~/Desktop/certs/
+scp platform/nginx/certs/rootCA.crt elder-rings@elder-rings.local:~/Desktop/certs/
+scp platform/nginx/certs/room1.p12 elder-rings@elder-rings.local:~/Desktop/certs/
 ```
 
 Install dependencies :
 
 ```
-cd ~/elder-rings-client && npm install
+cd ~/Desktop && npm install
 ```
 
 ### Configure X.509 client certificate for Chromium
@@ -96,8 +99,8 @@ certutil -N -d sql:$HOME/.pki/nssdb -f /dev/null
 3. Import the room certificate and trust the root CA
 
 ```
-pk12util -i ~/elder-rings-client/certs/room1.p12 -d sql:$HOME/.pki/nssdb -W elderrings -K ""
-certutil -A -n "elder-rings rootCA" -t "C,," -i ~/elder-rings-client/certs/rootCA.crt -d sql:$HOME/.pki/nssdb -f /dev/null
+pk12util -i ~/Desktop/certs/room1.p12 -d sql:$HOME/.pki/nssdb -W elderrings -K ""
+certutil -A -n "elder-rings rootCA" -t "C,," -i ~/Desktop/certs/rootCA.crt -d sql:$HOME/.pki/nssdb -f /dev/null
 ```
 
 4. Configure Chromium to auto-select the certificate for keycloak.local (no user prompt)
@@ -112,12 +115,14 @@ echo '{"AutoSelectCertificateForUrls":["{\"pattern\":\"https://keycloak.local\",
 
 > /!\ The CN value in the filter must match the issuer CN of the root CA. Check with : `openssl x509 -in certs/rootCA.crt -noout -issuer`
 
-### Run the application
+### Run the CEC wake daemon
 
-> This require the elder-rings app to be running on your "server"
+The Node script does not open the browser anymore: the kiosk browser runs permanently (next section) and handles the whole call flow (incoming call dialog, resident call policy, WebRTC). The daemon's only job is to turn the TV on through HDMI-CEC when a call invitation arrives. It fetches a fresh token and reconnects automatically whenever the connection drops.
+
+Manual run (requires the elder-rings app to be running on your "server") :
 
 ```
-node ~/elder-rings-client/elder-ring-client.js
+node ~/Desktop/elder-ring-client.js
 ```
 
 You should see :
@@ -127,4 +132,31 @@ Authenticated. Connecting to WebSocket...
 Connected to WebSocket
 ```
 
-To test it, start a call from any account to the room account configured on this Pi. Chromium should open automatically and land directly on the call page without any authentication prompt.
+Install it as a systemd service so it starts with the Pi :
+
+```
+sudo cp ~/Desktop/elder-rings-cec.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now elder-rings-cec
+```
+
+> /!\ The service file assumes the project lives in /home/elder-rings/Desktop and node is in /usr/bin, adapt if needed. Check the daemon with `systemctl status elder-rings-cec` or `journalctl -u elder-rings-cec -f`.
+
+### Run the kiosk browser
+
+Chromium runs permanently in kiosk mode on the platform home page. It authenticates through /room-login with the room certificate (no user interaction thanks to the AutoSelectCertificateForUrls policy), then the React app takes over: the resident can start calls with the TV remote, and incoming calls either show the incoming call dialog or join automatically depending on the resident call policy.
+
+Enable it at session startup :
+
+```
+mkdir -p ~/.config/autostart
+cp ~/Desktop/elder-rings-kiosk.desktop ~/.config/autostart/
+```
+
+> /!\ The `--autoplay-policy=no-user-gesture-required` flag is required : without it Chromium blocks the incoming call ringtone (no audio without a user gesture).
+
+Also disable screen blanking on the Pi, the TV manages its own standby : `sudo raspi-config` > Display Options > Screen Blanking > No.
+
+### Test the whole flow
+
+Turn the TV off (standby), then start a call from any account to the room account configured on this Pi. The TV should turn on and, depending on the resident call policy, either ring with the incoming call dialog (answer with the TV remote) or join the call directly.
