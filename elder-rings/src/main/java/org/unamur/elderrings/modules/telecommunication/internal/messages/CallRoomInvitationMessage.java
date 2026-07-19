@@ -17,6 +17,8 @@ public class CallRoomInvitationMessage extends SocketMessage<CallRoomInvitationM
 
         private UUID roomId;
         private UUID userId;
+        private Boolean autoAnswer;
+        private Boolean cameraOn;
 
     }
     

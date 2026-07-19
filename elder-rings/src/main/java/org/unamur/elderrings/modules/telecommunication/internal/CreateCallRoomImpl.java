@@ -10,9 +10,12 @@ import org.unamur.elderrings.modules.notification.api.SendNotificationInterface;
 import org.unamur.elderrings.modules.telecommunication.api.CreateCallRoomInterface;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoom;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomMember;
+import org.unamur.elderrings.modules.user.api.models.Resident;
+import org.unamur.elderrings.modules.user.api.models.UserType;
 import org.unamur.elderrings.modules.telecommunication.internal.messages.CallRoomInvitationMessage;
 import org.unamur.elderrings.modules.telecommunication.exceptions.DoNotDisturbException;
 import org.unamur.elderrings.modules.user.api.GetUserPreferences;
+import org.unamur.elderrings.modules.user.api.GetUser;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;
@@ -30,6 +33,7 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
   private final CallRoomRepository repository;
   private final SendNotificationInterface sendNotification;
   private final GetUserPreferences getUserPreferences;
+  private final GetUser getUser;
   
   @Override
   public CallRoom createCallRoom(Set<UUID> userIds) {
@@ -59,17 +63,30 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
     var room = repository.create(members);
     log.info("Created call room with id {}", room.id().value());
 
-    // notify all users
-    sendNotification.send(
-      reachableUsers,
-      CallRoomInvitationMessage.builder()
-                                .type("CALL_ROOM_INVITATION")
-                                .value(CallRoomInvitationMessage.CallRoomInvitationMessageValue.builder()
-                                                                                                  .roomId(room.id().value())
-                                                                                                  .userId(user.getId())
-                                                                                                  .build())
-                                .build()
-    );
+    // notify each user with its own effective call policy
+    for (UUID recipientId : reachableUsers) {
+      Boolean autoAnswer = null;
+      Boolean cameraOn = null;
+      var recipient = getUser.getUser(recipientId).getUser();
+    
+      if (recipient instanceof Resident r && r.getCallPolicy() != null) { // if the recipient is a resident and has a call policy, use it to determine autoAnswer and cameraOn
+        autoAnswer = r.getCallPolicy().isAutoAnswer();
+        cameraOn = r.getCallPolicy().isCameraOnByDefault() && user.getUserType() != UserType.STAFF; // Call initiated by a staff member, camera should be off by default (ethical reason)
+      }
+    
+      sendNotification.send(
+        recipientId,
+        CallRoomInvitationMessage.builder()
+          .type("CALL_ROOM_INVITATION")
+          .value(CallRoomInvitationMessage.CallRoomInvitationMessageValue.builder()
+                  .roomId(room.id().value())
+                  .userId(user.getId())
+                  .autoAnswer(autoAnswer)
+                  .cameraOn(cameraOn)
+                  .build())
+          .build()
+      );
+    }
 
     return room;
   }

@@ -1,6 +1,5 @@
 package org.unamur.elderrings.modules.notification.internal;
 
-import java.util.Set;
 import java.util.UUID;
 
 import org.unamur.elderrings.modules.notification.api.SendNotificationInterface;
@@ -18,10 +17,7 @@ public class SendNotificationImpl implements SendNotificationInterface {
   private final NotificationSocketManager notificationSocketManager;
   
   @Override
-  public <T> void send(Set<UUID> userIds, SocketMessage<T> message) {
-    userIds.forEach(userId -> {
-      notificationSocketManager.send(userId, message);
-    });
+  public <T> void send(UUID userId, SocketMessage<T> message) {
+    notificationSocketManager.send(userId, message);
   }  
-  
 }

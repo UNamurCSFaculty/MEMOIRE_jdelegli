@@ -7,6 +7,7 @@ import org.unamur.elderrings.modules.user.api.UpdateUserFromToken;
 import org.unamur.elderrings.modules.user.api.models.User;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +21,7 @@ public class UpdateUserFromTokenImpl implements UpdateUserFromToken {
   private final UserRepository repository;
 
   @Override
+  @Transactional
   public User createOrUpdateUser() {
     return UserEntityMapper.toModel(
       repository.createOrUpdateUser(

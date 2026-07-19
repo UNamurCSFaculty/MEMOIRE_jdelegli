@@ -59,6 +59,7 @@ export function initiateCall(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sendJsonMessage: (params: any) => void,
   localStreamRef?: MutableRefObject<MediaStream | null>,
+  cameraOn?: boolean | null,
 ) {
   if (!peerConnection?.current) {
     console.error("Cannot initiate a call before the connection is ready");
@@ -71,6 +72,9 @@ export function initiateCall(
         });
 
     streamPromise.then((stream) => {
+      if (cameraOn === false) {
+        stream.getVideoTracks().forEach((track) => (track.enabled = false));
+      }
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
@@ -157,6 +161,7 @@ export function answerCall(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sendJsonMessage: (params: any) => void,
   localStreamRef?: MutableRefObject<MediaStream | null>,
+  cameraOn?: boolean | null,
 ) {
   if (!peerConnection?.current) {
     console.error("Cannot answer a call before the connection is ready");
@@ -169,6 +174,9 @@ export function answerCall(
         });
 
     streamPromise.then((stream) => {
+      if (cameraOn === false) {
+        stream.getVideoTracks().forEach((track) => (track.enabled = false));
+      }
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }

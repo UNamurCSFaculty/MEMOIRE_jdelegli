@@ -9,6 +9,7 @@ import org.unamur.elderrings.modules.user.api.GetUserContacts;
 import org.unamur.elderrings.modules.user.api.models.Contact;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +23,7 @@ public class GetUserContactsImpl implements GetUserContacts {
   private final UserContactRepository repository;
 
   @Override
+  @Transactional
   public List<Contact> getUserContacts() {
     return repository.findContactsByUserId(user.getId()).stream().map(UserEntityMapper::toContact).toList();
   }
