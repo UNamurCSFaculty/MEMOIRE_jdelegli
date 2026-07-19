@@ -214,6 +214,13 @@ function createAndSendOffer(
 ) {
   if (!peerConnection.current) {
     console.error("Peer connection not established");
+  } else if (peerConnection.current.signalingState !== "stable") {
+    // Glare guard: an offer was already received (or sent) while this one
+    // was being prepared, sending ours now would corrupt the negotiation
+    console.warn(
+      "Skipping offer creation, signaling state is:",
+      peerConnection.current.signalingState,
+    );
   } else {
     peerConnection.current
       .createOffer()

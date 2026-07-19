@@ -1,169 +1,49 @@
-//Note : this component will be split in the future
-
-import {
-  answerCall,
-  closeAllConnections,
-  initiateCall,
-  onIceCandidateHandler,
-  onTrackHandler,
-  proccessWebRTCMessage,
-  terminateCall,
-} from "@utils/webRtcHelper";
-import { buildWsUrl } from "@utils/webSocketHelper";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useWebSocket from "react-use-websocket";
-import { webrtcWebSocketEventMessage } from "../../types/rtcWebSocketEventMessage";
+import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import PrimeSpinnerDotted from "~icons/prime/spinner-dotted";
 import Col from "@components/layout/Col";
-import { useNavigate } from "react-router-dom";
 import VideoCallActionBar from "./VideoCallActionBar";
 import Captions from "./Captions";
+import CallEndedScreen from "./CallEndedScreen";
 import { useAudioFilters } from "../../hooks/useAudioFilters";
-import BackHomeButton from "@components/navigation/BackHomeButton";
+import { useWebRtcCall } from "../../hooks/useWebRtcCall";
 
 export interface VideoCallProps {
   roomId: string;
+  isCallee?: boolean;
 }
 
-export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
+export default function VideoCall({ roomId, isCallee }: Readonly<VideoCallProps>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const {
+    localVideoRef,
+    remoteVideoRef,
+    peerConnection,
+    isCallStarted,
+    userConnected,
+    userLeft,
+    userRejectedCall,
+    endCall,
+  } = useWebRtcCall(roomId, isCallee);
+
   const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const localStreamRef = useRef<MediaStream | null>(null);
-
-  const { getWebSocket, lastJsonMessage, sendJsonMessage } = useWebSocket(
-    buildWsUrl("call-room", roomId),
-  );
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const peerConnection = useRef<RTCPeerConnection | null>(null);
-
   const { handlePlay } = useAudioFilters(remoteVideoRef);
 
-  const [isCallStarted, setIsCallStarted] = useState<boolean>(false);
-  const [userConnected, setUserConnected] = useState<boolean>(false);
-  const [userLeft, setUserLeft] = useState<boolean>(false);
-  const [userRejectedCall, setUserRejectedCall] = useState<boolean>(false);
-
-  const closeAllConnectionsAndSessions = () => {
-    closeAllConnections(peerConnection, remoteVideoRef, localVideoRef);
-    getWebSocket()?.close();
-  };
-
-  useEffect(() => {
-    if (!peerConnection.current) {
-      peerConnection.current = new RTCPeerConnection();
-      peerConnection.current.onicecandidate = (evt) => onIceCandidateHandler(evt, sendJsonMessage);
-      peerConnection.current.ontrack = (evt) => onTrackHandler(evt, remoteVideoRef);
-    }
-
-    // Request camera/mic permissions early so the popup doesn't interrupt WebRTC negotiation
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true },
-        video: true,
-      })
-      .then((stream) => {
-        localStreamRef.current = stream;
-      });
-
-    // To ensure to close the socket if the user close the window
-    window.addEventListener("beforeunload", closeAllConnectionsAndSessions);
-
-    // Function trigger when the component is unmounted
-    return () => {
-      //Remove the event listener to be clean
-      window.removeEventListener("beforeunload", closeAllConnectionsAndSessions);
-      // Manually close the socket as it's not part of the window event listener
-      closeAllConnectionsAndSessions();
-      // Stop tracks from early permission request if the call never started
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track) => track.stop());
-        localStreamRef.current = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    function startCall() {
-      setIsCallStarted(true);
-      initiateCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
-    }
-
-    if (lastJsonMessage) {
-      const parsedMessage = webrtcWebSocketEventMessage.parse(lastJsonMessage);
-      switch (parsedMessage.type) {
-        case "answer":
-        case "offer": {
-          setUserConnected(true);
-          proccessWebRTCMessage(parsedMessage, peerConnection);
-          break;
-        }
-        case "ice-candidate": {
-          proccessWebRTCMessage(parsedMessage, peerConnection);
-          break;
-        }
-        case "CALL_ROOM_MESSAGE_HISTORY": {
-          if (Array.isArray(parsedMessage.value)) {
-            if (parsedMessage.value.length === 0) {
-              startCall();
-            } else {
-              parsedMessage.value.forEach((message) => {
-                const parsedMessage = JSON.parse(message);
-                proccessWebRTCMessage(parsedMessage, peerConnection);
-                if (parsedMessage.type === "offer") {
-                  answerCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
-                  setUserConnected(true);
-                  setIsCallStarted(true);
-                }
-              });
-            }
-          }
-          break;
-        }
-        case "CALL_ROOM_USER_LEFT": {
-          setUserLeft(true);
-          closeAllConnectionsAndSessions();
-          break;
-        }
-        case "CALL_ROOM_USER_REJECTED_CALL": {
-          setUserRejectedCall(true);
-          closeAllConnectionsAndSessions();
-          break;
-        }
-      }
-    }
-  }, [lastJsonMessage]);
-
-  function endCall() {
-    terminateCall(peerConnection, localVideoRef, remoteVideoRef);
-    getWebSocket()?.close();
+  function endCallAndGoHome() {
+    endCall();
     navigate("/");
   }
 
   if (userLeft) {
-    return (
-      <div className=" flex flex-col w-full h-full items-center justify-center grow gap-8">
-        <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
-          {t("Pages.CallRoom.UserLeft")}
-        </div>
-        <BackHomeButton size="lg" shortcuts={["Enter"]} autoFocus />
-      </div>
-    );
+    return <CallEndedScreen message={t("Pages.CallRoom.UserLeft")} />;
   }
 
   if (userRejectedCall) {
-    return (
-      <div className=" flex flex-col w-full h-full items-center justify-center grow gap-8">
-        <div className="text-white bg-black/40 text-4xl font-semibold p-8 rounded-lg ">
-          {t("Pages.CallRoom.UserRejectedCall")}
-        </div>
-        <BackHomeButton size="lg" shortcuts={["Enter"]} autoFocus />
-      </div>
-    );
+    return <CallEndedScreen message={t("Pages.CallRoom.UserRejectedCall")} />;
   }
 
   return (
@@ -213,7 +93,7 @@ export default function VideoCall({ roomId }: Readonly<VideoCallProps>) {
         disabled={!isCallStarted}
         peerConnection={peerConnection}
         localVideoRef={localVideoRef}
-        endCall={endCall}
+        endCall={endCallAndGoHome}
         className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
         isAudioMuted={isAudioMuted}
         setIsAudioMuted={setIsAudioMuted}

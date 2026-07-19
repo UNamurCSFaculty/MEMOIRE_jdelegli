@@ -30,7 +30,7 @@ export default function IncomingCallListener() {
   const acceptCall = useCallback(() => {
     setRoomOffer(null);
     setContact(null);
-    navigate("call-room/" + roomOffer?.roomId);
+    navigate("call-room/" + roomOffer?.roomId, { state: { isCallee: true } });
   }, [navigate, roomOffer]);
 
   const declineCall = useCallback(() => {
