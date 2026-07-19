@@ -6,6 +6,7 @@ import org.unamur.elderrings.infra.user.entities.UserEntity;
 import org.unamur.elderrings.infra.user.entities.ResidentEntity;
 import org.unamur.elderrings.infra.user.entities.StaffEntity;
 import org.unamur.elderrings.infra.user.entities.FamilyEntity;
+import org.hibernate.Hibernate;
 import org.unamur.elderrings.infra.user.entities.CallPolicyEntity;
 import org.unamur.elderrings.modules.user.api.models.Contact;
 import org.unamur.elderrings.modules.user.api.models.User;
@@ -20,6 +21,8 @@ import lombok.experimental.UtilityClass;
 public class UserEntityMapper {
 
   public User toModel(UserEntity entity){
+    entity = (UserEntity) Hibernate.unproxy(entity); // Unproxy the entity to get the actual class type
+
     if (entity instanceof ResidentEntity r){
       return new Resident(
         r.getId(), 

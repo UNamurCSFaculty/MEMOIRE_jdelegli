@@ -12,10 +12,11 @@ import { useWebRtcCall } from "../../hooks/useWebRtcCall";
 
 export interface VideoCallProps {
   roomId: string;
+  cameraOn?: boolean | null;
   isCallee?: boolean;
 }
 
-export default function VideoCall({ roomId, isCallee }: Readonly<VideoCallProps>) {
+export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<VideoCallProps>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -28,7 +29,7 @@ export default function VideoCall({ roomId, isCallee }: Readonly<VideoCallProps>
     userLeft,
     userRejectedCall,
     endCall,
-  } = useWebRtcCall(roomId, isCallee);
+  } = useWebRtcCall(roomId, cameraOn, isCallee);
 
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const { handlePlay } = useAudioFilters(remoteVideoRef);
@@ -97,6 +98,7 @@ export default function VideoCall({ roomId, isCallee }: Readonly<VideoCallProps>
         className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
         isAudioMuted={isAudioMuted}
         setIsAudioMuted={setIsAudioMuted}
+        initialVideoHidden={cameraOn === false}
       />
     </div>
   );

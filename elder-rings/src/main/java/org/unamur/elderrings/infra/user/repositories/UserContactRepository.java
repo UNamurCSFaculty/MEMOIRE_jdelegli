@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 public class UserContactRepository implements PanacheRepository<UserContactEntity>  {
 
   public List<UserEntity> findContactsByUserId(UUID userId) {
-    return find("userA.id = ?1 OR userB.id = ?1", userId)
+    return find("SELECT c FROM UserContactEntity c JOIN FETCH c.userA JOIN FETCH c.userB WHERE c.userA.id = ?1 OR c.userB.id = ?1", userId)
         .stream()
         .map(contact -> contact.getUserA().getId().equals(userId) ? contact.getUserB() : contact.getUserA())
         .toList();

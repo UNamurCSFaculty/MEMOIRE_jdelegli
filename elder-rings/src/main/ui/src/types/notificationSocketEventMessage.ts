@@ -18,6 +18,8 @@ export const callRoomInvitationMessageContent = z
   .object({
     roomId: z.string(),
     userId: z.string(),
+    autoAnswer: z.boolean().nullish(),
+    cameraOn: z.boolean().nullish(),
   })
   .passthrough();
 

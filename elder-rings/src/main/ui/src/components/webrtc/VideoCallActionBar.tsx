@@ -26,6 +26,7 @@ interface VideoCallActionBarProps {
   className?: string;
   isAudioMuted: boolean;
   setIsAudioMuted: (b: boolean) => void;
+  initialVideoHidden?: boolean;
 }
 
 export default function VideoCallActionBar({
@@ -36,9 +37,10 @@ export default function VideoCallActionBar({
   className,
   isAudioMuted,
   setIsAudioMuted,
+  initialVideoHidden,
 }: Readonly<VideoCallActionBarProps>) {
   const [isScreenSharing, setIsScreenSharing] = useState<boolean>(false);
-  const [isVideoHidden, setIsVideoHidden] = useState(false);
+  const [isVideoHidden, setIsVideoHidden] = useState(initialVideoHidden ?? false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);

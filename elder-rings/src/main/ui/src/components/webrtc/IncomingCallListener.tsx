@@ -30,7 +30,9 @@ export default function IncomingCallListener() {
   const acceptCall = useCallback(() => {
     setRoomOffer(null);
     setContact(null);
-    navigate("call-room/" + roomOffer?.roomId, { state: { isCallee: true } });
+    navigate("call-room/" + roomOffer?.roomId, {
+      state: { cameraOn: roomOffer?.cameraOn, isCallee: true },
+    });
   }, [navigate, roomOffer]);
 
   const declineCall = useCallback(() => {
@@ -44,9 +46,16 @@ export default function IncomingCallListener() {
       const parsedSocketMessage = notificationSocketEventMessage.parse(lastJsonMessage);
       if (parsedSocketMessage.type === "CALL_ROOM_INVITATION") {
         const parsedMessage = callRoomInvitationMessageContent.parse(parsedSocketMessage.value);
-        setRoomOffer(parsedMessage);
+        if (parsedMessage.autoAnswer === true) {
+          navigate("call-room/" + parsedMessage.roomId, {
+            state: { cameraOn: parsedMessage.cameraOn, isCallee: true },
+          });
+        } else {
+          setRoomOffer(parsedMessage);
+        }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastJsonMessage]);
 
   useEffect(() => {
@@ -100,9 +109,7 @@ export default function IncomingCallListener() {
           <Modal.Container>
             <Modal.Dialog>
               <Modal.Header className="flex flex-col gap-1">
-                <Modal.Heading>
-                  {t("Components.IncomingCallListener.IncomingCall")}
-                </Modal.Heading>
+                <Modal.Heading>{t("Components.IncomingCallListener.IncomingCall")}</Modal.Heading>
               </Modal.Header>
               <Modal.Body>
                 <p className="flex flex-col items-center gap-4">
@@ -125,7 +132,9 @@ export default function IncomingCallListener() {
               <Modal.Footer>
                 <Row className="items-center gap-12 justify-center w-full">
                   <Button
-                    ref={(el) => { buttonRefs.current[0] = el; }}
+                    ref={(el) => {
+                      buttonRefs.current[0] = el;
+                    }}
                     variant="primary"
                     isIconOnly
                     onPress={acceptCall}
@@ -135,7 +144,9 @@ export default function IncomingCallListener() {
                     <IconStartCall />
                   </Button>
                   <Button
-                    ref={(el) => { buttonRefs.current[1] = el; }}
+                    ref={(el) => {
+                      buttonRefs.current[1] = el;
+                    }}
                     variant="danger"
                     isIconOnly
                     onPress={declineCall}

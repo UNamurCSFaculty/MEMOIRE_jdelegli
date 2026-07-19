@@ -9,6 +9,7 @@ import org.unamur.elderrings.modules.user.api.models.Contact;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,6 +20,7 @@ public class GetUserImpl implements GetUser {
   private final UserRepository repository;
 
   @Override
+  @Transactional
   public Contact getUser(UUID userId) {
     var user = repository.getUserById(userId);
     if (user.isPresent()) {

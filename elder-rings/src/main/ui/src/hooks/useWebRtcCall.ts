@@ -14,15 +14,15 @@ import { webrtcWebSocketEventMessage } from "@type/rtcWebSocketEventMessage";
 
 /**
  * Handles the whole WebRTC call lifecycle for a room: signaling over the
- * call-room WebSocket, peer connection setup, local media acquisition and
- * call state tracking.
+ * call-room WebSocket, peer connection setup, local media acquisition
+ * (honoring the cameraOn policy flag) and call state tracking.
  *
  * isCallee marks the peer that joined through an invitation: it never
  * initiates the offer (even on an empty message history) and only answers,
  * which prevents both sides from sending an offer when they join the room
- * almost simultaneously.
+ * almost simultaneously (e.g. with auto-answer enabled).
  */
-export function useWebRtcCall(roomId: string, isCallee?: boolean) {
+export function useWebRtcCall(roomId: string, cameraOn?: boolean | null, isCallee?: boolean) {
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -56,6 +56,9 @@ export function useWebRtcCall(roomId: string, isCallee?: boolean) {
         video: true,
       })
       .then((stream) => {
+        if (cameraOn === false) {
+          stream.getVideoTracks().forEach((t) => (t.enabled = false));
+        }
         localStreamRef.current = stream;
       });
 
@@ -80,7 +83,7 @@ export function useWebRtcCall(roomId: string, isCallee?: boolean) {
   useEffect(() => {
     function startCall() {
       setIsCallStarted(true);
-      initiateCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
+      initiateCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef, cameraOn);
     }
 
     if (lastJsonMessage) {
@@ -94,7 +97,7 @@ export function useWebRtcCall(roomId: string, isCallee?: boolean) {
         case "offer": {
           setUserConnected(true);
           proccessWebRTCMessage(parsedMessage, peerConnection);
-          answerCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
+          answerCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef, cameraOn);
           setIsCallStarted(true);
           break;
         }
@@ -114,7 +117,7 @@ export function useWebRtcCall(roomId: string, isCallee?: boolean) {
                 const parsedMessage = JSON.parse(message);
                 proccessWebRTCMessage(parsedMessage, peerConnection);
                 if (parsedMessage.type === "offer") {
-                  answerCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef);
+                  answerCall(peerConnection, localVideoRef, sendJsonMessage, localStreamRef, cameraOn);
                   setUserConnected(true);
                   setIsCallStarted(true);
                 }
