@@ -1,0 +1,15 @@
+[Unit]
+Description=Elder Rings CEC wake daemon (turns the TV on when a call invitation arrives)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=elder-rings
+WorkingDirectory=/home/elder-rings/Desktop
+ExecStart=/usr/bin/node /home/elder-rings/Desktop/elder-ring-client.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

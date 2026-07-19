@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Elder Rings Kiosk
+Comment=Chromium in kiosk mode on the Elder Rings platform, authenticated with the room certificate
+Exec=chromium --kiosk --noerrdialogs --disable-session-crashed-bubble --autoplay-policy=no-user-gesture-required https://elder-rings.local/elder-rings/api/room-login
+X-GNOME-Autostart-enabled=true
