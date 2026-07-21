@@ -2,7 +2,8 @@
   "Common": {
     "LoadingSuspension": "Bezig met laden...",
     "Back": "Terug",
-    "GoBackHome": "Terug naar de startpagina."
+    "GoBackHome": "Terug naar de startpagina.",
+    "DoNotDisturb": "{{name}} wil momenteel niet gestoord worden"
   },
   "Components": {
     "Errors": {
@@ -22,7 +23,6 @@
       "PreviousSlide": "Vorige contactpersoon",
       "NextSlide": "Volgende contactpersoon",
       "GoToSlide": "Ga naar contactpersoon {{index}}",
-      "ContactDoNotDisturb": "{{name}} wil momenteel niet gestoord worden",
       "ContactDoNotDisturbLabel": "Niet storen"
     },
     "IncomingCallListener": {
@@ -88,7 +88,8 @@
         "notification": "Niet storen is nu {{status}}",
         "Enabled": "ingeschakeld",
         "Disabled": "uitgeschakeld"
-      }
+      },
+      "Residents": "Bewoners"
     },
     "CallRoom": {
       "UserLeft": "Je gesprekspartner heeft het gesprek verlaten",
@@ -104,6 +105,11 @@
     },
     "ContactPage": {
       "NoContactsFound": "Geen contacten gevonden"
+    },
+    "ResidentsPage": {
+      "Title": "Bewoners",
+      "PictureAlt": "Foto van {{name}}",
+      "Call": "Start een oproep met {{name}}"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "Geen gebruikers gevonden"

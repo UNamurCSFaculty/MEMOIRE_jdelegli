@@ -2,6 +2,8 @@ package org.unamur.elderrings.app.user.dto;
 
 import java.util.UUID;
 
+import org.unamur.elderrings.modules.user.api.models.UserType;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +21,6 @@ public class UserDto {
 
   private String lastName;
 
-  private Boolean isRoom;
+  private UserType userType;
 
 }

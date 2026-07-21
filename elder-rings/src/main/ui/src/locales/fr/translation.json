@@ -2,7 +2,8 @@
   "Common": {
     "LoadingSuspension": "Chargement ...",
     "Back": "Retour",
-    "GoBackHome": "Retour à l'accueil."
+    "GoBackHome": "Retour à l'accueil.",
+    "DoNotDisturb": "{{name}} a activé le mode ne pas déranger"
   },
   "Components": {
     "Errors": {
@@ -22,7 +23,6 @@
       "PreviousSlide": "Contact précédent",
       "NextSlide": "Contact suivant",
       "GoToSlide": "Aller au contact {{index}}",
-      "ContactDoNotDisturb": "{{name}} a activé le mode ne pas déranger",
       "ContactDoNotDisturbLabel": "Ne pas déranger"
     },
     "IncomingCallListener": {
@@ -88,7 +88,8 @@
         "notification": "Le mode ne pas déranger est maintenant {{status}}",
         "Enabled": "activé",
         "Disabled": "désactivé"
-      }
+      },
+      "Residents": "Résidents"
     },
     "CallRoom": {
       "UserLeft": "Votre correspondant à quitté la conversation",
@@ -104,6 +105,11 @@
     },
     "ContactPage": {
       "NoContactsFound": "Pas de contacts trouvés"
+    },
+    "ResidentsPage": {
+      "Title": "Résidents",
+      "PictureAlt": "Photo de {{name}}",
+      "Call": "Démarrer un appel avec {{name}}"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "Aucun utilisateur trouvé"
