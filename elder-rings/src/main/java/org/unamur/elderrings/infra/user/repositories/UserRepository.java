@@ -111,6 +111,10 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
         AND u.id <> ?1
     """, excludedUserId).list();
   }
+
+  public List<UserEntity> findAllResidents() {
+    return find("SELECT r FROM ResidentEntity r").list();
+  }
   
   private Class<? extends UserEntity> expectedClass(UserType type) {
     return switch (type) {

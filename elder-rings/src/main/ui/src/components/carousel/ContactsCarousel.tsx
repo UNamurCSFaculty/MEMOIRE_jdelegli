@@ -1,14 +1,11 @@
 import { ContactDto } from "@type/openapiTypes";
 import { useCallback, useEffect, useState } from "react";
 import { basePath } from "../../../basepath.config";
-import { apiClient } from "@openapi/zodiosClient";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@heroui/react";
 import { IconChevonLeft, IconChevonRight, IconStartCall } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 import { useTTS } from "../../hooks/useTTS";
-import { AxiosError } from "axios";
-import { notifyError } from "@utils/notifyUtil";
+import { useStartCall } from "../../hooks/useStartCall";
 
 interface ContactsCarouselProps {
   contacts: ContactDto[];
@@ -22,10 +19,10 @@ export default function ContactsCarousel({
   onNavigateUp,
 }: Readonly<ContactsCarouselProps>) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const tts = useTTS();
+  const callContact = useStartCall();
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % contacts.length);
@@ -34,27 +31,6 @@ export default function ContactsCarousel({
   const prevSlide = useCallback(
     () => setCurrentIndex((prevIndex) => (prevIndex - 1 + contacts.length) % contacts.length),
     [contacts.length],
-  );
-
-  const callContact = useCallback(
-    (contact: ContactDto) => {
-      apiClient
-        .createCallRoom({ userIds: [contact.id!] })
-        .then((resp) => {
-          navigate("../call-room/" + resp.id);
-        })
-        .catch((err) => {
-          const axiosError = err as AxiosError<{ errorCode: string }>;
-          if (axiosError.response?.data?.errorCode === "DO_NOT_DISTURB") {
-            notifyError(
-              t("Components.ContactsCarousel.ContactDoNotDisturb", {
-                name: `${contact.firstName} ${contact.lastName}`,
-              }),
-            );
-          }
-        });
-    },
-    [navigate, t],
   );
 
   useEffect(() => {

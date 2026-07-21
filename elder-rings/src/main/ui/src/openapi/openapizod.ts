@@ -7,8 +7,10 @@ const CreateCallRoomBody = z
       .array(
         z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
-          .uuid(),
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
       )
       .min(1)
       .max(1),
@@ -18,14 +20,14 @@ const UUID = z.string();
 const CallRoomDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
   })
   .passthrough();
 const RejectCallRoomInvitationBody = z
   .object({
     roomId: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
   })
   .passthrough();
@@ -34,13 +36,13 @@ const Instant = z.string();
 const ContactRequestDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
     requesterId: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
     targetId: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
     status: ContactRequestStatusDto,
     createdAt: Instant.datetime({ offset: true }),
@@ -49,7 +51,11 @@ const ContactRequestDto = z
   .partial()
   .passthrough();
 const UserGeneralPreferencesDto = z
-  .object({ lang: z.string(), isPublic: z.boolean(), doNotDisturb: z.boolean() })
+  .object({
+    lang: z.string(),
+    isPublic: z.boolean(),
+    doNotDisturb: z.boolean(),
+  })
   .partial()
   .passthrough();
 const TextSizeDto = z.enum(["SM", "MD", "LG", "XL", "XXL"]);
@@ -77,15 +83,16 @@ const UserPreferencesDto = z
   })
   .partial()
   .passthrough();
+const UserType = z.enum(["RESIDENT", "FAMILY", "STAFF"]);
 const ContactDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
     username: z.string(),
     firstName: z.string(),
     lastName: z.string(),
-    isRoom: z.boolean(),
+    userType: UserType,
     picture: z.union([z.string(), z.null()]),
   })
   .partial()
@@ -93,12 +100,12 @@ const ContactDto = z
 const UserDto = z
   .object({
     id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/,
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
     username: z.string(),
     firstName: z.string(),
     lastName: z.string(),
-    isRoom: z.boolean(),
+    userType: UserType,
   })
   .partial()
   .passthrough();
@@ -117,6 +124,7 @@ export const schemas = {
   UserFrequencyGainDto,
   UserAudioPreferencesDto,
   UserPreferencesDto,
+  UserType,
   ContactDto,
   UserDto,
 };
@@ -161,14 +169,18 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
           .uuid()
           .optional(),
       },
     ],
     response: z
       .string()
-      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+      .regex(
+        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      )
       .uuid(),
   },
   {
@@ -182,7 +194,9 @@ const endpoints = makeApi([
         type: "Path",
         schema: z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
           .uuid(),
       },
       {
@@ -215,6 +229,20 @@ const endpoints = makeApi([
     response: z.void(),
   },
   {
+    method: "get",
+    path: "/elder-rings/api/room-login",
+    alias: "getElderRingsapiroomLogin",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "roomId",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
     method: "put",
     path: "/elder-rings/api/user-preferences",
     alias: "updateCurrentUserPreferences",
@@ -237,6 +265,26 @@ const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/elder-rings/api/user/general-preferences",
+    alias: "getUserGeneralPreferences",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: UserGeneralPreferencesDto,
+  },
+  {
+    method: "get",
     path: "/elder-rings/api/user/get",
     alias: "getUser",
     requestFormat: "json",
@@ -246,7 +294,9 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
           .uuid()
           .optional(),
       },
@@ -259,24 +309,6 @@ const endpoints = makeApi([
     alias: "getContact",
     requestFormat: "json",
     response: z.array(ContactDto),
-  },
-  {
-    method: "get",
-    path: "/elder-rings/api/user/general-preferences",
-    alias: "getUserGeneralPreferences",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "userId",
-        type: "Query",
-        schema: z
-          .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
-          .uuid()
-          .optional(),
-      },
-    ],
-    response: UserGeneralPreferencesDto,
   },
   {
     method: "get",
@@ -310,12 +342,33 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .string()
-          .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
           .uuid()
           .optional(),
       },
     ],
     response: z.string(),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/residents",
+    alias: "getResidents",
+    requestFormat: "json",
+    response: z.array(ContactDto),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
   },
   {
     method: "post",
@@ -334,7 +387,9 @@ const endpoints = makeApi([
     ],
     response: z
       .string()
-      .regex(/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/)
+      .regex(
+        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      )
       .uuid(),
   },
 ]);

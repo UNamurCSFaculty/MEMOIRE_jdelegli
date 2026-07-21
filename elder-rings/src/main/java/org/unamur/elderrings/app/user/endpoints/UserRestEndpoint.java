@@ -28,8 +28,10 @@ import org.unamur.elderrings.modules.user.api.GetUserPicture;
 import org.unamur.elderrings.modules.user.api.GetUserPreferences;
 import org.unamur.elderrings.modules.user.api.SetUserPicture;
 import org.unamur.elderrings.modules.user.api.UpdateUserFromToken;
+import org.unamur.elderrings.modules.user.api.GetAllResidents;
 
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -54,6 +56,7 @@ public class UserRestEndpoint {
   private final GetUserContacts getUserContacts;
   private final GetAllVisibleUsers getAllVisibleUsers;
   private final GetUserPreferences getUserPreferences;
+  private final GetAllResidents getAllResidents;
 
   @GET
   @Path("/me")
@@ -115,6 +118,15 @@ public class UserRestEndpoint {
       throw new NotFoundException();
     }
     return RestResponse.ok(ContactMapper.toDto(contact));
+  }
+
+  @GET
+  @Path("/residents")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(operationId = "getResidents")
+  @RolesAllowed("staff")
+  public RestResponse<List<ContactDto>> getResidents() {
+    return RestResponse.ok(getAllResidents.getAllResidents().stream().map(ContactMapper::toDto).toList());
   }
 
   @GET
