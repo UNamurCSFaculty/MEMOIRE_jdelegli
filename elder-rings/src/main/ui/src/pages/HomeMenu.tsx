@@ -14,32 +14,31 @@ import { apiClient } from "@openapi/zodiosClient";
 import { notifySuccess } from "@utils/notifyUtil";
 import { Button } from "@heroui/react";
 import { useUser } from "../hooks/useUser";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 
 export default function HomeMenu() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const user = useUser();
+  const { userPreferences, refreshUserPreferences } = useUserPreferences();
 
   const toggleDoNotDisturb = useCallback(async () => {
-    const current = await apiClient.getCurrentUserPreferences();
-    await apiClient
-      .updateCurrentUserPreferences({
-        ...current,
-        general: {
-          ...current?.general,
-          doNotDisturb: !current?.general?.doNotDisturb,
-        },
-      })
-      .then((resp) => {
-        notifySuccess(
-          t(`Pages.HomeMenu.DoNotDisturbButton.notification`, {
-            status: resp.general?.doNotDisturb
-              ? t("Pages.HomeMenu.DoNotDisturbButton.Enabled")
-              : t("Pages.HomeMenu.DoNotDisturbButton.Disabled"),
-          }),
-        );
-      });
-  }, [t]);
+    const resp = await apiClient.updateCurrentUserPreferences({
+      ...userPreferences,
+      general: {
+        ...userPreferences.general,
+        doNotDisturb: !userPreferences?.general?.doNotDisturb,
+      },
+    });
+    await refreshUserPreferences();
+    notifySuccess(
+      t(`Pages.HomeMenu.DoNotDisturbButton.notification`, {
+        status: resp.general?.doNotDisturb
+          ? t("Pages.HomeMenu.DoNotDisturbButton.Enabled")
+          : t("Pages.HomeMenu.DoNotDisturbButton.Disabled"),
+      }),
+    );
+  }, [refreshUserPreferences, t, userPreferences]);
 
   const options = useMemo(
     () => [
