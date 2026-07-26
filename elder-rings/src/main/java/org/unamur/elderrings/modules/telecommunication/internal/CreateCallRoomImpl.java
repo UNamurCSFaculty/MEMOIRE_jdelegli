@@ -1,5 +1,6 @@
 package org.unamur.elderrings.modules.telecommunication.internal;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -10,12 +11,11 @@ import org.unamur.elderrings.modules.notification.api.SendNotificationInterface;
 import org.unamur.elderrings.modules.telecommunication.api.CreateCallRoomInterface;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoom;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomMember;
-import org.unamur.elderrings.modules.user.api.models.Resident;
+import org.unamur.elderrings.modules.user.api.models.UserPreferences;
 import org.unamur.elderrings.modules.user.api.models.UserType;
 import org.unamur.elderrings.modules.telecommunication.internal.messages.CallRoomInvitationMessage;
 import org.unamur.elderrings.modules.telecommunication.exceptions.DoNotDisturbException;
 import org.unamur.elderrings.modules.user.api.GetUserPreferences;
-import org.unamur.elderrings.modules.user.api.GetUser;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;
@@ -33,15 +33,17 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
   private final CallRoomRepository repository;
   private final SendNotificationInterface sendNotification;
   private final GetUserPreferences getUserPreferences;
-  private final GetUser getUser;
-  
+
   @Override
   public CallRoom createCallRoom(Set<UUID> userIds) {
 
-    //filter out users with do not disturb enabled
+    //filter out users with do not disturb enabled, keep preferences for the invitations
+    Map<UUID, UserPreferences> prefsByUser = new HashMap<>();
     Set<UUID> reachableUsers = new HashSet<>();
     for (UUID userId: userIds) {
-      if (!getUserPreferences.getPreferencesForUser(userId).getGeneral().isDoNotDisturb()) {
+      var prefs = getUserPreferences.getPreferencesForUser(userId);
+      prefsByUser.put(userId, prefs);
+      if (!prefs.getGeneral().isDoNotDisturb()) {
         reachableUsers.add(userId);
       }
     }
@@ -65,15 +67,16 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
 
     // notify each user with its own effective call policy
     for (UUID recipientId : reachableUsers) {
+      // a null call policy section means the recipient is not a resident
+      var policy = prefsByUser.get(recipientId).getCallPolicy();
       Boolean autoAnswer = null;
       Boolean cameraOn = null;
-      var recipient = getUser.getUser(recipientId).getUser();
-    
-      if (recipient instanceof Resident r && r.getCallPolicy() != null) { // if the recipient is a resident and has a call policy, use it to determine autoAnswer and cameraOn
-        autoAnswer = r.getCallPolicy().isAutoAnswer();
-        cameraOn = r.getCallPolicy().isCameraOnByDefault() && user.getUserType() != UserType.STAFF; // Call initiated by a staff member, camera should be off by default (ethical reason)
+
+      if (policy != null) {
+        autoAnswer = policy.isAutoAnswer();
+        cameraOn = policy.isCameraOnByDefault() && user.getUserType() != UserType.STAFF; // Call initiated by a staff member, camera should be off by default (ethical reason)
       }
-    
+
       sendNotification.send(
         recipientId,
         CallRoomInvitationMessage.builder()

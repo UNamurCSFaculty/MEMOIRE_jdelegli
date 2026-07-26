@@ -11,6 +11,9 @@ export type CallRoomDto = z.infer<typeof schemas.CallRoomDto>;
 export type ContactDto = z.infer<typeof schemas.ContactDto>;
 export type ContactRequestDto = z.infer<typeof schemas.ContactRequestDto>;
 export type TextSizeDto = z.infer<typeof schemas.TextSizeDto>;
+export type AutonomyLevel = z.infer<typeof schemas.AutonomyLevel>;
+export type ResidentDto = z.infer<typeof schemas.ResidentDto>;
 
 // Value list for enums
 export const textSizeDtoValues = schemas.TextSizeDto._def.values;
+export const autonomyLevelValues = schemas.AutonomyLevel._def.values;

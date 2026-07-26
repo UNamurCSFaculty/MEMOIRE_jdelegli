@@ -75,11 +75,16 @@ const UserAudioPreferencesDto = z
   })
   .partial()
   .passthrough();
+const UserCallPolicyPreferencesDto = z
+  .object({ autoAnswer: z.boolean(), cameraOnByDefault: z.boolean() })
+  .partial()
+  .passthrough();
 const UserPreferencesDto = z
   .object({
     general: UserGeneralPreferencesDto,
     visual: UserVisualPreferencesDto,
     audio: UserAudioPreferencesDto,
+    callPolicy: UserCallPolicyPreferencesDto,
   })
   .partial()
   .passthrough();
@@ -106,7 +111,28 @@ const UserDto = z
     firstName: z.string(),
     lastName: z.string(),
     userType: UserType,
+    tutorOfResidentId: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
   })
+  .partial()
+  .passthrough();
+const AutonomyLevel = z.enum(["AUTONOMOUS", "INTERMEDIATE", "DEPENDENT"]);
+const ResidentDto = z
+  .object({
+    id: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    username: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    autonomyLevel: AutonomyLevel,
+    picture: z.union([z.string(), z.null()]),
+  })
+  .partial()
+  .passthrough();
+const ResidentSettingsDto = z
+  .object({ autonomyLevel: AutonomyLevel })
   .partial()
   .passthrough();
 
@@ -123,10 +149,14 @@ export const schemas = {
   UserVisualPreferencesDto,
   UserFrequencyGainDto,
   UserAudioPreferencesDto,
+  UserCallPolicyPreferencesDto,
   UserPreferencesDto,
   UserType,
   ContactDto,
   UserDto,
+  AutonomyLevel,
+  ResidentDto,
+  ResidentSettingsDto,
 };
 
 const endpoints = makeApi([
@@ -264,6 +294,51 @@ const endpoints = makeApi([
     response: UserPreferencesDto,
   },
   {
+    method: "put",
+    path: "/elder-rings/api/user-preferences/of-user",
+    alias: "updateUserPreferences",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: UserPreferencesDto,
+      },
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: UserPreferencesDto,
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user-preferences/of-user",
+    alias: "getUserPreferences",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: UserPreferencesDto,
+  },
+  {
     method: "get",
     path: "/elder-rings/api/user/general-preferences",
     alias: "getUserGeneralPreferences",
@@ -371,6 +446,63 @@ const endpoints = makeApi([
     ],
   },
   {
+    method: "get",
+    path: "/elder-rings/api/user/residents/detail",
+    alias: "getResident",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: ResidentDto,
+  },
+  {
+    method: "put",
+    path: "/elder-rings/api/user/residents/settings",
+    alias: "updateResidentSettings",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ResidentSettingsDto,
+      },
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z.void(),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
     method: "post",
     path: "/elder-rings/api/user/set-picture",
     alias: "setUserPicture",
@@ -383,6 +515,39 @@ const endpoints = makeApi([
           .object({ file: z.instanceof(File) })
           .partial()
           .passthrough(),
+      },
+    ],
+    response: z
+      .string()
+      .regex(
+        /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+      )
+      .uuid(),
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/user/set-picture/of-user",
+    alias: "setUserPictureOfUser",
+    requestFormat: "form-url",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ file: z.instanceof(File) })
+          .partial()
+          .passthrough(),
+      },
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
       },
     ],
     response: z

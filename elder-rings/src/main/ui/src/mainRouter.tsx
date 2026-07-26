@@ -10,6 +10,8 @@ import UserPreferencePage from "@pages/UserPreferencePage";
 import HomeMenu from "@pages/HomeMenu";
 import StaffRoute from "@components/navigation/StaffRoute";
 import ResidentsPage from "@pages/ResidentsPage";
+import ResidentSettingsPage from "@pages/ResidentSettingsPage";
+import ResidentAccessRoute from "@components/navigation/ResidentAccessRoute";
 
 const mainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -18,6 +20,9 @@ const mainRouter = createBrowserRouter(
       <Route path="contacts" element={<ContactPage />} />
       <Route element={<StaffRoute />}>
         <Route path="residents" element={<ResidentsPage />} />
+      </Route>
+      <Route element={<ResidentAccessRoute />}>
+        <Route path="residents/:id/settings" element={<ResidentSettingsPage />} />
       </Route>
       <Route path="add-contact" element={<AddContactPage />} />
       <Route path="user-preferences" element={<UserPreferencePage />} />

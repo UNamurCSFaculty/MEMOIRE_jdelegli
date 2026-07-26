@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.unamur.elderrings.infra.user.entities.UserEntity;
 import org.unamur.elderrings.infra.user.entities.UserPictureEntity;
-import org.unamur.elderrings.infra.user.entities.CallPolicyEntity;
 import org.unamur.elderrings.infra.user.entities.FamilyEntity;
 import org.unamur.elderrings.infra.user.entities.ResidentEntity;
 import org.unamur.elderrings.infra.user.entities.StaffEntity;
@@ -58,13 +57,7 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
     } else {
       // Create a new user entity based on the type from the token
       UserEntity user = switch (type) {
-        case RESIDENT -> {
-          var resident = new ResidentEntity();
-          var policy = new CallPolicyEntity();
-          policy.setResident(resident);
-          resident.setCallPolicy(policy);
-          yield resident;
-        }
+        case RESIDENT -> new ResidentEntity();
         case STAFF -> new StaffEntity();
         case FAMILY -> new FamilyEntity();
       };

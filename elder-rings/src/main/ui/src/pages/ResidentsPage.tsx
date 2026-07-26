@@ -4,12 +4,14 @@ import { useTranslation } from "react-i18next";
 import { apiClient } from "@openapi/zodiosClient";
 import { ContactDto } from "@type/openapiTypes";
 import { Avatar, Button, Card } from "@heroui/react";
-import { IconStartCall } from "@components/icons/favouriteIcons";
+import { IconSettings, IconStartCall } from "@components/icons/favouriteIcons";
+import { useNavigate } from "react-router-dom";
 import { useStartCall } from "../hooks/useStartCall";
 import BackHomeButton from "@components/navigation/BackHomeButton";
 
 function ResidentsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const startCall = useStartCall();
   const [residents, setResidents] = useState<ContactDto[]>([]);
 
@@ -42,7 +44,7 @@ function ResidentsPage() {
                 {resident.firstName} {resident.lastName}
               </Card.Title>
             </Card.Content>
-            <Card.Footer>
+            <Card.Footer className="flex gap-2">
               <Button
                 variant="primary"
                 className="bg-success"
@@ -53,6 +55,16 @@ function ResidentsPage() {
                 })}
               >
                 <IconStartCall />
+              </Button>
+              <Button
+                isIconOnly
+                variant="primary"
+                onPress={() => navigate(`/residents/${resident.id}/settings`)}
+                aria-label={t("Pages.ResidentsPage.Settings", {
+                  name: `${resident.firstName} ${resident.lastName}`,
+                })}
+              >
+                <IconSettings />
               </Button>
             </Card.Footer>
           </Card>

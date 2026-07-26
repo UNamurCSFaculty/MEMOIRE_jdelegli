@@ -14,14 +14,14 @@ public class UserMapper {
 
   public UserDto toDto(User model) {
     return new UserDto(
-      model.getId(), 
-      model.getUsername(),  
-      model.getFirstName(), 
-      model.getLastName(),
-      userTypeOf(model)
-    );
+        model.getId(),
+        model.getUsername(),
+        model.getFirstName(),
+        model.getLastName(),
+        userTypeOf(model),
+        model instanceof Family family ? family.getTutorOfResidentId() : null);
   }
-  
+
   static UserType userTypeOf(User model) {
     return switch (model) {
       case Resident r -> UserType.RESIDENT;

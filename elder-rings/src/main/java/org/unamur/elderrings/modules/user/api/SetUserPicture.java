@@ -6,4 +6,6 @@ public interface SetUserPicture {
 
   UUID setPicture(byte[] image);
 
+  UUID setPictureForUser(UUID userId, byte[] image);
+
 }

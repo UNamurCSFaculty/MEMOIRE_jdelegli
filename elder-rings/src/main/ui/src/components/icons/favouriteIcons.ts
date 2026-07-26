@@ -18,3 +18,4 @@ export { default as IconAdd } from "~icons/mdi/add";
 export { default as IconGear } from "~icons/mdi/gear-box";
 export { default as IconDoNotDisturb } from "~icons/mdi/do-not-disturb";
 export { default as IconRooms } from "~icons/mdi/bed-outline";
+export { default as IconSettings } from "~icons/mdi/cog-outline";

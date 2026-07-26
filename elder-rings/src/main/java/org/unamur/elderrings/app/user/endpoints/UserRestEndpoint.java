@@ -16,9 +16,12 @@ import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.unamur.elderrings.app.core.Routes;
 import org.unamur.elderrings.app.user.dto.ContactDto;
+import org.unamur.elderrings.app.user.dto.ResidentDto;
+import org.unamur.elderrings.app.user.dto.ResidentSettingsDto;
 import org.unamur.elderrings.app.user.dto.UserDto;
 import org.unamur.elderrings.app.user.dto.UserPreferencesDto;
 import org.unamur.elderrings.app.user.mappers.ContactMapper;
+import org.unamur.elderrings.app.user.mappers.ResidentMapper;
 import org.unamur.elderrings.app.user.mappers.UserMapper;
 import org.unamur.elderrings.app.user.mappers.UserPreferencesDtoMapper;
 import org.unamur.elderrings.modules.user.api.GetAllVisibleUsers;
@@ -26,8 +29,14 @@ import org.unamur.elderrings.modules.user.api.GetUser;
 import org.unamur.elderrings.modules.user.api.GetUserContacts;
 import org.unamur.elderrings.modules.user.api.GetUserPicture;
 import org.unamur.elderrings.modules.user.api.GetUserPreferences;
+import org.unamur.elderrings.modules.user.api.ResidentAccessPolicy;
 import org.unamur.elderrings.modules.user.api.SetUserPicture;
+import org.unamur.elderrings.modules.user.api.UpdateResidentSettings;
 import org.unamur.elderrings.modules.user.api.UpdateUserFromToken;
+import org.unamur.elderrings.modules.user.api.models.Resident;
+
+import io.quarkus.security.ForbiddenException;
+
 import org.unamur.elderrings.modules.user.api.GetAllResidents;
 
 import jakarta.annotation.security.PermitAll;
@@ -36,6 +45,7 @@ import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -43,7 +53,7 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j 
+@Slf4j
 @RequiredArgsConstructor
 @Tag(name = "User")
 @Path(Routes.USER_REST_ENDPOINT)
@@ -57,54 +67,47 @@ public class UserRestEndpoint {
   private final GetAllVisibleUsers getAllVisibleUsers;
   private final GetUserPreferences getUserPreferences;
   private final GetAllResidents getAllResidents;
+  private final UpdateResidentSettings updateResidentSettings;
+  private final ResidentAccessPolicy residentAccessPolicy;
 
   @GET
   @Path("/me")
   @Operation(operationId = "getCurrentUser")
   @PermitAll
-  public RestResponse<UserDto> getCurrentUser(){
+  public RestResponse<UserDto> getCurrentUser() {
     UserDto dto = UserMapper.toDto(updateUserFromToken.createOrUpdateUser());
     return RestResponse.ok(dto);
   }
-
 
   @GET
   @Path("/me/picture")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(operationId = "getCurrentUserPicture")
-  @APIResponse(
-      responseCode = "200",
-      description = "Base64-encoded user profile picture",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = SchemaType.STRING, format = "base64"))
-  )
+  @APIResponse(responseCode = "200", description = "Base64-encoded user profile picture", content = @Content(mediaType = "application/json", schema = @Schema(type = SchemaType.STRING, format = "base64")))
   @PermitAll
   public RestResponse<String> getCurrentUserPicture() {
-      byte[] imageBytes = getUserPicture.getConnectedUserPicture();
-      String base64 = imageBytes != null ? Base64.getEncoder().encodeToString(imageBytes) : null;
-      return RestResponse.ok(base64);
+    byte[] imageBytes = getUserPicture.getConnectedUserPicture();
+    String base64 = imageBytes != null ? Base64.getEncoder().encodeToString(imageBytes) : null;
+    return RestResponse.ok(base64);
   }
 
   @GET
   @Path("/picture")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(operationId = "getUserPicture")
-  @APIResponse(
-      responseCode = "200",
-      description = "Base64-encoded user profile picture",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = SchemaType.STRING, format = "base64"))
-  )
+  @APIResponse(responseCode = "200", description = "Base64-encoded user profile picture", content = @Content(mediaType = "application/json", schema = @Schema(type = SchemaType.STRING, format = "base64")))
   @PermitAll
   public RestResponse<String> getUserPicture(@QueryParam("userId") UUID userId) {
-      byte[] imageBytes = getUserPicture.getPicture(userId);
-      String base64 = imageBytes != null ? Base64.getEncoder().encodeToString(imageBytes) : null;
-      return RestResponse.ok(base64);
+    byte[] imageBytes = getUserPicture.getPicture(userId);
+    String base64 = imageBytes != null ? Base64.getEncoder().encodeToString(imageBytes) : null;
+    return RestResponse.ok(base64);
   }
 
   @GET
   @Path("/get-contacts")
   @Operation(operationId = "getContact")
   @PermitAll
-  public RestResponse<List<ContactDto>> getContact(){
+  public RestResponse<List<ContactDto>> getContact() {
     return RestResponse.ok(getUserContacts.getUserContacts().stream().map(ContactMapper::toDto).toList());
   }
 
@@ -112,7 +115,7 @@ public class UserRestEndpoint {
   @Path("/get")
   @Operation(operationId = "getUser")
   @PermitAll
-  public RestResponse<ContactDto> getUser(@QueryParam("userId") UUID userId){
+  public RestResponse<ContactDto> getUser(@QueryParam("userId") UUID userId) {
     var contact = getUser.getUser(userId);
     if (contact == null) {
       throw new NotFoundException();
@@ -130,10 +133,36 @@ public class UserRestEndpoint {
   }
 
   @GET
+  @Path("/residents/detail")
+  @Produces(MediaType.APPLICATION_JSON)
+  @PermitAll // Guard is managed in the route by the ResidentAccessPolicy
+  @Operation(operationId = "getResident")
+  public RestResponse<ResidentDto> getResident(@QueryParam("userId") UUID userId) {
+    if (!residentAccessPolicy.canManage(userId)) {
+      throw new ForbiddenException("Not allowed to manage this resident's preferences");
+    }
+
+    var contact = getUser.getUser(userId);
+    if (contact == null || !(contact.getUser() instanceof Resident resident)) {
+      throw new NotFoundException();
+    }
+    return RestResponse.ok(ResidentMapper.toDto(contact, resident));
+  }
+
+  @PUT
+  @Path("/residents/settings")
+  @RolesAllowed("staff")
+  @Operation(operationId = "updateResidentSettings")
+  public RestResponse<Void> updateResidentSettingsEndpoint(@QueryParam("userId") UUID userId, ResidentSettingsDto dto) {
+    updateResidentSettings.updateAutonomyLevel(userId, dto.getAutonomyLevel());
+    return RestResponse.noContent();
+  }
+
+  @GET
   @Path("/get-visible-users")
   @Operation(operationId = "getVisibleUsers")
   @PermitAll
-  public RestResponse<List<ContactDto>> getVisibleUsers(){
+  public RestResponse<List<ContactDto>> getVisibleUsers() {
     return RestResponse.ok(getAllVisibleUsers.getAllVisibleUsers().stream().map(ContactMapper::toDto).toList());
   }
 
@@ -141,7 +170,8 @@ public class UserRestEndpoint {
   @Path("/general-preferences")
   @Operation(operationId = "getUserGeneralPreferences")
   @PermitAll
-  public RestResponse<UserPreferencesDto.UserGeneralPreferencesDto> getUserGeneralPreferences(@QueryParam("userId") UUID userId) {
+  public RestResponse<UserPreferencesDto.UserGeneralPreferencesDto> getUserGeneralPreferences(
+      @QueryParam("userId") UUID userId) {
     var preferences = getUserPreferences.getPreferencesForUser(userId);
     return RestResponse.ok(UserPreferencesDtoMapper.toDto(preferences).getGeneral());
   }
@@ -161,5 +191,22 @@ public class UserRestEndpoint {
     // Return the picture ID as a response
     return RestResponse.ok(pictureId);
   }
-  
+
+  @POST
+  @Path("/set-picture/of-user")
+  @Operation(operationId = "setUserPictureOfUser")
+  @PermitAll // Guard is managed in the route by the ResidentAccessPolicy
+  public RestResponse<UUID> uploadProfilePictureOfUser(@QueryParam("userId") UUID userId, @RestForm File file)
+      throws IOException, BadRequestException {
+    if (!residentAccessPolicy.canManage(userId)) {
+      throw new ForbiddenException("Not allowed to manage this resident's preferences");
+    }
+    if (file == null) {
+      throw new BadRequestException("File not found");
+    }
+
+    byte[] imageBytes = java.nio.file.Files.readAllBytes(file.toPath());
+    return RestResponse.ok(setUserPicture.setPictureForUser(userId, imageBytes));
+  }
+
 }

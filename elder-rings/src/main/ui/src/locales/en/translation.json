@@ -39,6 +39,9 @@
       "Decline": "Decline"
     },
     "UserPreferencesForm": {
+      "CallPolicyTitle": "Calls",
+      "AutoAnswer": "Automatic answer",
+      "CameraOnByDefault": "Camera on by default",
       "ProfilePicture": "Profile picture",
       "PersonalPicture": "Your picture",
       "IsPublicProfile": "Public profile",
@@ -89,7 +92,8 @@
         "Enabled": "enabled",
         "Disabled": "disabled"
       },
-      "Residents": "Residents"
+      "Residents": "Residents",
+      "TutoredResident": "My relative's settings"
     },
     "CallRoom": {
       "UserLeft": "Your contact left the conversation",
@@ -109,13 +113,23 @@
     "ResidentsPage": {
       "Title": "Residents",
       "PictureAlt": "{{name}}'s photo",
-      "Call": "Start a call with {{name}}"
+      "Call": "Start a call with {{name}}",
+      "Settings": "{{name}}'s settings"
+    },
+    "ResidentSettingsPage": {
+      "Title": "{{name}}'s settings",
+      "AutonomyLevel": "Autonomy level"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "No users found"
     }
   },
   "Enums": {
+    "AutonomyLevel": {
+      "AUTONOMOUS": "Autonomous",
+      "INTERMEDIATE": "Intermediate",
+      "DEPENDENT": "Dependent"
+    },
     "TextSizeDto": {
       "SM": "Small",
       "MD": "Medium",

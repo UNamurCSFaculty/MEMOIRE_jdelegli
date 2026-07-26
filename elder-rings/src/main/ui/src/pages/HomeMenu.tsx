@@ -7,6 +7,7 @@ import {
   IconGear,
   IconDoNotDisturb,
   IconRooms,
+  IconSettings,
 } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 import WeatherSnippet from "@components/weather/WeatherSnippet";
@@ -76,8 +77,17 @@ export default function HomeMenu() {
             },
           ]
         : []),
+      ...(user.userType === "FAMILY" && user.tutorOfResidentId
+        ? [
+            {
+              label: "TutoredResident",
+              onClick: () => navigate(`/residents/${user.tutorOfResidentId}/settings`),
+              icon: IconSettings,
+            },
+          ]
+        : []),
     ],
-    [navigate, toggleDoNotDisturb, user.userType],
+    [navigate, toggleDoNotDisturb, user.userType, user.tutorOfResidentId],
   );
 
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
