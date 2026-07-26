@@ -15,6 +15,7 @@ public class UserPreferences {
     private GeneralPreferences general;
     private VisualPreferences visual;
     private AudioPreferences audio;
+    private CallPolicyPreferences callPolicy;
 
     @Getter
     @Setter
@@ -52,5 +53,21 @@ public class UserPreferences {
     public static class FrequencyGain {
         private int frequency; // 0–20000 Hz
         private double gain;   // e.g., -20.0 to +20.0 dB
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class CallPolicyPreferences {
+        private boolean autoAnswer;
+        private boolean cameraOnByDefault;
+
+        public static CallPolicyPreferences defaultsFor(Resident.AutonomyLevel level) {
+            return switch (level) {
+                case AUTONOMOUS -> new CallPolicyPreferences(false, false);
+                case INTERMEDIATE -> new CallPolicyPreferences(true, false);
+                case DEPENDENT -> new CallPolicyPreferences(true, true);
+            };
+        }
     }
 }

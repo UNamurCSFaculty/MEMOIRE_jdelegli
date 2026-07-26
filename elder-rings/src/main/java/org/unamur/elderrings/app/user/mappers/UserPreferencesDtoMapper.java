@@ -28,7 +28,12 @@ public class UserPreferencesDtoMapper {
                                 .map(f -> new UserPreferences.FrequencyGain(f.getFrequency(), f.getGain()))
                                 .toList(),
                         dto.getAudio().isPlayInterfaceSounds()
-                )
+                ),
+                dto.getCallPolicy() != null ? 
+                        new UserPreferences.CallPolicyPreferences(
+                                dto.getCallPolicy().isAutoAnswer(),
+                                dto.getCallPolicy().isCameraOnByDefault()
+                        ) : null
         );
     }
 
@@ -49,7 +54,12 @@ public class UserPreferencesDtoMapper {
                                 .map(f -> new UserPreferencesDto.UserFrequencyGainDto(f.getFrequency(), f.getGain()))
                                 .toList(),
                         model.getAudio().isPlayInterfaceSounds()
-                )
+                ),
+                model.getCallPolicy() != null ? 
+                        new UserPreferencesDto.UserCallPolicyPreferencesDto(
+                                model.getCallPolicy().isAutoAnswer(),
+                                model.getCallPolicy().isCameraOnByDefault()
+                        ) : null
         );
     }
 }

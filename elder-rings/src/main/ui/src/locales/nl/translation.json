@@ -39,6 +39,9 @@
       "Decline": "Weigeren"
     },
     "UserPreferencesForm": {
+      "CallPolicyTitle": "Oproepen",
+      "AutoAnswer": "Automatisch opnemen",
+      "CameraOnByDefault": "Camera standaard aan",
       "ProfilePicture": "Profielfoto",
       "PersonalPicture": "Jouw foto",
       "IsPublicProfile": "Openbaar profiel",
@@ -89,7 +92,8 @@
         "Enabled": "ingeschakeld",
         "Disabled": "uitgeschakeld"
       },
-      "Residents": "Bewoners"
+      "Residents": "Bewoners",
+      "TutoredResident": "Instellingen van mijn naaste"
     },
     "CallRoom": {
       "UserLeft": "Je gesprekspartner heeft het gesprek verlaten",
@@ -109,13 +113,23 @@
     "ResidentsPage": {
       "Title": "Bewoners",
       "PictureAlt": "Foto van {{name}}",
-      "Call": "Start een oproep met {{name}}"
+      "Call": "Start een oproep met {{name}}",
+      "Settings": "Instellingen van {{name}}"
+    },
+    "ResidentSettingsPage": {
+      "Title": "Instellingen van {{name}}",
+      "AutonomyLevel": "Zelfstandigheidsniveau"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "Geen gebruikers gevonden"
     }
   },
   "Enums": {
+    "AutonomyLevel": {
+      "AUTONOMOUS": "Zelfstandig",
+      "INTERMEDIATE": "Gemiddeld",
+      "DEPENDENT": "Afhankelijk"
+    },
     "TextSizeDto": {
       "SM": "Klein",
       "MD": "Middelgroot",

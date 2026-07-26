@@ -23,4 +23,6 @@ public class UserDto {
 
   private UserType userType;
 
+  private UUID tutorOfResidentId;
+
 }

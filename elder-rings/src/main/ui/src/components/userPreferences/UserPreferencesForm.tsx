@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-import { apiClient } from "@openapi/zodiosClient";
 import { UserPreferencesDto, textSizeDtoValues } from "@type/openapiTypes";
-import { useUserPreferences } from "../../hooks/useUserPreferences";
 import AudioSampleTest from "./AudioSampleTest";
 import { useTranslation } from "react-i18next";
 import { SupportedLanguage } from "../../locales/i18n";
-import { notifySuccess } from "@utils/notifyUtil";
-import isEqual from "lodash/isEqual";
 import {
   Button,
   Checkbox,
@@ -20,25 +16,32 @@ import {
 import { IconAdd, IconRemove } from "@components/icons/favouriteIcons";
 import { basePath } from "../../../basepath.config";
 import BackHomeButton from "@components/navigation/BackHomeButton";
+import { CallPolicyFloor } from "@utils/callPolicyFloor";
 
-export default function UserPreferencesForm() {
+interface UserPreferencesFormProps {
+  preferences: UserPreferencesDto;
+  onSave: (preferences: UserPreferencesDto, file: File | null) => Promise<void>;
+  showPictureSection?: boolean;
+  pictureBase64?: string | null;
+  showCallPolicySection?: boolean;
+  callPolicyFloor?: CallPolicyFloor;
+}
+
+export default function UserPreferencesForm({
+  preferences,
+  onSave,
+  showPictureSection = false,
+  pictureBase64,
+  showCallPolicySection = false,
+  callPolicyFloor,
+}: Readonly<UserPreferencesFormProps>) {
   const { t } = useTranslation();
-  const { userPreferences, refreshUserPreferences } = useUserPreferences();
   const [formData, setFormData] = useState<UserPreferencesDto | null>(null);
-  const [initialPreferences, setInitialPreferences] = useState<UserPreferencesDto | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [userPicture, setUserPicture] = useState<string | null>(null);
 
   useEffect(() => {
-    apiClient.getCurrentUserPicture().then((resp) => setUserPicture(resp));
-  }, []);
-
-  useEffect(() => {
-    if (userPreferences) {
-      setFormData(userPreferences);
-      setInitialPreferences(userPreferences);
-    }
-  }, [userPreferences]);
+    setFormData(preferences);
+  }, [preferences]);
 
   if (!formData) return null;
 
@@ -70,28 +73,8 @@ export default function UserPreferencesForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const actions = [];
-
-    if (!isEqual(formData, initialPreferences)) {
-      actions.push(apiClient.updateCurrentUserPreferences(formData));
-    }
-
-    if (file) {
-      const formDataObj = new FormData();
-      formDataObj.append("file", file);
-      actions.push(
-        fetch("/elder-rings/api/user/set-picture", {
-          method: "POST",
-          body: formDataObj,
-        }),
-      );
-    }
-
     try {
-      await Promise.all(actions);
-      await refreshUserPreferences?.();
-      notifySuccess(t("Components.UserPreferencesForm.PreferencesUpdated"));
-      setInitialPreferences(formData);
+      await onSave(formData, file);
       setFile(null);
     } catch (err) {
       console.error("Failed to update preferences", err);
@@ -141,36 +124,38 @@ export default function UserPreferencesForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col grow h-full overflow-auto p-4">
+    <form onSubmit={handleSubmit} className="flex flex-col grow h-full overflow-auto">
       {/* Profile Picture */}
       <div className="flex flex-wrap gap-8 justify-start">
-        <section className="flex-1">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-semibold">
-              {t("Components.UserPreferencesForm.ProfilePicture")}
-            </h2>
-            <Separator />
-            <img
-              src={
-                userPicture
-                  ? `data:image/*;base64,${userPicture}`
-                  : basePath + "/picture-user-default.jpg"
-              }
-              alt={t("Components.UserPreferencesForm.PersonalPicture")}
-              className="w-64 object-contain"
-            />
-            <Label htmlFor="personal-picture-input">
-              {t("Components.UserPreferencesForm.PersonalPicture")}
-            </Label>
-            <Input
-              id="personal-picture-input"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="w-80"
-            />
-          </div>
-        </section>
+        {showPictureSection && (
+          <section className="flex-1">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">
+                {t("Components.UserPreferencesForm.ProfilePicture")}
+              </h2>
+              <Separator />
+              <img
+                src={
+                  pictureBase64
+                    ? `data:image/*;base64,${pictureBase64}`
+                    : basePath + "/picture-user-default.jpg"
+                }
+                alt={t("Components.UserPreferencesForm.PersonalPicture")}
+                className="w-64 object-contain"
+              />
+              <Label htmlFor="personal-picture-input">
+                {t("Components.UserPreferencesForm.PersonalPicture")}
+              </Label>
+              <Input
+                id="personal-picture-input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="w-80"
+              />
+            </div>
+          </section>
+        )}
 
         <div className="flex flex-col gap-4 flex-1">
           {/* General */}
@@ -282,6 +267,47 @@ export default function UserPreferencesForm() {
               </Select>
             </div>
           </section>
+
+          {showCallPolicySection && (
+            <section>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-lg font-semibold">
+                  {t("Components.UserPreferencesForm.CallPolicyTitle")}
+                </h2>
+                <Separator />
+                <Checkbox
+                  isSelected={formData.callPolicy?.autoAnswer ?? false}
+                  isDisabled={callPolicyFloor?.autoAnswer === true}
+                  onChange={(isSelected: boolean) =>
+                    handleChange("callPolicy", "autoAnswer", isSelected)
+                  }
+                  aria-label={t("Components.UserPreferencesForm.AutoAnswer")}
+                >
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    {t("Components.UserPreferencesForm.AutoAnswer")}
+                  </Checkbox.Content>
+                </Checkbox>
+                <Checkbox
+                  isSelected={formData.callPolicy?.cameraOnByDefault ?? false}
+                  isDisabled={callPolicyFloor?.cameraOnByDefault === true}
+                  onChange={(isSelected: boolean) =>
+                    handleChange("callPolicy", "cameraOnByDefault", isSelected)
+                  }
+                  aria-label={t("Components.UserPreferencesForm.CameraOnByDefault")}
+                >
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                  <Checkbox.Content>
+                    {t("Components.UserPreferencesForm.CameraOnByDefault")}
+                  </Checkbox.Content>
+                </Checkbox>
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Audio */}

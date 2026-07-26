@@ -16,6 +16,7 @@ public class UserPreferencesDto {
     private UserGeneralPreferencesDto general;
     private UserVisualPreferencesDto visual;
     private UserAudioPreferencesDto audio;
+    private UserCallPolicyPreferencesDto callPolicy;
 
     @Getter
     @Setter
@@ -55,5 +56,13 @@ public class UserPreferencesDto {
     public static class UserFrequencyGainDto {
         private int frequency;
         private double gain;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserCallPolicyPreferencesDto {
+        private boolean autoAnswer;
+        private boolean cameraOnByDefault;
     }
 }

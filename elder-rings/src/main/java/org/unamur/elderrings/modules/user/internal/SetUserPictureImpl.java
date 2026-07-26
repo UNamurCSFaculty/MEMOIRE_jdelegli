@@ -23,5 +23,10 @@ public class SetUserPictureImpl implements SetUserPicture {
   public UUID setPicture(byte[] image) {
     return repository.setUserPicture(user.getId(), image);
   }
+
+  @Override
+  public UUID setPictureForUser(UUID userId, byte[] image) {
+    return repository.setUserPicture(userId, image);
+  }
   
 }

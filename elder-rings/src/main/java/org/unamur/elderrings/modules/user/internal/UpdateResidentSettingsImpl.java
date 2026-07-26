@@ -1,0 +1,34 @@
+package org.unamur.elderrings.modules.user.internal;
+
+import java.util.UUID;
+
+import org.unamur.elderrings.infra.user.entities.ResidentEntity;
+import org.unamur.elderrings.infra.user.repositories.UserRepository;
+import org.unamur.elderrings.modules.user.api.UpdateResidentSettings;
+import org.unamur.elderrings.modules.user.api.models.Resident;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
+import lombok.RequiredArgsConstructor;
+
+@ApplicationScoped
+@RequiredArgsConstructor
+public class UpdateResidentSettingsImpl implements UpdateResidentSettings {
+
+    private final UserRepository userRepository;
+
+    @Override
+    @Transactional
+    public void updateAutonomyLevel(UUID residentId, Resident.AutonomyLevel level) {
+        // Get the user related to the id
+        var user = userRepository.getUserById(residentId)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        // Check if the user is a resident
+        if (!(user instanceof ResidentEntity resident)) {
+            throw new BadRequestException("User is not a resident");
+        }
+
+        resident.setAutonomyLevel(ResidentEntity.AutonomyLevel.valueOf(level.name()));
+    }
+}
