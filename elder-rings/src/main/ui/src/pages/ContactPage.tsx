@@ -45,10 +45,10 @@ export default function ContactPage() {
 
         const preferencesEntries = await Promise.all(
           fetchedContacts.map(async (contact) => {
-            const prefs = await apiClient.getUserGeneralPreferences({
+            const dndStatus = await apiClient.getUserDndStatus({
               queries: { userId: contact.id },
             });
-            return [contact.id, prefs.doNotDisturb] as [string, boolean];
+            return [contact.id, dndStatus.active] as [string, boolean];
           }),
         );
         setDoNotDisturbMap(Object.fromEntries(preferencesEntries));

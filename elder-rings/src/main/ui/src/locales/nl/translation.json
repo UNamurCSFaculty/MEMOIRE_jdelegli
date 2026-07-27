@@ -17,6 +17,10 @@
         "Action": "Terug naar <1>de startpagina</1>."
       }
     },
+    "DndBanner": {
+      "Active": "Niet storen staat aan. Je ontvangt geen oproepen.",
+      "ActiveUntil": "Niet storen staat aan tot {{time}}."
+    },
     "ContactsCarousel": {
       "ContactPictureAlt": "Foto van {{name}}",
       "CallContact": "Start een oproep met {{name}}",
@@ -39,6 +43,11 @@
       "Decline": "Weigeren"
     },
     "UserPreferencesForm": {
+      "DndTitle": "Niet storen",
+      "DndEnabled": "Niet storen staat aan (tot uitschakeling)",
+      "DndActiveUntil": "(aan tot {{time}})",
+      "DndAutoDisable": "Schakelt automatisch uit",
+      "DndDurationMinutes": "Duur (minuten)",
       "CallPolicyTitle": "Oproepen",
       "AutoAnswer": "Automatisch opnemen",
       "CameraOnByDefault": "Camera standaard aan",
@@ -114,7 +123,8 @@
       "Title": "Bewoners",
       "PictureAlt": "Foto van {{name}}",
       "Call": "Start een oproep met {{name}}",
-      "Settings": "Instellingen van {{name}}"
+      "Settings": "Instellingen van {{name}}",
+      "DoNotDisturb": "Niet storen"
     },
     "ResidentSettingsPage": {
       "Title": "Instellingen van {{name}}",

@@ -17,6 +17,10 @@
         "Action": "Back to <1>home</1>."
       }
     },
+    "DndBanner": {
+      "Active": "Do not disturb is on. You will not receive calls.",
+      "ActiveUntil": "Do not disturb is on until {{time}}."
+    },
     "ContactsCarousel": {
       "ContactPictureAlt": "{{name}}'s photo",
       "CallContact": "Start a call with {{name}}",
@@ -39,6 +43,11 @@
       "Decline": "Decline"
     },
     "UserPreferencesForm": {
+      "DndTitle": "Do not disturb",
+      "DndEnabled": "Do not disturb is on (until turned off)",
+      "DndActiveUntil": "(on until {{time}})",
+      "DndAutoDisable": "Turns off automatically",
+      "DndDurationMinutes": "Duration (minutes)",
       "CallPolicyTitle": "Calls",
       "AutoAnswer": "Automatic answer",
       "CameraOnByDefault": "Camera on by default",
@@ -114,7 +123,8 @@
       "Title": "Residents",
       "PictureAlt": "{{name}}'s photo",
       "Call": "Start a call with {{name}}",
-      "Settings": "{{name}}'s settings"
+      "Settings": "{{name}}'s settings",
+      "DoNotDisturb": "Do not disturb"
     },
     "ResidentSettingsPage": {
       "Title": "{{name}}'s settings",

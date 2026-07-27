@@ -17,7 +17,4 @@ public class GeneralPreferencesEmbeddableEntity {
 
     @Column(name = "is_profile_public")
     private boolean isPublic;
-
-    @Column(name = "do_not_disturb")
-    private boolean doNotDisturb;
 }

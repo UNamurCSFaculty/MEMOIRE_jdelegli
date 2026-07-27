@@ -14,11 +14,24 @@ function ResidentsPage() {
   const navigate = useNavigate();
   const startCall = useStartCall();
   const [residents, setResidents] = useState<ContactDto[]>([]);
+  const [dndMap, setDndMap] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    apiClient.getResidents().then((res) => {
+    const fetchData = async () => {
+      const res = await apiClient.getResidents();
       setResidents(res);
-    });
+
+      const dndEntries = await Promise.all(
+        res.map(async (resident) => {
+          const dndStatus = await apiClient.getUserDndStatus({
+            queries: { userId: resident.id },
+          });
+          return [resident.id, dndStatus.active] as [string, boolean];
+        }),
+      );
+      setDndMap(Object.fromEntries(dndEntries));
+    };
+    fetchData();
   }, []);
 
   return (
@@ -43,12 +56,19 @@ function ResidentsPage() {
               <Card.Title className="text-xl font-semibold">
                 {resident.firstName} {resident.lastName}
               </Card.Title>
+              {dndMap[resident.id!] && (
+                <p className="mt-1 inline-flex items-center gap-2 bg-red-100 text-red-900 py-1 px-3 rounded-full text-sm">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
+                  {t("Pages.ResidentsPage.DoNotDisturb")}
+                </p>
+              )}
             </Card.Content>
             <Card.Footer className="flex gap-2">
               <Button
                 variant="primary"
                 className="bg-success"
                 isIconOnly
+                isDisabled={dndMap[resident.id!]}
                 onPress={() => startCall(resident)}
                 aria-label={t("Pages.ResidentsPage.Call", {
                   name: `${resident.firstName} ${resident.lastName}`,

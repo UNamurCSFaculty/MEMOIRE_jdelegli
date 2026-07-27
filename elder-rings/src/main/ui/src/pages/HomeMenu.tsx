@@ -16,30 +16,40 @@ import { notifySuccess } from "@utils/notifyUtil";
 import { Button } from "@heroui/react";
 import { useUser } from "../hooks/useUser";
 import { useUserPreferences } from "../hooks/useUserPreferences";
+import DndBanner from "@components/dnd/DndBanner";
+import { useDndStatus } from "../hooks/useDndStatus";
 
 export default function HomeMenu() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const user = useUser();
   const { userPreferences, refreshUserPreferences } = useUserPreferences();
+  const { active: dndActive } = useDndStatus();
 
   const toggleDoNotDisturb = useCallback(async () => {
+    const durationMinutes = userPreferences.dnd?.durationMinutes ?? null;
+    const activate = !dndActive;
+
     const resp = await apiClient.updateCurrentUserPreferences({
       ...userPreferences,
-      general: {
-        ...userPreferences.general,
-        doNotDisturb: !userPreferences?.general?.doNotDisturb,
+      dnd: {
+        ...userPreferences.dnd,
+        enabled: activate && durationMinutes == null,
+        until:
+          activate && durationMinutes != null
+            ? new Date(Date.now() + durationMinutes * 60_000).toISOString()
+            : undefined,
       },
     });
     await refreshUserPreferences();
     notifySuccess(
       t(`Pages.HomeMenu.DoNotDisturbButton.notification`, {
-        status: resp.general?.doNotDisturb
+        status: resp.dnd?.active
           ? t("Pages.HomeMenu.DoNotDisturbButton.Enabled")
           : t("Pages.HomeMenu.DoNotDisturbButton.Disabled"),
       }),
     );
-  }, [refreshUserPreferences, t, userPreferences]);
+  }, [dndActive, userPreferences, refreshUserPreferences, t]);
 
   const options = useMemo(
     () => [
@@ -67,6 +77,7 @@ export default function HomeMenu() {
         label: "DoNotDisturbButton.Label",
         onClick: () => toggleDoNotDisturb(),
         icon: IconDoNotDisturb,
+        className: dndActive ? "bg-red-500/40 hover:bg-red-500/50" : undefined,
       },
       ...(user.userType === "STAFF"
         ? [
@@ -87,7 +98,7 @@ export default function HomeMenu() {
           ]
         : []),
     ],
-    [navigate, toggleDoNotDisturb, user.userType, user.tutorOfResidentId],
+    [navigate, toggleDoNotDisturb, user.userType, user.tutorOfResidentId, dndActive],
   );
 
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -138,8 +149,9 @@ export default function HomeMenu() {
   }, [options]);
 
   return (
-    <div className="flex items-center justify-center w-screen h-screen p-6">
-      <div className="grid grid-cols-2 auto-rows-fr gap-4 w-full h-full">
+    <div className="flex flex-col w-screen h-screen p-6 gap-4">
+      <DndBanner />
+      <div className="grid grid-cols-2 auto-rows-fr gap-4 w-full flex-1 min-h-0">
         {options.map((option, index) => {
           const isAloneOnRow = index === options.length - 1 && options.length % 2 === 1;
           return (
@@ -154,6 +166,7 @@ export default function HomeMenu() {
               className={twMerge(
                 "h-full transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
                 isAloneOnRow && "col-span-2",
+                option.className,
               )}
             >
               {option.render ? (

@@ -51,11 +51,7 @@ const ContactRequestDto = z
   .partial()
   .passthrough();
 const UserGeneralPreferencesDto = z
-  .object({
-    lang: z.string(),
-    isPublic: z.boolean(),
-    doNotDisturb: z.boolean(),
-  })
+  .object({ lang: z.string(), isPublic: z.boolean() })
   .partial()
   .passthrough();
 const TextSizeDto = z.enum(["SM", "MD", "LG", "XL", "XXL"]);
@@ -79,12 +75,22 @@ const UserCallPolicyPreferencesDto = z
   .object({ autoAnswer: z.boolean(), cameraOnByDefault: z.boolean() })
   .partial()
   .passthrough();
+const UserDndPreferencesDto = z
+  .object({
+    enabled: z.boolean(),
+    until: Instant.datetime({ offset: true }),
+    active: z.boolean(),
+    durationMinutes: z.number().int(),
+  })
+  .partial()
+  .passthrough();
 const UserPreferencesDto = z
   .object({
     general: UserGeneralPreferencesDto,
     visual: UserVisualPreferencesDto,
     audio: UserAudioPreferencesDto,
     callPolicy: UserCallPolicyPreferencesDto,
+    dnd: UserDndPreferencesDto,
   })
   .partial()
   .passthrough();
@@ -150,6 +156,7 @@ export const schemas = {
   UserFrequencyGainDto,
   UserAudioPreferencesDto,
   UserCallPolicyPreferencesDto,
+  UserDndPreferencesDto,
   UserPreferencesDto,
   UserType,
   ContactDto,
@@ -340,8 +347,8 @@ const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/elder-rings/api/user/general-preferences",
-    alias: "getUserGeneralPreferences",
+    path: "/elder-rings/api/user/dnd-status",
+    alias: "getUserDndStatus",
     requestFormat: "json",
     parameters: [
       {
@@ -356,7 +363,7 @@ const endpoints = makeApi([
           .optional(),
       },
     ],
-    response: UserGeneralPreferencesDto,
+    response: UserDndPreferencesDto,
   },
   {
     method: "get",

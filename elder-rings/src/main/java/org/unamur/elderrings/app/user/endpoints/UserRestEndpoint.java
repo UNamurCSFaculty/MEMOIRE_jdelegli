@@ -167,13 +167,13 @@ public class UserRestEndpoint {
   }
 
   @GET
-  @Path("/general-preferences")
-  @Operation(operationId = "getUserGeneralPreferences")
+  @Path("/dnd-status")
+  @Operation(operationId = "getUserDndStatus")
   @PermitAll
-  public RestResponse<UserPreferencesDto.UserGeneralPreferencesDto> getUserGeneralPreferences(
+  public RestResponse<UserPreferencesDto.UserDndPreferencesDto> getUserDndStatus(
       @QueryParam("userId") UUID userId) {
     var preferences = getUserPreferences.getPreferencesForUser(userId);
-    return RestResponse.ok(UserPreferencesDtoMapper.toDto(preferences).getGeneral());
+    return RestResponse.ok(UserPreferencesDtoMapper.toDto(preferences).getDnd());
   }
 
   @POST

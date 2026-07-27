@@ -9,6 +9,7 @@ import org.unamur.elderrings.infra.user.entities.UserAudioFilterEntity;
 import org.unamur.elderrings.infra.user.entities.UserEntity;
 import org.unamur.elderrings.infra.user.entities.UserPreferencesEntity;
 import org.unamur.elderrings.infra.user.entities.CallPolicyPreferencesEmbeddableEntity;
+import org.unamur.elderrings.infra.user.entities.DndPreferencesEmbeddableEntity;
 import org.unamur.elderrings.infra.user.entities.ResidentEntity;
 import org.unamur.elderrings.infra.user.entities.VisualPreferencesEmbeddableEntity;
 import org.unamur.elderrings.infra.user.entities.VisualPreferencesEmbeddableEntity.TextSizeEntity;
@@ -28,8 +29,7 @@ public class UserPreferencesEntityMapper {
                                 entity.getUser().getId(),
                                 new UserPreferences.GeneralPreferences(
                                                 entity.getGeneral().getLang(),
-                                                entity.getGeneral().isPublic(),
-                                                entity.getGeneral().isDoNotDisturb()),
+                                                entity.getGeneral().isPublic()),
                                 new UserPreferences.VisualPreferences(
                                                 TextSize.valueOf(entity.getVisual().getTextSize().name()),
                                                 entity.getVisual().isReadTextOnScreen()),
@@ -42,7 +42,11 @@ public class UserPreferencesEntityMapper {
                                                 entity.getAudio().isPlayInterfaceSounds()),
                                 owner instanceof ResidentEntity resident
                                                 ? toCallPolicy(entity.getCallPolicy(), resident)
-                                                : null);
+                                                : null,
+                                new UserPreferences.DndPreferences(
+                                                entity.getDnd().isDoNotDisturb(),
+                                                entity.getDnd().getDoNotDisturbUntil(),
+                                                entity.getDnd().getDoNotDisturbDurationMinutes()));
         }
 
         private UserPreferences.CallPolicyPreferences toCallPolicy(CallPolicyPreferencesEmbeddableEntity stored,
@@ -69,7 +73,6 @@ public class UserPreferencesEntityMapper {
                 var general = new GeneralPreferencesEmbeddableEntity();
                 general.setLang(model.getGeneral().getLang());
                 general.setPublic(model.getGeneral().isPublic());
-                general.setDoNotDisturb(model.getGeneral().isDoNotDisturb());
                 entity.setGeneral(general);
 
                 var visual = new VisualPreferencesEmbeddableEntity();
@@ -96,6 +99,12 @@ public class UserPreferencesEntityMapper {
                         callPolicy.setCameraOnByDefault(model.getCallPolicy().isCameraOnByDefault());
                 }
                 entity.setCallPolicy(callPolicy);
+
+                var dnd = new DndPreferencesEmbeddableEntity();
+                dnd.setDoNotDisturb(model.getDnd().isEnabled());
+                dnd.setDoNotDisturbUntil(model.getDnd().getUntil());
+                dnd.setDoNotDisturbDurationMinutes(model.getDnd().getDurationMinutes());
+                entity.setDnd(dnd);
 
                 entity.setFilters(filters);
                 return entity;

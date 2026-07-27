@@ -47,6 +47,9 @@ public class UserPreferencesEntity {
     @Embedded
     private CallPolicyPreferencesEmbeddableEntity callPolicy = new CallPolicyPreferencesEmbeddableEntity();
 
+    @Embedded
+    private DndPreferencesEmbeddableEntity dnd = new DndPreferencesEmbeddableEntity();
+
     @OneToMany(mappedBy = "preferences", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAudioFilterEntity> filters = new ArrayList<>();
 }
