@@ -1,5 +1,6 @@
 package org.unamur.elderrings.modules.telecommunication.internal;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,9 +19,6 @@ import org.unamur.elderrings.modules.telecommunication.exceptions.DoNotDisturbEx
 import org.unamur.elderrings.modules.user.api.GetUserPreferences;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,13 +35,14 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
   @Override
   public CallRoom createCallRoom(Set<UUID> userIds) {
 
-    //filter out users with do not disturb enabled, keep preferences for the invitations
+    // filter out users with do not disturb enabled, keep preferences for the
+    // invitations
     Map<UUID, UserPreferences> prefsByUser = new HashMap<>();
     Set<UUID> reachableUsers = new HashSet<>();
-    for (UUID userId: userIds) {
+    for (UUID userId : userIds) {
       var prefs = getUserPreferences.getPreferencesForUser(userId);
       prefsByUser.put(userId, prefs);
-      if (!prefs.getGeneral().isDoNotDisturb()) {
+      if (!prefs.getDnd().isActiveAt(Instant.now())) {
         reachableUsers.add(userId);
       }
     }
@@ -54,14 +53,14 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
     }
 
     Set<CallRoomMember> members = new HashSet<>();
-    //add the user in the room members
+    // add the user in the room members
     members.add(CallRoomMember.of(user));
-    //add the other users in the room members
-    for(UUID userId : reachableUsers) {
+    // add the other users in the room members
+    for (UUID userId : reachableUsers) {
       members.add(new CallRoomMember(userId));
     }
-    
-    //create the room
+
+    // create the room
     var room = repository.create(members);
     log.info("Created call room with id {}", room.id().value());
 
@@ -74,24 +73,25 @@ public class CreateCallRoomImpl implements CreateCallRoomInterface {
 
       if (policy != null) {
         autoAnswer = policy.isAutoAnswer();
-        cameraOn = policy.isCameraOnByDefault() && user.getUserType() != UserType.STAFF; // Call initiated by a staff member, camera should be off by default (ethical reason)
+        cameraOn = policy.isCameraOnByDefault() && user.getUserType() != UserType.STAFF; // Call initiated by a staff
+                                                                                         // member, camera should be off
+                                                                                         // by default (ethical reason)
       }
 
       sendNotification.send(
-        recipientId,
-        CallRoomInvitationMessage.builder()
-          .type("CALL_ROOM_INVITATION")
-          .value(CallRoomInvitationMessage.CallRoomInvitationMessageValue.builder()
+          recipientId,
+          CallRoomInvitationMessage.builder()
+              .type("CALL_ROOM_INVITATION")
+              .value(CallRoomInvitationMessage.CallRoomInvitationMessageValue.builder()
                   .roomId(room.id().value())
                   .userId(user.getId())
                   .autoAnswer(autoAnswer)
                   .cameraOn(cameraOn)
                   .build())
-          .build()
-      );
+              .build());
     }
 
     return room;
   }
-  
+
 }

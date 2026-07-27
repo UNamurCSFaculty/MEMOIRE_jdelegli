@@ -123,6 +123,11 @@ export default function UserPreferencesForm({
     }));
   };
 
+  // Effective state: manually enabled or a timed activation still running
+  const dndCurrentlyActive =
+    (formData.dnd?.enabled ?? false) ||
+    (formData.dnd?.until != null && new Date(formData.dnd.until).getTime() > Date.now());
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col grow h-full overflow-auto">
       {/* Profile Picture */}
@@ -265,6 +270,81 @@ export default function UserPreferencesForm({
                   </ListBox>
                 </Select.Popover>
               </Select>
+            </div>
+          </section>
+
+          {/* Do not disturb */}
+          <section>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">
+                {t("Components.UserPreferencesForm.DndTitle")}
+              </h2>
+              <Separator />
+              <Checkbox
+                isSelected={dndCurrentlyActive}
+                onChange={(isSelected: boolean) => {
+                  // Manual master switch: stays on until unchecked, and
+                  // unchecking also cancels a running timed activation.
+                  // The timed mode only applies to the resident's home button.
+                  handleChange("dnd", "enabled", isSelected);
+                  if (!isSelected) {
+                    handleChange("dnd", "until", undefined);
+                  }
+                }}
+                aria-label={t("Components.UserPreferencesForm.DndEnabled")}
+              >
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  {t("Components.UserPreferencesForm.DndEnabled")}
+                  {!formData.dnd?.enabled && formData.dnd?.until && (
+                    <span className="text-sm text-gray-600">
+                      {" "}
+                      {t("Components.UserPreferencesForm.DndActiveUntil", {
+                        time: new Date(formData.dnd.until).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }),
+                      })}
+                    </span>
+                  )}
+                </Checkbox.Content>
+              </Checkbox>
+              <Checkbox
+                isSelected={formData.dnd?.durationMinutes != null}
+                onChange={(isSelected: boolean) =>
+                  handleChange("dnd", "durationMinutes", isSelected ? 60 : undefined)
+                }
+                aria-label={t("Components.UserPreferencesForm.DndAutoDisable")}
+              >
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  {t("Components.UserPreferencesForm.DndAutoDisable")}
+                </Checkbox.Content>
+              </Checkbox>
+              {formData.dnd?.durationMinutes != null && (
+                <NumberField
+                  value={formData.dnd.durationMinutes}
+                  onChange={(value) => {
+                    if (typeof value !== "number" || !Number.isFinite(value)) return;
+                    handleChange("dnd", "durationMinutes", value);
+                  }}
+                  minValue={1}
+                  maxValue={480}
+                  aria-label={t("Components.UserPreferencesForm.DndDurationMinutes")}
+                  className="max-w-xs"
+                >
+                  <Label>{t("Components.UserPreferencesForm.DndDurationMinutes")}</Label>
+                  <NumberField.Group>
+                    <NumberField.DecrementButton />
+                    <NumberField.Input className="w-full min-w-0 text-center" />
+                    <NumberField.IncrementButton />
+                  </NumberField.Group>
+                </NumberField>
+              )}
             </div>
           </section>
 

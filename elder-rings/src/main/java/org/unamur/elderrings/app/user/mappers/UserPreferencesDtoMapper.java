@@ -1,5 +1,7 @@
 package org.unamur.elderrings.app.user.mappers;
 
+import java.time.Instant;
+
 import org.unamur.elderrings.app.user.dto.UserPreferencesDto;
 import org.unamur.elderrings.app.user.dto.UserPreferencesDto.TextSizeDto;
 import org.unamur.elderrings.modules.user.api.models.UserPreferences;
@@ -10,56 +12,53 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class UserPreferencesDtoMapper {
 
-    public UserPreferences toModel(UserPreferencesDto dto, java.util.UUID userId) {
-        return new UserPreferences(
-                userId,
-                new UserPreferences.GeneralPreferences(
-                        dto.getGeneral().getLang(),
-                        dto.getGeneral().isPublic(),
-                        dto.getGeneral().isDoNotDisturb()
-                ),
-                new UserPreferences.VisualPreferences(
-                        TextSize.valueOf(dto.getVisual().getTextSize().name()),
-                        dto.getVisual().isReadTextOnScreen()
-                ),
-                new UserPreferences.AudioPreferences(
-                        dto.getAudio().isCompression(),
-                        dto.getAudio().getFilters().stream()
-                                .map(f -> new UserPreferences.FrequencyGain(f.getFrequency(), f.getGain()))
-                                .toList(),
-                        dto.getAudio().isPlayInterfaceSounds()
-                ),
-                dto.getCallPolicy() != null ? 
-                        new UserPreferences.CallPolicyPreferences(
-                                dto.getCallPolicy().isAutoAnswer(),
-                                dto.getCallPolicy().isCameraOnByDefault()
-                        ) : null
-        );
-    }
+        public UserPreferences toModel(UserPreferencesDto dto, java.util.UUID userId) {
+                return new UserPreferences(
+                                userId,
+                                new UserPreferences.GeneralPreferences(
+                                                dto.getGeneral().getLang(),
+                                                dto.getGeneral().isPublic()),
+                                new UserPreferences.VisualPreferences(
+                                                TextSize.valueOf(dto.getVisual().getTextSize().name()),
+                                                dto.getVisual().isReadTextOnScreen()),
+                                new UserPreferences.AudioPreferences(
+                                                dto.getAudio().isCompression(),
+                                                dto.getAudio().getFilters().stream()
+                                                                .map(f -> new UserPreferences.FrequencyGain(
+                                                                                f.getFrequency(), f.getGain()))
+                                                                .toList(),
+                                                dto.getAudio().isPlayInterfaceSounds()),
+                                dto.getCallPolicy() != null ? new UserPreferences.CallPolicyPreferences(
+                                                dto.getCallPolicy().isAutoAnswer(),
+                                                dto.getCallPolicy().isCameraOnByDefault()) : null,
+                                new UserPreferences.DndPreferences(
+                                                dto.getDnd().isEnabled(),
+                                                dto.getDnd().getUntil(),
+                                                dto.getDnd().getDurationMinutes()));
+        }
 
-    public UserPreferencesDto toDto(UserPreferences model) {
-        return new UserPreferencesDto(
-                new UserPreferencesDto.UserGeneralPreferencesDto(
-                        model.getGeneral().getLang(),
-                        model.getGeneral().isPublic(),
-                        model.getGeneral().isDoNotDisturb()
-                ),
-                new UserPreferencesDto.UserVisualPreferencesDto(
-                        TextSizeDto.valueOf(model.getVisual().getTextSize().name()),
-                        model.getVisual().isReadTextOnScreen()
-                ),
-                new UserPreferencesDto.UserAudioPreferencesDto(
-                        model.getAudio().isCompression(),
-                        model.getAudio().getFilters().stream()
-                                .map(f -> new UserPreferencesDto.UserFrequencyGainDto(f.getFrequency(), f.getGain()))
-                                .toList(),
-                        model.getAudio().isPlayInterfaceSounds()
-                ),
-                model.getCallPolicy() != null ? 
-                        new UserPreferencesDto.UserCallPolicyPreferencesDto(
-                                model.getCallPolicy().isAutoAnswer(),
-                                model.getCallPolicy().isCameraOnByDefault()
-                        ) : null
-        );
-    }
+        public UserPreferencesDto toDto(UserPreferences model) {
+                return new UserPreferencesDto(
+                                new UserPreferencesDto.UserGeneralPreferencesDto(
+                                                model.getGeneral().getLang(),
+                                                model.getGeneral().isPublic()),
+                                new UserPreferencesDto.UserVisualPreferencesDto(
+                                                TextSizeDto.valueOf(model.getVisual().getTextSize().name()),
+                                                model.getVisual().isReadTextOnScreen()),
+                                new UserPreferencesDto.UserAudioPreferencesDto(
+                                                model.getAudio().isCompression(),
+                                                model.getAudio().getFilters().stream()
+                                                                .map(f -> new UserPreferencesDto.UserFrequencyGainDto(
+                                                                                f.getFrequency(), f.getGain()))
+                                                                .toList(),
+                                                model.getAudio().isPlayInterfaceSounds()),
+                                model.getCallPolicy() != null ? new UserPreferencesDto.UserCallPolicyPreferencesDto(
+                                                model.getCallPolicy().isAutoAnswer(),
+                                                model.getCallPolicy().isCameraOnByDefault()) : null,
+                                new UserPreferencesDto.UserDndPreferencesDto(
+                                                model.getDnd().isEnabled(),
+                                                model.getDnd().getUntil(),
+                                                model.getDnd().isActiveAt(Instant.now()),
+                                                model.getDnd().getDurationMinutes()));
+        }
 }

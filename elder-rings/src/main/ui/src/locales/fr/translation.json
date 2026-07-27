@@ -17,6 +17,10 @@
         "Action": "Retour à <1>l'accueil</1>."
       }
     },
+    "DndBanner": {
+      "Active": "Ne pas déranger est activé. Vous ne recevez pas d'appels.",
+      "ActiveUntil": "Ne pas déranger est activé jusqu'à {{time}}."
+    },
     "ContactsCarousel": {
       "ContactPictureAlt": "Photo de {{name}}",
       "CallContact": "Démarrer un appel avec {{name}}",
@@ -39,6 +43,11 @@
       "Decline": "Refuser"
     },
     "UserPreferencesForm": {
+      "DndTitle": "Ne pas déranger",
+      "DndEnabled": "Ne pas déranger activé (jusqu'à désactivation)",
+      "DndActiveUntil": "(actif jusqu'à {{time}})",
+      "DndAutoDisable": "Se désactive automatiquement",
+      "DndDurationMinutes": "Durée (minutes)",
       "CallPolicyTitle": "Appels",
       "AutoAnswer": "Décrochage automatique",
       "CameraOnByDefault": "Caméra activée par défaut",
@@ -114,7 +123,8 @@
       "Title": "Résidents",
       "PictureAlt": "Photo de {{name}}",
       "Call": "Démarrer un appel avec {{name}}",
-      "Settings": "Réglages de {{name}}"
+      "Settings": "Réglages de {{name}}",
+      "DoNotDisturb": "Ne pas déranger"
     },
     "ResidentSettingsPage": {
       "Title": "Réglages de {{name}}",

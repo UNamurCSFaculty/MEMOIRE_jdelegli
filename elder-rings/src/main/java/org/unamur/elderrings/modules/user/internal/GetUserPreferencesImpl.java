@@ -29,12 +29,12 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
         return preferencesRepository.findByUserId(userId)
                 .map(UserPreferencesEntityMapper::toModel)
                 .orElseGet(() -> new UserPreferences(
-                  userId,
-                  new UserPreferences.GeneralPreferences("fr", false, false),
-                  new UserPreferences.VisualPreferences(TextSize.MD, false),
-                  new UserPreferences.AudioPreferences(false, List.of(), false),
-                  defaultCallPolicyFor(userId)
-              ));
+                        userId,
+                        new UserPreferences.GeneralPreferences("fr", false),
+                        new UserPreferences.VisualPreferences(TextSize.MD, false),
+                        new UserPreferences.AudioPreferences(false, List.of(), false),
+                        defaultCallPolicyFor(userId),
+                        new UserPreferences.DndPreferences(false, null, null)));
     }
 
     private UserPreferences.CallPolicyPreferences defaultCallPolicyFor(UUID userId) {
@@ -46,6 +46,6 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
             return new UserPreferences.CallPolicyPreferences(false, false);
         }
         return UserPreferences.CallPolicyPreferences.defaultsFor(
-            Resident.AutonomyLevel.valueOf(resident.getAutonomyLevel().name()));
+                Resident.AutonomyLevel.valueOf(resident.getAutonomyLevel().name()));
     }
 }

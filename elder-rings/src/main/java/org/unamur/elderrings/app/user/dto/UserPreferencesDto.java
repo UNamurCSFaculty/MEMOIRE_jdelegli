@@ -1,5 +1,6 @@
 package org.unamur.elderrings.app.user.dto;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,6 +18,7 @@ public class UserPreferencesDto {
     private UserVisualPreferencesDto visual;
     private UserAudioPreferencesDto audio;
     private UserCallPolicyPreferencesDto callPolicy;
+    private UserDndPreferencesDto dnd;
 
     @Getter
     @Setter
@@ -25,12 +27,10 @@ public class UserPreferencesDto {
         private String lang;
         @JsonProperty("isPublic")
         private boolean isPublic;
-        @JsonProperty("doNotDisturb")
-        private boolean doNotDisturb;
     }
 
     public enum TextSizeDto {
-      SM, MD, LG, XL, XXL
+        SM, MD, LG, XL, XXL
     }
 
     @Getter
@@ -64,5 +64,17 @@ public class UserPreferencesDto {
     public static class UserCallPolicyPreferencesDto {
         private boolean autoAnswer;
         private boolean cameraOnByDefault;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserDndPreferencesDto {
+        @JsonProperty("enabled")
+        private boolean enabled;
+        private Instant until;
+        @JsonProperty("active")
+        private boolean active;
+        private Integer durationMinutes;
     }
 }
