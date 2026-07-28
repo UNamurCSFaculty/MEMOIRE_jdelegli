@@ -7,6 +7,8 @@ import org.unamur.elderrings.infra.user.repositories.UserPreferencesRepository;
 import org.unamur.elderrings.infra.user.repositories.UserRepository;
 import org.unamur.elderrings.modules.user.api.SaveUserPreferences;
 import org.unamur.elderrings.modules.user.api.models.UserPreferences;
+import org.unamur.elderrings.modules.notification.api.SendNotificationInterface;
+import org.unamur.elderrings.modules.user.internal.messages.PreferencesUpdatedMessage;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -18,6 +20,7 @@ public class SaveUserPreferencesImpl implements SaveUserPreferences {
 
     private final UserPreferencesRepository preferencesRepository;
     private final UserRepository userRepository;
+    private final SendNotificationInterface sendNotification;
 
     @Override
     @Transactional
@@ -35,5 +38,8 @@ public class SaveUserPreferencesImpl implements SaveUserPreferences {
             var entity = UserPreferencesEntityMapper.toEntity(preferences, user);
             preferencesRepository.persist(entity);
         }
+
+        sendNotification.send(userId,
+                PreferencesUpdatedMessage.builder().type("PREFERENCES_UPDATED").value(userId).build());
     }
 }

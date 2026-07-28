@@ -21,6 +21,7 @@ export default function IncomingCallListener() {
   const { lastJsonMessage } = useWebSocket(buildWsUrl("notifications"), {
     // The kiosk browser on the room TV runs for days: the notification
     // socket must survive server restarts and network drops
+    share: true,
     shouldReconnect: () => true,
     reconnectInterval: 3000,
     reconnectAttempts: Infinity,
