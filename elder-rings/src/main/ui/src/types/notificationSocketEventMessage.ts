@@ -5,6 +5,7 @@ export const notificationSocketEventType = z.enum([
   "NOTIFICATION_CONNECTED_USER_LIST",
   "NOTIFICATION_NEW_USER_CONNECTED",
   "NOTIFICATION_USER_LEFT",
+  "PREFERENCES_UPDATED",
 ]);
 
 export const notificationSocketEventMessage = z
