@@ -35,7 +35,7 @@ function ResidentsPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center h-full p-4 m-8 gap-4 bg-white/60 rounded-xl">
+    <div className="flex flex-col items-center flex-1 min-h-0 p-4 m-8 gap-4 bg-white/60 rounded-xl">
       <h1 className="text-3xl font-semibold w-full">{t("Pages.ResidentsPage.Title")}</h1>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] auto-rows-max gap-6 flex-1 w-full overflow-y-auto min-h-0">
         {residents.map((resident) => (

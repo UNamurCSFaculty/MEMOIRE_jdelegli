@@ -3,6 +3,14 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* The app scrolls inside RootLayout's column only: stray hidden elements
+   appended to <body> by libraries must never create a window-level scroll */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 @theme {
   --font-sans: "Atkinson Hyperlegible Next", sans-serif;
 }

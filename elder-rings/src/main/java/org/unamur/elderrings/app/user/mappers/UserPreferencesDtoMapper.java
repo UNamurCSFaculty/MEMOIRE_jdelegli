@@ -1,11 +1,13 @@
 package org.unamur.elderrings.app.user.mappers;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.unamur.elderrings.app.user.dto.UserPreferencesDto;
 import org.unamur.elderrings.app.user.dto.UserPreferencesDto.TextSizeDto;
 import org.unamur.elderrings.modules.user.api.models.UserPreferences;
 import org.unamur.elderrings.modules.user.api.models.UserPreferences.TextSize;
+import org.unamur.elderrings.modules.user.api.models.UserPreferences.DndPreferences.DndWindow;
 
 import lombok.experimental.UtilityClass;
 
@@ -34,7 +36,15 @@ public class UserPreferencesDtoMapper {
                                 new UserPreferences.DndPreferences(
                                                 dto.getDnd().isEnabled(),
                                                 dto.getDnd().getUntil(),
-                                                dto.getDnd().getDurationMinutes()));
+                                                dto.getDnd().getDurationMinutes(),
+                                                dto.getDnd().getWindows() == null
+                                                                ? List.of()
+                                                                : dto.getDnd().getWindows().stream()
+                                                                                .map(w -> new DndWindow(
+                                                                                                w.getDay(),
+                                                                                                w.getStart(),
+                                                                                                w.getEnd()))
+                                                                                .toList()));
         }
 
         public UserPreferencesDto toDto(UserPreferences model) {
@@ -59,6 +69,12 @@ public class UserPreferencesDtoMapper {
                                                 model.getDnd().isEnabled(),
                                                 model.getDnd().getUntil(),
                                                 model.getDnd().isActiveAt(Instant.now()),
-                                                model.getDnd().getDurationMinutes()));
+                                                model.getDnd().getDurationMinutes(),
+                                                model.getDnd().getWindows().stream()
+                                                                .map(w -> new UserPreferencesDto.UserDndWindowDto(
+                                                                                w.getDay(),
+                                                                                w.getStart(),
+                                                                                w.getEnd()))
+                                                                .toList()));
         }
 }

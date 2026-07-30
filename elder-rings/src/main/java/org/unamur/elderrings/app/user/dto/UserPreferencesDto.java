@@ -1,6 +1,8 @@
 package org.unamur.elderrings.app.user.dto;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -76,5 +78,15 @@ public class UserPreferencesDto {
         @JsonProperty("active")
         private boolean active;
         private Integer durationMinutes;
+        private List<UserDndWindowDto> windows;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserDndWindowDto {
+        private DayOfWeek day;
+        private LocalTime start;
+        private LocalTime end;
     }
 }

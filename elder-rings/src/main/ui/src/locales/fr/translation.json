@@ -21,6 +21,17 @@
       "Active": "Ne pas déranger est activé. Vous ne recevez pas d'appels.",
       "ActiveUntil": "Ne pas déranger est activé jusqu'à {{time}}."
     },
+    "DndWindowsEditor": {
+      "Title": "Créneaux hebdomadaires",
+      "AddWindow": "Ajouter un créneau",
+      "ApplyToWeek": "Appliquer à toute la semaine",
+      "NoWindows": "Aucun créneau. Le mode ne pas déranger ne s'active pas tout seul.",
+      "Day": "Jour",
+      "Start": "Heure de début",
+      "End": "Heure de fin",
+      "RemoveWindow": "Supprimer le créneau",
+      "SameTimesError": "L'heure de début et l'heure de fin sont identiques. Choisissez deux heures différentes."
+    },
     "ContactsCarousel": {
       "ContactPictureAlt": "Photo de {{name}}",
       "CallContact": "Démarrer un appel avec {{name}}",
@@ -151,6 +162,15 @@
       "FR": "Français",
       "EN": "Anglais",
       "NL": "Néerlandais"
+    },
+    "DayOfWeek": {
+      "MONDAY": "Lundi",
+      "TUESDAY": "Mardi",
+      "WEDNESDAY": "Mercredi",
+      "THURSDAY": "Jeudi",
+      "FRIDAY": "Vendredi",
+      "SATURDAY": "Samedi",
+      "SUNDAY": "Dimanche"
     }
   }
 }

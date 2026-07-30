@@ -16,6 +16,7 @@ import {
 import { IconAdd, IconRemove } from "@components/icons/favouriteIcons";
 import { basePath } from "../../../basepath.config";
 import BackHomeButton from "@components/navigation/BackHomeButton";
+import DndWindowsEditor from "@components/dnd/DndWindowsEditor";
 import { CallPolicyFloor } from "@utils/callPolicyFloor";
 
 interface UserPreferencesFormProps {
@@ -42,7 +43,6 @@ export default function UserPreferencesForm({
   useEffect(() => {
     setFormData(preferences);
   }, [preferences]);
-
   if (!formData) return null;
 
   const handleChange = <
@@ -129,11 +129,11 @@ export default function UserPreferencesForm({
     (formData.dnd?.until != null && new Date(formData.dnd.until).getTime() > Date.now());
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col grow h-full overflow-auto">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 flex-1 min-h-0 overflow-auto">
       {/* Profile Picture */}
       <div className="flex flex-wrap gap-8 justify-start">
         {showPictureSection && (
-          <section className="flex-1">
+          <section className="flex-1 basis-72 min-w-0">
             <div className="flex flex-col gap-2">
               <h2 className="text-lg font-semibold">
                 {t("Components.UserPreferencesForm.ProfilePicture")}
@@ -156,13 +156,13 @@ export default function UserPreferencesForm({
                 type="file"
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                className="w-80"
+                className="w-full max-w-80"
               />
             </div>
           </section>
         )}
 
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-4 flex-1 basis-96 min-w-0">
           {/* General */}
           <section>
             <div className="flex flex-col gap-2">
@@ -345,6 +345,10 @@ export default function UserPreferencesForm({
                   </NumberField.Group>
                 </NumberField>
               )}
+              <DndWindowsEditor
+                windows={formData.dnd?.windows ?? []}
+                onChange={(windows) => handleChange("dnd", "windows", windows)}
+              />
             </div>
           </section>
 
@@ -391,7 +395,7 @@ export default function UserPreferencesForm({
         </div>
 
         {/* Audio */}
-        <section className="flex-1">
+        <section className="flex-1 basis-96 min-w-0">
           <div className="flex flex-col gap-2">
             <h2 className="text-lg font-semibold">
               {t("Components.UserPreferencesForm.AudioTitle")}
@@ -508,7 +512,7 @@ export default function UserPreferencesForm({
         </section>
       </div>
 
-      <div className="flex justify-center mt-auto gap-2">
+      <div className="flex flex-wrap justify-center mt-auto gap-2 pt-4">
         <Button
           type="submit"
           aria-label={t("Components.UserPreferencesForm.SavePreferences")}
