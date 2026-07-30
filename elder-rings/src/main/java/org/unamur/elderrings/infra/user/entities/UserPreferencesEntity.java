@@ -52,4 +52,7 @@ public class UserPreferencesEntity {
 
     @OneToMany(mappedBy = "preferences", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAudioFilterEntity> filters = new ArrayList<>();
+
+    @OneToMany(mappedBy = "preferences", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DndWindowEntity> dndWindows = new ArrayList<>();
 }

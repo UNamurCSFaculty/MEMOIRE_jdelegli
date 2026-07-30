@@ -11,11 +11,13 @@ import org.unamur.elderrings.infra.user.entities.UserPreferencesEntity;
 import org.unamur.elderrings.infra.user.entities.CallPolicyPreferencesEmbeddableEntity;
 import org.unamur.elderrings.infra.user.entities.DndPreferencesEmbeddableEntity;
 import org.unamur.elderrings.infra.user.entities.ResidentEntity;
+import org.unamur.elderrings.infra.user.entities.DndWindowEntity;
 import org.unamur.elderrings.infra.user.entities.VisualPreferencesEmbeddableEntity;
 import org.unamur.elderrings.infra.user.entities.VisualPreferencesEmbeddableEntity.TextSizeEntity;
 import org.unamur.elderrings.modules.user.api.models.Resident;
 import org.unamur.elderrings.modules.user.api.models.UserPreferences;
 import org.unamur.elderrings.modules.user.api.models.UserPreferences.TextSize;
+import org.unamur.elderrings.modules.user.api.models.UserPreferences.DndPreferences.DndWindow;
 
 import lombok.experimental.UtilityClass;
 
@@ -46,7 +48,13 @@ public class UserPreferencesEntityMapper {
                                 new UserPreferences.DndPreferences(
                                                 entity.getDnd().isDoNotDisturb(),
                                                 entity.getDnd().getDoNotDisturbUntil(),
-                                                entity.getDnd().getDoNotDisturbDurationMinutes()));
+                                                entity.getDnd().getDoNotDisturbDurationMinutes(),
+                                                entity.getDndWindows().stream()
+                                                                .map(w -> new DndWindow(
+                                                                                w.getDay(),
+                                                                                w.getStartTime(),
+                                                                                w.getEndTime()))
+                                                                .toList()));
         }
 
         private UserPreferences.CallPolicyPreferences toCallPolicy(CallPolicyPreferencesEmbeddableEntity stored,
@@ -92,6 +100,19 @@ public class UserPreferencesEntityMapper {
                         filter.setPreferences(entity);
                         return filter;
                 }).toList();
+
+                List<DndWindowEntity> dndWindows = model.getDnd().getWindows() == null
+                                ? List.of()
+                                : model.getDnd().getWindows().stream().map(w -> {
+                                        var window = new DndWindowEntity();
+                                        window.setDay(w.getDay());
+                                        window.setStartTime(w.getStart());
+                                        window.setEndTime(w.getEnd());
+                                        window.setPreferences(entity);
+                                        return window;
+                                }).toList();
+
+                entity.setDndWindows(dndWindows);
 
                 var callPolicy = new CallPolicyPreferencesEmbeddableEntity();
                 if (model.getCallPolicy() != null) {

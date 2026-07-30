@@ -21,6 +21,17 @@
       "Active": "Niet storen staat aan. Je ontvangt geen oproepen.",
       "ActiveUntil": "Niet storen staat aan tot {{time}}."
     },
+    "DndWindowsEditor": {
+      "Title": "Wekelijkse tijdvakken",
+      "AddWindow": "Tijdvak toevoegen",
+      "ApplyToWeek": "Toepassen op de hele week",
+      "NoWindows": "Geen tijdvakken. Niet storen gaat niet vanzelf aan.",
+      "Day": "Dag",
+      "Start": "Begintijd",
+      "End": "Eindtijd",
+      "RemoveWindow": "Tijdvak verwijderen",
+      "SameTimesError": "De begintijd en de eindtijd zijn hetzelfde. Kies twee verschillende tijden."
+    },
     "ContactsCarousel": {
       "ContactPictureAlt": "Foto van {{name}}",
       "CallContact": "Start een oproep met {{name}}",
@@ -151,6 +162,15 @@
       "FR": "Frans",
       "EN": "Engels",
       "NL": "Nederlands"
+    },
+    "DayOfWeek": {
+      "MONDAY": "Maandag",
+      "TUESDAY": "Dinsdag",
+      "WEDNESDAY": "Woensdag",
+      "THURSDAY": "Donderdag",
+      "FRIDAY": "Vrijdag",
+      "SATURDAY": "Zaterdag",
+      "SUNDAY": "Zondag"
     }
   }
 }

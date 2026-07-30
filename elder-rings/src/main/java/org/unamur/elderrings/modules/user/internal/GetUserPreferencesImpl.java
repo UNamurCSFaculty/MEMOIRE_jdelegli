@@ -34,7 +34,7 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
                         new UserPreferences.VisualPreferences(TextSize.MD, false),
                         new UserPreferences.AudioPreferences(false, List.of(), false),
                         defaultCallPolicyFor(userId),
-                        new UserPreferences.DndPreferences(false, null, null)));
+                        new UserPreferences.DndPreferences(false, null, null, List.of())));
     }
 
     private UserPreferences.CallPolicyPreferences defaultCallPolicyFor(UUID userId) {

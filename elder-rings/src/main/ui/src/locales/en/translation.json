@@ -21,6 +21,17 @@
       "Active": "Do not disturb is on. You will not receive calls.",
       "ActiveUntil": "Do not disturb is on until {{time}}."
     },
+    "DndWindowsEditor": {
+      "Title": "Weekly time slots",
+      "AddWindow": "Add a time slot",
+      "ApplyToWeek": "Apply to the whole week",
+      "NoWindows": "No time slots. Do not disturb does not turn on by itself.",
+      "Day": "Day",
+      "Start": "Start time",
+      "End": "End time",
+      "RemoveWindow": "Remove the time slot",
+      "SameTimesError": "The start time and the end time are the same. Please choose two different times."
+    },
     "ContactsCarousel": {
       "ContactPictureAlt": "{{name}}'s photo",
       "CallContact": "Start a call with {{name}}",
@@ -151,6 +162,15 @@
       "FR": "French",
       "EN": "English",
       "NL": "Dutch"
+    },
+    "DayOfWeek": {
+      "MONDAY": "Monday",
+      "TUESDAY": "Tuesday",
+      "WEDNESDAY": "Wednesday",
+      "THURSDAY": "Thursday",
+      "FRIDAY": "Friday",
+      "SATURDAY": "Saturday",
+      "SUNDAY": "Sunday"
     }
   }
 }

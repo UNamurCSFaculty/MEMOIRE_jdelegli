@@ -75,12 +75,27 @@ const UserCallPolicyPreferencesDto = z
   .object({ autoAnswer: z.boolean(), cameraOnByDefault: z.boolean() })
   .partial()
   .passthrough();
+const DayOfWeek = z.enum([
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+  "SUNDAY",
+]);
+const LocalTime = z.string();
+const UserDndWindowDto = z
+  .object({ day: DayOfWeek, start: LocalTime, end: LocalTime })
+  .partial()
+  .passthrough();
 const UserDndPreferencesDto = z
   .object({
     enabled: z.boolean(),
     until: Instant.datetime({ offset: true }),
     active: z.boolean(),
     durationMinutes: z.number().int(),
+    windows: z.array(UserDndWindowDto),
   })
   .partial()
   .passthrough();
@@ -156,6 +171,9 @@ export const schemas = {
   UserFrequencyGainDto,
   UserAudioPreferencesDto,
   UserCallPolicyPreferencesDto,
+  DayOfWeek,
+  LocalTime,
+  UserDndWindowDto,
   UserDndPreferencesDto,
   UserPreferencesDto,
   UserType,

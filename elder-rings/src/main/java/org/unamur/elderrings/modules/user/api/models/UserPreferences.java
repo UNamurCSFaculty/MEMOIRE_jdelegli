@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,13 +84,38 @@ public class UserPreferences {
         private boolean enabled;
         private Instant until;
         private Integer durationMinutes;
+        private List<DndWindow> windows;
 
         /**
-         * The do-not-disturb mode is active when manually enabled or when
-         * a timed activation has not expired yet.
+         * Active when manually enabled, when a timed activation has not
+         * expired yet, or when the current time falls in a weekly window.
          */
         public boolean isActiveAt(Instant now) {
-            return enabled || (until != null && now.isBefore(until));
+            var local = LocalDateTime.ofInstant(now, ZoneId.systemDefault());
+            return enabled
+                    || (until != null && now.isBefore(until))
+                    || (windows != null && windows.stream()
+                            .anyMatch(w -> w.isActiveAt(local.getDayOfWeek(), local.toLocalTime())));
+        }
+
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        public static class DndWindow {
+            private DayOfWeek day;
+            private LocalTime start;
+            private LocalTime end;
+
+            /**
+             * end before start means the window crosses midnight into the
+             * next day, as specified by schema.org OpeningHoursSpecification.
+             */
+            public boolean isActiveAt(DayOfWeek currentDay, LocalTime now) {
+                if (start.isBefore(end)) {
+                    return currentDay == day && !now.isBefore(start) && now.isBefore(end);
+                }
+                return (currentDay == day && !now.isBefore(start)) || (currentDay == day.plus(1) && now.isBefore(end));
+            }
         }
     }
 }

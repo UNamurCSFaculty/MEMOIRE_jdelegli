@@ -74,7 +74,7 @@ export default function ResidentSettingsPage() {
   };
 
   return (
-    <div className="flex flex-col m-8 p-4 gap-4 rounded-xl bg-white/60 h-full overflow-y-auto">
+    <div className="flex flex-col m-8 p-4 gap-4 rounded-xl bg-white/60 flex-1 min-h-0 overflow-y-auto">
       <div className="flex items-center gap-4">
         <Avatar className="size-16">
           <Avatar.Image
