@@ -72,7 +72,11 @@ const UserAudioPreferencesDto = z
   .partial()
   .passthrough();
 const UserCallPolicyPreferencesDto = z
-  .object({ autoAnswer: z.boolean(), cameraOnByDefault: z.boolean() })
+  .object({
+    autoAnswer: z.boolean(),
+    cameraOnByDefault: z.boolean(),
+    locked: z.boolean(),
+  })
   .partial()
   .passthrough();
 const DayOfWeek = z.enum([
@@ -86,7 +90,12 @@ const DayOfWeek = z.enum([
 ]);
 const LocalTime = z.string();
 const UserDndWindowDto = z
-  .object({ day: DayOfWeek, start: LocalTime, end: LocalTime })
+  .object({
+    day: DayOfWeek,
+    start: LocalTime,
+    end: LocalTime,
+    locked: z.boolean(),
+  })
   .partial()
   .passthrough();
 const UserDndPreferencesDto = z
@@ -96,6 +105,7 @@ const UserDndPreferencesDto = z
     active: z.boolean(),
     durationMinutes: z.number().int(),
     windows: z.array(UserDndWindowDto),
+    locked: z.boolean(),
   })
   .partial()
   .passthrough();

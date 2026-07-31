@@ -44,4 +44,7 @@ public class DndWindowEntity {
 
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
+
+    @Column(name = "locked", nullable = false)
+    private boolean locked;
 }

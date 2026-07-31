@@ -66,12 +66,13 @@ public class UserPreferences {
     public static class CallPolicyPreferences {
         private boolean autoAnswer;
         private boolean cameraOnByDefault;
+        private boolean locked;
 
         public static CallPolicyPreferences defaultsFor(Resident.AutonomyLevel level) {
             return switch (level) {
-                case AUTONOMOUS -> new CallPolicyPreferences(false, false);
-                case INTERMEDIATE -> new CallPolicyPreferences(true, false);
-                case DEPENDENT -> new CallPolicyPreferences(true, true);
+                case AUTONOMOUS -> new CallPolicyPreferences(false, false, false);
+                case INTERMEDIATE -> new CallPolicyPreferences(true, false, false);
+                case DEPENDENT -> new CallPolicyPreferences(true, true, false);
             };
         }
 
@@ -85,6 +86,7 @@ public class UserPreferences {
         private Instant until;
         private Integer durationMinutes;
         private List<DndWindow> windows;
+        private boolean locked;
 
         /**
          * Active when manually enabled, when a timed activation has not
@@ -105,6 +107,7 @@ public class UserPreferences {
             private DayOfWeek day;
             private LocalTime start;
             private LocalTime end;
+            private boolean locked;
 
             /**
              * end before start means the window crosses midnight into the

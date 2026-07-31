@@ -66,6 +66,7 @@ public class UserPreferencesDto {
     public static class UserCallPolicyPreferencesDto {
         private boolean autoAnswer;
         private boolean cameraOnByDefault;
+        private boolean locked;
     }
 
     @Getter
@@ -79,6 +80,7 @@ public class UserPreferencesDto {
         private boolean active;
         private Integer durationMinutes;
         private List<UserDndWindowDto> windows;
+        private boolean locked;
     }
 
     @Getter
@@ -88,5 +90,6 @@ public class UserPreferencesDto {
         private DayOfWeek day;
         private LocalTime start;
         private LocalTime end;
+        private boolean locked;
     }
 }

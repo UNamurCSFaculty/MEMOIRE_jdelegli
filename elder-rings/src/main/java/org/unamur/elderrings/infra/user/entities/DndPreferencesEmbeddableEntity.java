@@ -21,4 +21,7 @@ public class DndPreferencesEmbeddableEntity {
 
     @Column(name = "do_not_disturb_duration_minutes")
     private Integer doNotDisturbDurationMinutes;
+
+    @Column(name = "do_not_disturb_locked")
+    private boolean locked;
 }

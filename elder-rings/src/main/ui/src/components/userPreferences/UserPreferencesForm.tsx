@@ -13,7 +13,7 @@ import {
   Select,
   Separator,
 } from "@heroui/react";
-import { IconAdd, IconRemove } from "@components/icons/favouriteIcons";
+import { IconAdd, IconRemove, IconLock, IconLockOpen } from "@components/icons/favouriteIcons";
 import { basePath } from "../../../basepath.config";
 import BackHomeButton from "@components/navigation/BackHomeButton";
 import DndWindowsEditor from "@components/dnd/DndWindowsEditor";
@@ -26,6 +26,7 @@ interface UserPreferencesFormProps {
   pictureBase64?: string | null;
   showCallPolicySection?: boolean;
   callPolicyFloor?: CallPolicyFloor;
+  lockMode?: "manage" | "readonly";
 }
 
 export default function UserPreferencesForm({
@@ -35,6 +36,7 @@ export default function UserPreferencesForm({
   pictureBase64,
   showCallPolicySection = false,
   callPolicyFloor,
+  lockMode,
 }: Readonly<UserPreferencesFormProps>) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<UserPreferencesDto | null>(null);
@@ -127,6 +129,9 @@ export default function UserPreferencesForm({
   const dndCurrentlyActive =
     (formData.dnd?.enabled ?? false) ||
     (formData.dnd?.until != null && new Date(formData.dnd.until).getTime() > Date.now());
+  const canManageLocks = lockMode === "manage";
+  const dndReadonly = lockMode === "readonly" && (formData.dnd?.locked ?? false);
+  const callPolicyReadonly = lockMode === "readonly" && (formData.callPolicy?.locked ?? false);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 flex-1 min-h-0 overflow-auto">
@@ -276,12 +281,34 @@ export default function UserPreferencesForm({
           {/* Do not disturb */}
           <section>
             <div className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold">
-                {t("Components.UserPreferencesForm.DndTitle")}
-              </h2>
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-lg font-semibold">
+                  {t("Components.UserPreferencesForm.DndTitle")}
+                </h2>
+                {canManageLocks && (
+                  <Button
+                    isIconOnly
+                    variant={formData.dnd?.locked ? "danger-soft" : "secondary"}
+                    onPress={() => handleChange("dnd", "locked", !formData.dnd?.locked)}
+                    aria-label={t(
+                      formData.dnd?.locked
+                        ? "Components.UserPreferencesForm.UnlockSection"
+                        : "Components.UserPreferencesForm.LockSection",
+                    )}
+                  >
+                    {formData.dnd?.locked ? <IconLock /> : <IconLockOpen />}
+                  </Button>
+                )}
+              </div>
               <Separator />
+              {dndReadonly && (
+                <p className="text-sm italic text-slate-700 dark:text-slate-200">
+                  {t("Components.UserPreferencesForm.LockedByStaff")}
+                </p>
+              )}
               <Checkbox
                 isSelected={dndCurrentlyActive}
+                isDisabled={dndReadonly}
                 onChange={(isSelected: boolean) => {
                   // Manual master switch: stays on until unchecked, and
                   // unchecking also cancels a running timed activation.
@@ -313,6 +340,7 @@ export default function UserPreferencesForm({
               </Checkbox>
               <Checkbox
                 isSelected={formData.dnd?.durationMinutes != null}
+                isDisabled={dndReadonly}
                 onChange={(isSelected: boolean) =>
                   handleChange("dnd", "durationMinutes", isSelected ? 60 : undefined)
                 }
@@ -328,6 +356,7 @@ export default function UserPreferencesForm({
               {formData.dnd?.durationMinutes != null && (
                 <NumberField
                   value={formData.dnd.durationMinutes}
+                  isDisabled={dndReadonly}
                   onChange={(value) => {
                     if (typeof value !== "number" || !Number.isFinite(value)) return;
                     handleChange("dnd", "durationMinutes", value);
@@ -347,21 +376,46 @@ export default function UserPreferencesForm({
               )}
               <DndWindowsEditor
                 windows={formData.dnd?.windows ?? []}
+                isDisabled={dndReadonly}
                 onChange={(windows) => handleChange("dnd", "windows", windows)}
+                lockMode={lockMode}
               />
             </div>
           </section>
-
+          {/* Call policy */}
           {showCallPolicySection && (
             <section>
               <div className="flex flex-col gap-2">
-                <h2 className="text-lg font-semibold">
-                  {t("Components.UserPreferencesForm.CallPolicyTitle")}
-                </h2>
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="text-lg font-semibold">
+                    {t("Components.UserPreferencesForm.CallPolicyTitle")}
+                  </h2>
+                  {canManageLocks && (
+                    <Button
+                      isIconOnly
+                      variant={formData.callPolicy?.locked ? "danger-soft" : "secondary"}
+                      onPress={() =>
+                        handleChange("callPolicy", "locked", !formData.callPolicy?.locked)
+                      }
+                      aria-label={t(
+                        formData.callPolicy?.locked
+                          ? "Components.UserPreferencesForm.UnlockSection"
+                          : "Components.UserPreferencesForm.LockSection",
+                      )}
+                    >
+                      {formData.callPolicy?.locked ? <IconLock /> : <IconLockOpen />}
+                    </Button>
+                  )}
+                </div>
                 <Separator />
+                {callPolicyReadonly && (
+                  <p className="text-sm italic text-slate-700 dark:text-slate-200">
+                    {t("Components.UserPreferencesForm.LockedByStaff")}
+                  </p>
+                )}
                 <Checkbox
                   isSelected={formData.callPolicy?.autoAnswer ?? false}
-                  isDisabled={callPolicyFloor?.autoAnswer === true}
+                  isDisabled={callPolicyFloor?.autoAnswer === true || callPolicyReadonly}
                   onChange={(isSelected: boolean) =>
                     handleChange("callPolicy", "autoAnswer", isSelected)
                   }
@@ -376,7 +430,7 @@ export default function UserPreferencesForm({
                 </Checkbox>
                 <Checkbox
                   isSelected={formData.callPolicy?.cameraOnByDefault ?? false}
-                  isDisabled={callPolicyFloor?.cameraOnByDefault === true}
+                  isDisabled={callPolicyFloor?.cameraOnByDefault === true || callPolicyReadonly}
                   onChange={(isSelected: boolean) =>
                     handleChange("callPolicy", "cameraOnByDefault", isSelected)
                   }

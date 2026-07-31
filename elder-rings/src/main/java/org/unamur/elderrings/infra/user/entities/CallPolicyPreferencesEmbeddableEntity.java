@@ -17,4 +17,7 @@ public class CallPolicyPreferencesEmbeddableEntity {
 
     @Column(name = "camera_on_by_default")
     private boolean cameraOnByDefault;
+
+    @Column(name = "call_policy_locked")
+    private boolean locked;
 }

@@ -19,3 +19,5 @@ export { default as IconGear } from "~icons/mdi/gear-box";
 export { default as IconDoNotDisturb } from "~icons/mdi/do-not-disturb";
 export { default as IconRooms } from "~icons/mdi/bed-outline";
 export { default as IconSettings } from "~icons/mdi/cog-outline";
+export { default as IconLock } from "~icons/mdi/lock-outline";
+export { default as IconLockOpen } from "~icons/mdi/lock-open-variant-outline";

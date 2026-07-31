@@ -30,7 +30,10 @@
       "Start": "Begintijd",
       "End": "Eindtijd",
       "RemoveWindow": "Tijdvak verwijderen",
-      "SameTimesError": "De begintijd en de eindtijd zijn hetzelfde. Kies twee verschillende tijden."
+      "SameTimesError": "De begintijd en de eindtijd zijn hetzelfde. Kies twee verschillende tijden.",
+      "LockWindow": "Tijdvak vergrendelen",
+      "UnlockWindow": "Tijdvak ontgrendelen",
+      "LockedWindow": "Tijdvak beschermd door het personeel"
     },
     "ContactsCarousel": {
       "ContactPictureAlt": "Foto van {{name}}",
@@ -80,7 +83,10 @@
       "RemoveFilter": "Verwijderen",
       "AddFilter": "Filter toevoegen",
       "TestConfigTitle": "Configuratie testen",
-      "SavePreferences": "Voorkeuren opslaan"
+      "SavePreferences": "Voorkeuren opslaan",
+      "LockSection": "Vergrendelen voor de voogd",
+      "UnlockSection": "Ontgrendelen",
+      "LockedByStaff": "Deze instelling is beschermd door het personeel. Je kunt ze niet wijzigen."
     }
   },
   "Pages": {
