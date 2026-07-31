@@ -131,6 +131,7 @@ export default function ResidentSettingsPage() {
         callPolicyFloor={
           resident.autonomyLevel ? CALL_POLICY_FLOOR[resident.autonomyLevel] : undefined
         }
+        lockMode={user.userType === "STAFF" ? "manage" : "readonly"}
       />
     </div>
   );

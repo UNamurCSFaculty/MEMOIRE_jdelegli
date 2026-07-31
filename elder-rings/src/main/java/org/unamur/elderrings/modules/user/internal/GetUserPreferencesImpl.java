@@ -34,7 +34,7 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
                         new UserPreferences.VisualPreferences(TextSize.MD, false),
                         new UserPreferences.AudioPreferences(false, List.of(), false),
                         defaultCallPolicyFor(userId),
-                        new UserPreferences.DndPreferences(false, null, null, List.of())));
+                        new UserPreferences.DndPreferences(false, null, null, List.of(), false)));
     }
 
     private UserPreferences.CallPolicyPreferences defaultCallPolicyFor(UUID userId) {
@@ -43,7 +43,7 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
             return null;
         }
         if (resident.getAutonomyLevel() == null) {
-            return new UserPreferences.CallPolicyPreferences(false, false);
+            return new UserPreferences.CallPolicyPreferences(false, false, false);
         }
         return UserPreferences.CallPolicyPreferences.defaultsFor(
                 Resident.AutonomyLevel.valueOf(resident.getAutonomyLevel().name()));

@@ -53,8 +53,10 @@ public class UserPreferencesEntityMapper {
                                                                 .map(w -> new DndWindow(
                                                                                 w.getDay(),
                                                                                 w.getStartTime(),
-                                                                                w.getEndTime()))
-                                                                .toList()));
+                                                                                w.getEndTime(),
+                                                                                w.isLocked()))
+                                                                .toList(),
+                                                entity.getDnd().isLocked()));
         }
 
         private UserPreferences.CallPolicyPreferences toCallPolicy(CallPolicyPreferencesEmbeddableEntity stored,
@@ -62,7 +64,7 @@ public class UserPreferencesEntityMapper {
                 var floor = resident.getAutonomyLevel() != null
                                 ? UserPreferences.CallPolicyPreferences.defaultsFor(
                                                 Resident.AutonomyLevel.valueOf(resident.getAutonomyLevel().name()))
-                                : new UserPreferences.CallPolicyPreferences(false, false);
+                                : new UserPreferences.CallPolicyPreferences(false, false, false);
 
                 if (stored == null) {
                         return floor;
@@ -71,7 +73,8 @@ public class UserPreferencesEntityMapper {
                 // never lower them
                 return new UserPreferences.CallPolicyPreferences(
                                 stored.isAutoAnswer() || floor.isAutoAnswer(),
-                                stored.isCameraOnByDefault() || floor.isCameraOnByDefault());
+                                stored.isCameraOnByDefault() || floor.isCameraOnByDefault(),
+                                stored.isLocked());
         }
 
         public UserPreferencesEntity toEntity(UserPreferences model, UserEntity userEntity) {
@@ -108,6 +111,7 @@ public class UserPreferencesEntityMapper {
                                         window.setDay(w.getDay());
                                         window.setStartTime(w.getStart());
                                         window.setEndTime(w.getEnd());
+                                        window.setLocked(w.isLocked());
                                         window.setPreferences(entity);
                                         return window;
                                 }).toList();
@@ -118,6 +122,7 @@ public class UserPreferencesEntityMapper {
                 if (model.getCallPolicy() != null) {
                         callPolicy.setAutoAnswer(model.getCallPolicy().isAutoAnswer());
                         callPolicy.setCameraOnByDefault(model.getCallPolicy().isCameraOnByDefault());
+                        callPolicy.setLocked(model.getCallPolicy().isLocked());
                 }
                 entity.setCallPolicy(callPolicy);
 
@@ -125,6 +130,7 @@ public class UserPreferencesEntityMapper {
                 dnd.setDoNotDisturb(model.getDnd().isEnabled());
                 dnd.setDoNotDisturbUntil(model.getDnd().getUntil());
                 dnd.setDoNotDisturbDurationMinutes(model.getDnd().getDurationMinutes());
+                dnd.setLocked(model.getDnd().isLocked());
                 entity.setDnd(dnd);
 
                 entity.setFilters(filters);

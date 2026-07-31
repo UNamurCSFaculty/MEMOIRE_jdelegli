@@ -32,7 +32,8 @@ public class UserPreferencesDtoMapper {
                                                 dto.getAudio().isPlayInterfaceSounds()),
                                 dto.getCallPolicy() != null ? new UserPreferences.CallPolicyPreferences(
                                                 dto.getCallPolicy().isAutoAnswer(),
-                                                dto.getCallPolicy().isCameraOnByDefault()) : null,
+                                                dto.getCallPolicy().isCameraOnByDefault(),
+                                                dto.getCallPolicy().isLocked()) : null,
                                 new UserPreferences.DndPreferences(
                                                 dto.getDnd().isEnabled(),
                                                 dto.getDnd().getUntil(),
@@ -43,8 +44,10 @@ public class UserPreferencesDtoMapper {
                                                                                 .map(w -> new DndWindow(
                                                                                                 w.getDay(),
                                                                                                 w.getStart(),
-                                                                                                w.getEnd()))
-                                                                                .toList()));
+                                                                                                w.getEnd(),
+                                                                                                w.isLocked()))
+                                                                                .toList(),
+                                                dto.getDnd().isLocked()));
         }
 
         public UserPreferencesDto toDto(UserPreferences model) {
@@ -64,7 +67,8 @@ public class UserPreferencesDtoMapper {
                                                 model.getAudio().isPlayInterfaceSounds()),
                                 model.getCallPolicy() != null ? new UserPreferencesDto.UserCallPolicyPreferencesDto(
                                                 model.getCallPolicy().isAutoAnswer(),
-                                                model.getCallPolicy().isCameraOnByDefault()) : null,
+                                                model.getCallPolicy().isCameraOnByDefault(),
+                                                model.getCallPolicy().isLocked()) : null,
                                 new UserPreferencesDto.UserDndPreferencesDto(
                                                 model.getDnd().isEnabled(),
                                                 model.getDnd().getUntil(),
@@ -74,7 +78,9 @@ public class UserPreferencesDtoMapper {
                                                                 .map(w -> new UserPreferencesDto.UserDndWindowDto(
                                                                                 w.getDay(),
                                                                                 w.getStart(),
-                                                                                w.getEnd()))
-                                                                .toList()));
+                                                                                w.getEnd(),
+                                                                                w.isLocked()))
+                                                                .toList(),
+                                                model.getDnd().isLocked()));
         }
 }

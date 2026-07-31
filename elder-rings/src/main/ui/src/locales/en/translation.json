@@ -30,7 +30,10 @@
       "Start": "Start time",
       "End": "End time",
       "RemoveWindow": "Remove the time slot",
-      "SameTimesError": "The start time and the end time are the same. Please choose two different times."
+      "SameTimesError": "The start time and the end time are the same. Please choose two different times.",
+      "LockWindow": "Lock the time slot",
+      "UnlockWindow": "Unlock the time slot",
+      "LockedWindow": "Time slot protected by the staff"
     },
     "ContactsCarousel": {
       "ContactPictureAlt": "{{name}}'s photo",
@@ -80,7 +83,10 @@
       "RemoveFilter": "Remove",
       "AddFilter": "Add a filter",
       "TestConfigTitle": "Test configuration",
-      "SavePreferences": "Save preferences"
+      "SavePreferences": "Save preferences",
+      "LockSection": "Lock for the tutor",
+      "UnlockSection": "Unlock",
+      "LockedByStaff": "This setting is protected by the staff. You cannot change it."
     }
   },
   "Pages": {

@@ -30,7 +30,10 @@
       "Start": "Heure de début",
       "End": "Heure de fin",
       "RemoveWindow": "Supprimer le créneau",
-      "SameTimesError": "L'heure de début et l'heure de fin sont identiques. Choisissez deux heures différentes."
+      "SameTimesError": "L'heure de début et l'heure de fin sont identiques. Choisissez deux heures différentes.",
+      "LockWindow": "Verrouiller le créneau",
+      "UnlockWindow": "Déverrouiller le créneau",
+      "LockedWindow": "Créneau protégé par le personnel"
     },
     "ContactsCarousel": {
       "ContactPictureAlt": "Photo de {{name}}",
@@ -80,7 +83,10 @@
       "RemoveFilter": "Supprimer",
       "AddFilter": "Ajouter un filtre",
       "TestConfigTitle": "Tester la configuration",
-      "SavePreferences": "Enregistrer les préférences"
+      "SavePreferences": "Enregistrer les préférences",
+      "LockSection": "Verrouiller pour le tuteur",
+      "UnlockSection": "Déverrouiller",
+      "LockedByStaff": "Réglage protégé par le personnel. Vous ne pouvez pas le modifier."
     }
   },
   "Pages": {
