@@ -50,6 +50,10 @@
       "AcceptCall": "Accepter l'appel",
       "DeclineCall": "Refuser l'appel"
     },
+    "PendingRequestsBadge": {
+      "Label_one": "{{count}} demande de contact en attente",
+      "Label_other": "{{count}} demandes de contact en attente"
+    },
     "ContactRequestModal": {
       "Title": "Vous avez une ou plusieurs demandes de contact",
       "ContactPictureAlt": "Photo de {{name}}",
@@ -145,7 +149,14 @@
     },
     "ResidentSettingsPage": {
       "Title": "Réglages de {{name}}",
-      "AutonomyLevel": "Niveau d'autonomie"
+      "AutonomyLevel": "Niveau d'autonomie",
+      "PendingRequestsTitle": "Demandes de contact en attente",
+      "NoPendingRequests": "Aucune demande en attente.",
+      "RequestAccepted": "La demande de {{name}} a été acceptée.",
+      "RequestDeclined": "La demande de {{name}} a été refusée.",
+      "RequestResponseFailed": "La demande n'a pas pu être traitée. Réessayez.",
+      "AcceptRequest": "Accepter",
+      "DeclineRequest": "Refuser"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "Aucun utilisateur trouvé"

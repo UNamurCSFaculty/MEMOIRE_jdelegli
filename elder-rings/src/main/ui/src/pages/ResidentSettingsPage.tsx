@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
 import { apiClient } from "@openapi/zodiosClient";
 import {
   AutonomyLevel,
@@ -12,9 +11,11 @@ import {
 import UserPreferencesForm from "@components/userPreferences/UserPreferencesForm";
 import LoadingPage from "./generic/LoadingPage";
 import { CALL_POLICY_FLOOR } from "@utils/callPolicyFloor";
-import { notifySuccess } from "@utils/notifyUtil";
-import { Avatar, Label, ListBox, Select } from "@heroui/react";
+import { notifyError, notifySuccess } from "@utils/notifyUtil";
+import { Avatar, Label, ListBox, Select, Button } from "@heroui/react";
 import { useUser } from "../hooks/useUser";
+import { ContactRequestWithUser } from "@components/addContact/ContactRequestModal";
+import { IconCheck, IconClose } from "@components/icons/favouriteIcons";
 
 export default function ResidentSettingsPage() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export default function ResidentSettingsPage() {
   const [resident, setResident] = useState<ResidentDto | null>(null);
   const [preferences, setPreferences] = useState<UserPreferencesDto | null>(null);
   const [picture, setPicture] = useState<string | null>(null);
+  const [pendingRequests, setPendingRequests] = useState<ContactRequestWithUser[]>([]);
 
   const fetchData = useCallback(async () => {
     if (!id) return;
@@ -33,11 +35,26 @@ export default function ResidentSettingsPage() {
     ]);
     setResident(res);
     setPreferences(prefs);
+
     // fetched apart: a resident without picture must not block the page
     apiClient
       .getUserPicture({ queries: { userId: id } })
       .then(setPicture)
       .catch(() => setPicture(null));
+
+    // fetch pending requests of the resident
+    apiClient
+      .getPendingRequestsOfUser({ queries: { userId: id } })
+      .then((requests) =>
+        Promise.all(
+          requests.map(async (request) => {
+            const requester = await apiClient.getUser({ queries: { userId: request.requesterId } });
+            return { request, requester };
+          }),
+        ),
+      )
+      .then(setPendingRequests)
+      .catch(() => setPendingRequests([]));
   }, [id]);
 
   useEffect(() => {
@@ -71,6 +88,27 @@ export default function ResidentSettingsPage() {
   const handleAutonomyChange = async (level: AutonomyLevel) => {
     await apiClient.updateResidentSettings({ autonomyLevel: level }, { queries: { userId: id } });
     await fetchData();
+  };
+
+  const handleRequestResponse = async (requestId: string, accepted: boolean) => {
+    const entry = pendingRequests.find((r) => r.request.id === requestId);
+    try {
+      await apiClient.respondToContactRequest(undefined, {
+        queries: { accepted },
+        params: { requestId },
+      });
+      setPendingRequests((prev) => prev.filter((r) => r.request.id !== requestId));
+      notifySuccess(
+        t(
+          accepted
+            ? "Pages.ResidentSettingsPage.RequestAccepted"
+            : "Pages.ResidentSettingsPage.RequestDeclined",
+          { name: `${entry?.requester.firstName} ${entry?.requester.lastName}` },
+        ),
+      );
+    } catch {
+      notifyError(t("Pages.ResidentSettingsPage.RequestResponseFailed"));
+    }
   };
 
   return (
@@ -121,6 +159,52 @@ export default function ResidentSettingsPage() {
           </Select.Popover>
         </Select>
       )}
+
+      <section className="flex flex-col gap-2 max-h-60 overflow-y-auto">
+        <h2 className="text-lg font-semibold">
+          {t("Pages.ResidentSettingsPage.PendingRequestsTitle")}
+        </h2>
+        {pendingRequests.length === 0 && (
+          <p className="text-sm italic text-slate-700">
+            {t("Pages.ResidentSettingsPage.NoPendingRequests")}
+          </p>
+        )}
+        {pendingRequests.map(({ request, requester }) => (
+          <div key={request.id} className="flex items-center gap-4 bg-white/30 p-2 rounded-lg">
+            <Avatar className="size-10">
+              <Avatar.Image
+                src={requester.picture ? `data:image/*;base64,${requester.picture}` : undefined}
+                alt={`${requester.firstName} ${requester.lastName}`}
+              />
+              <Avatar.Fallback>
+                {requester.firstName?.[0]}
+                {requester.lastName?.[0]}
+              </Avatar.Fallback>
+            </Avatar>
+            <p>
+              {requester.firstName} {requester.lastName}
+            </p>
+            <div className="flex gap-2 ml-auto">
+              <Button
+                onPress={() => handleRequestResponse(request.id!, true)}
+                isIconOnly
+                variant="primary"
+                aria-label={t("Pages.ResidentSettingsPage.AcceptRequest")}
+              >
+                <IconCheck />
+              </Button>
+              <Button
+                onPress={() => handleRequestResponse(request.id!, false)}
+                isIconOnly
+                variant="danger"
+                aria-label={t("Pages.ResidentSettingsPage.DeclineRequest")}
+              >
+                <IconClose />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </section>
 
       <UserPreferencesForm
         preferences={preferences}

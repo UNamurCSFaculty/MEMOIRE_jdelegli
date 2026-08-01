@@ -8,6 +8,7 @@ import { IconSettings, IconStartCall } from "@components/icons/favouriteIcons";
 import { useNavigate } from "react-router-dom";
 import { useStartCall } from "../hooks/useStartCall";
 import BackHomeButton from "@components/navigation/BackHomeButton";
+import PendingRequestsBadge from "@components/addContact/PendingRequestsBadge";
 
 function ResidentsPage() {
   const { t } = useTranslation();
@@ -37,9 +38,9 @@ function ResidentsPage() {
   return (
     <div className="flex flex-col items-center flex-1 min-h-0 p-4 m-8 gap-4 bg-white/60 rounded-xl">
       <h1 className="text-3xl font-semibold w-full">{t("Pages.ResidentsPage.Title")}</h1>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] auto-rows-max gap-6 flex-1 w-full overflow-y-auto min-h-0">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] auto-rows-max gap-6 flex-1 w-full overflow-y-auto min-h-0 p-2 -m-2">
         {residents.map((resident) => (
-          <Card key={resident.id} className="items-center gap-4 p-6">
+          <Card key={resident.id} className="items-center relative gap-4 p-6 overflow-visible">
             <Avatar className="size-24">
               <Avatar.Image
                 src={resident.picture ? `data:image/*;base64,${resident.picture}` : undefined}
@@ -87,6 +88,7 @@ function ResidentsPage() {
                 <IconSettings />
               </Button>
             </Card.Footer>
+            <PendingRequestsBadge userId={resident.id!} className="absolute -top-2 -right-2" />
           </Card>
         ))}
       </div>

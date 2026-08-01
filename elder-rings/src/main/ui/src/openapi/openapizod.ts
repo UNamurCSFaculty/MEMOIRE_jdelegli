@@ -281,6 +281,26 @@ const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/elder-rings/api/contact-management/pending/of-user",
+    alias: "getPendingRequestsOfUser",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "userId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z.array(ContactRequestDto),
+  },
+  {
+    method: "get",
     path: "/elder-rings/api/media/sounds/:filename",
     alias: "getElderRingsapimediasoundsFilename",
     requestFormat: "json",

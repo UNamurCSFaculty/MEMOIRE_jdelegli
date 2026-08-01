@@ -382,6 +382,125 @@ export default function UserPreferencesForm({
               />
             </div>
           </section>
+        </div>
+
+        <div className="flex flex-col gap-4 flex-1 basis-96 min-w-0">
+          {/* Audio */}
+          <section>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">
+                {t("Components.UserPreferencesForm.AudioTitle")}
+              </h2>
+              <Separator />
+              <Checkbox
+                isSelected={formData.audio?.compression}
+                onChange={(isSelected: boolean) => handleChange("audio", "compression", isSelected)}
+                aria-label={t("Components.UserPreferencesForm.EnableAudioCompression")}
+              >
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  {t("Components.UserPreferencesForm.EnableAudioCompression")}
+                </Checkbox.Content>
+              </Checkbox>
+              <Checkbox
+                isSelected={formData.audio?.playInterfaceSounds}
+                onChange={(isSelected: boolean) =>
+                  handleChange("audio", "playInterfaceSounds", isSelected)
+                }
+                aria-label={t("Components.UserPreferencesForm.PlayInterfaceSounds")}
+              >
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Content>
+                  {t("Components.UserPreferencesForm.PlayInterfaceSounds")}
+                </Checkbox.Content>
+              </Checkbox>
+              <div className="flex flex-col gap-3 rounded-lg bg-white/70 p-3 dark:bg-black/30">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-md font-semibold">
+                    {t("Components.UserPreferencesForm.AudioFilters")}
+                  </h3>
+                  <Button
+                    onPress={addAudioFilter}
+                    aria-label={t("Components.UserPreferencesForm.AddFilter")}
+                    variant="secondary"
+                  >
+                    <IconAdd />
+                    {t("Components.UserPreferencesForm.AddFilter")}
+                  </Button>
+                </div>
+                {formData.audio?.filters?.length && formData.audio?.filters?.length > 0 && (
+                  <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-3 text-sm italic text-slate-700 sm:grid dark:text-slate-200">
+                    <p>{t("Components.UserPreferencesForm.FrequencyPlaceholder")}</p>
+                    <p>{t("Components.UserPreferencesForm.GainPlaceholder")}</p>
+                    <span className="sr-only">
+                      {t("Components.UserPreferencesForm.RemoveFilter")}
+                    </span>
+                  </div>
+                )}
+                {formData.audio?.filters?.map((filter, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center"
+                  >
+                    <NumberField
+                      value={filter.frequency}
+                      onChange={(value) => updateAudioFilter(index, "frequency", value)}
+                      aria-label={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
+                      minValue={100}
+                      maxValue={20000}
+                      className="min-w-28 w-full"
+                    >
+                      <NumberField.Group>
+                        <NumberField.DecrementButton />
+                        <NumberField.Input
+                          placeholder={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
+                        />
+                        <NumberField.IncrementButton />
+                      </NumberField.Group>
+                    </NumberField>
+                    <NumberField
+                      value={filter.gain}
+                      onChange={(value) => updateAudioFilter(index, "gain", value)}
+                      aria-label={t("Components.UserPreferencesForm.GainPlaceholder")}
+                      minValue={-100}
+                      maxValue={100}
+                      className="min-w-28 w-full"
+                    >
+                      <NumberField.Group>
+                        <NumberField.DecrementButton />
+                        <NumberField.Input
+                          placeholder={t("Components.UserPreferencesForm.GainPlaceholder")}
+                        />
+                        <NumberField.IncrementButton />
+                      </NumberField.Group>
+                    </NumberField>
+                    <Button
+                      onPress={() => removeAudioFilter(index)}
+                      isIconOnly
+                      aria-label={t("Components.UserPreferencesForm.RemoveFilter")}
+                      variant="danger-soft"
+                      className="justify-self-start sm:justify-self-center"
+                    >
+                      <IconRemove />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col gap-2 pl-2">
+                <h3 className="text-md font-semibold">
+                  {t("Components.UserPreferencesForm.TestConfigTitle")}
+                </h3>
+                <AudioSampleTest
+                  eqBands={formData.audio?.filters ?? []}
+                  compression={formData.audio?.compression ?? false}
+                />
+              </div>
+            </div>
+          </section>
           {/* Call policy */}
           {showCallPolicySection && (
             <section>
@@ -447,123 +566,6 @@ export default function UserPreferencesForm({
             </section>
           )}
         </div>
-
-        {/* Audio */}
-        <section className="flex-1 basis-96 min-w-0">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-semibold">
-              {t("Components.UserPreferencesForm.AudioTitle")}
-            </h2>
-            <Separator />
-            <Checkbox
-              isSelected={formData.audio?.compression}
-              onChange={(isSelected: boolean) => handleChange("audio", "compression", isSelected)}
-              aria-label={t("Components.UserPreferencesForm.EnableAudioCompression")}
-            >
-              <Checkbox.Control>
-                <Checkbox.Indicator />
-              </Checkbox.Control>
-              <Checkbox.Content>
-                {t("Components.UserPreferencesForm.EnableAudioCompression")}
-              </Checkbox.Content>
-            </Checkbox>
-            <Checkbox
-              isSelected={formData.audio?.playInterfaceSounds}
-              onChange={(isSelected: boolean) =>
-                handleChange("audio", "playInterfaceSounds", isSelected)
-              }
-              aria-label={t("Components.UserPreferencesForm.PlayInterfaceSounds")}
-            >
-              <Checkbox.Control>
-                <Checkbox.Indicator />
-              </Checkbox.Control>
-              <Checkbox.Content>
-                {t("Components.UserPreferencesForm.PlayInterfaceSounds")}
-              </Checkbox.Content>
-            </Checkbox>
-            <div className="flex flex-col gap-3 rounded-lg bg-white/70 p-3 dark:bg-black/30">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-md font-semibold">
-                  {t("Components.UserPreferencesForm.AudioFilters")}
-                </h3>
-                <Button
-                  onPress={addAudioFilter}
-                  aria-label={t("Components.UserPreferencesForm.AddFilter")}
-                  variant="secondary"
-                >
-                  <IconAdd />
-                  {t("Components.UserPreferencesForm.AddFilter")}
-                </Button>
-              </div>
-              {formData.audio?.filters?.length && formData.audio?.filters?.length > 0 && (
-                <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-3 text-sm italic text-slate-700 sm:grid dark:text-slate-200">
-                  <p>{t("Components.UserPreferencesForm.FrequencyPlaceholder")}</p>
-                  <p>{t("Components.UserPreferencesForm.GainPlaceholder")}</p>
-                  <span className="sr-only">
-                    {t("Components.UserPreferencesForm.RemoveFilter")}
-                  </span>
-                </div>
-              )}
-              {formData.audio?.filters?.map((filter, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center"
-                >
-                  <NumberField
-                    value={filter.frequency}
-                    onChange={(value) => updateAudioFilter(index, "frequency", value)}
-                    aria-label={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
-                    minValue={100}
-                    maxValue={20000}
-                    className="min-w-28 w-full"
-                  >
-                    <NumberField.Group>
-                      <NumberField.DecrementButton />
-                      <NumberField.Input
-                        placeholder={t("Components.UserPreferencesForm.FrequencyPlaceholder")}
-                      />
-                      <NumberField.IncrementButton />
-                    </NumberField.Group>
-                  </NumberField>
-                  <NumberField
-                    value={filter.gain}
-                    onChange={(value) => updateAudioFilter(index, "gain", value)}
-                    aria-label={t("Components.UserPreferencesForm.GainPlaceholder")}
-                    minValue={-100}
-                    maxValue={100}
-                    className="min-w-28 w-full"
-                  >
-                    <NumberField.Group>
-                      <NumberField.DecrementButton />
-                      <NumberField.Input
-                        placeholder={t("Components.UserPreferencesForm.GainPlaceholder")}
-                      />
-                      <NumberField.IncrementButton />
-                    </NumberField.Group>
-                  </NumberField>
-                  <Button
-                    onPress={() => removeAudioFilter(index)}
-                    isIconOnly
-                    aria-label={t("Components.UserPreferencesForm.RemoveFilter")}
-                    variant="danger-soft"
-                    className="justify-self-start sm:justify-self-center"
-                  >
-                    <IconRemove />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2 pl-2">
-              <h3 className="text-md font-semibold">
-                {t("Components.UserPreferencesForm.TestConfigTitle")}
-              </h3>
-              <AudioSampleTest
-                eqBands={formData.audio?.filters ?? []}
-                compression={formData.audio?.compression ?? false}
-              />
-            </div>
-          </div>
-        </section>
       </div>
 
       <div className="flex flex-wrap justify-center mt-auto gap-2 pt-4">

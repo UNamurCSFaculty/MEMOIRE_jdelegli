@@ -50,6 +50,10 @@
       "AcceptCall": "Accept call",
       "DeclineCall": "Decline call"
     },
+    "PendingRequestsBadge": {
+      "Label_one": "{{count}} pending contact request",
+      "Label_other": "{{count}} pending contact requests"
+    },
     "ContactRequestModal": {
       "Title": "You have one or more contact requests",
       "ContactPictureAlt": "{{name}}'s photo",
@@ -145,7 +149,14 @@
     },
     "ResidentSettingsPage": {
       "Title": "{{name}}'s settings",
-      "AutonomyLevel": "Autonomy level"
+      "AutonomyLevel": "Autonomy level",
+      "PendingRequestsTitle": "Pending contact requests",
+      "NoPendingRequests": "No pending requests.",
+      "RequestAccepted": "{{name}}'s request has been accepted.",
+      "RequestDeclined": "{{name}}'s request has been declined.",
+      "RequestResponseFailed": "The request could not be handled. Please try again.",
+      "AcceptRequest": "Accept",
+      "DeclineRequest": "Decline"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "No users found"
