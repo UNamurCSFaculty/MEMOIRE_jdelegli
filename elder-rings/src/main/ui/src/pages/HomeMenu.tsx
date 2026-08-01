@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import {
   IconContact,
-  IconEvent,
+  //IconEvent,
   IconGear,
   IconDoNotDisturb,
   IconRooms,
   IconSettings,
 } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
-import WeatherSnippet from "@components/weather/WeatherSnippet";
+//import WeatherSnippet from "@components/weather/WeatherSnippet";
 import { apiClient } from "@openapi/zodiosClient";
 import { notifySuccess } from "@utils/notifyUtil";
 import { Button } from "@heroui/react";
@@ -18,6 +18,7 @@ import { useUser } from "../hooks/useUser";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import DndBanner from "@components/dnd/DndBanner";
 import { useDndStatus } from "../hooks/useDndStatus";
+import PendingRequestsBadge from "@components/addContact/PendingRequestsBadge";
 
 export default function HomeMenu() {
   const navigate = useNavigate();
@@ -58,21 +59,21 @@ export default function HomeMenu() {
         onClick: () => navigate("/contacts"),
         icon: IconContact,
       },
-      {
-        label: "Events",
-        onClick: () => navigate("/events"),
-        icon: IconEvent,
-      },
+      // {
+      //   label: "Events",
+      //   onClick: () => navigate("/events"),
+      //   icon: IconEvent,
+      // },
       {
         label: "Preference",
         onClick: () => navigate("/user-preferences"),
         icon: IconGear,
       },
-      {
-        label: "Weather",
-        onClick: () => navigate("/weather"),
-        render: () => <WeatherSnippet />,
-      },
+      // {
+      //   label: "Weather",
+      //   onClick: () => navigate("/weather"),
+      //   render: () => <WeatherSnippet />,
+      // },
       {
         label: "DoNotDisturbButton.Label",
         onClick: () => toggleDoNotDisturb(),
@@ -94,6 +95,12 @@ export default function HomeMenu() {
               label: "TutoredResident",
               onClick: () => navigate(`/residents/${user.tutorOfResidentId}/settings`),
               icon: IconSettings,
+              badge: (
+                <PendingRequestsBadge
+                  userId={user.tutorOfResidentId}
+                  className="absolute -top-2 -right-2"
+                />
+              ),
             },
           ]
         : []),
@@ -164,16 +171,17 @@ export default function HomeMenu() {
               key={option.label}
               onClick={option.onClick}
               className={twMerge(
-                "h-full transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
+                "relative h-full transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
                 isAloneOnRow && "col-span-2",
                 option.className,
               )}
             >
-              {option.render ? (
+              {option.badge}
+              {/* {option.render ? (
                 option.render()
-              ) : (
-                <option.icon className="mb-4 drop-shadow w-32 h-32" />
-              )}
+              ) : ( */}
+              <option.icon className="mb-4 drop-shadow w-32 h-32" />
+              {/* )} */}
               <span className="text-3xl font-semibold drop-shadow">
                 {t(`Pages.HomeMenu.${option.label}`)}
               </span>

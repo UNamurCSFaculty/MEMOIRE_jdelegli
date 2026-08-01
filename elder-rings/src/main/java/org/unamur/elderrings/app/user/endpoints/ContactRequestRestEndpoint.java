@@ -12,8 +12,10 @@ import org.unamur.elderrings.app.user.mappers.ContactRequestMapper;
 import org.unamur.elderrings.modules.authentication.services.ConnectedUser;
 import org.unamur.elderrings.modules.user.api.CreateContactRequest;
 import org.unamur.elderrings.modules.user.api.GetPendingContactRequests;
+import org.unamur.elderrings.modules.user.api.ResidentAccessPolicy;
 import org.unamur.elderrings.modules.user.api.RespondToContactRequest;
 
+import io.quarkus.security.ForbiddenException;
 import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -33,6 +35,7 @@ public class ContactRequestRestEndpoint {
   private final GetPendingContactRequests getPendingContactRequests;
   private final RespondToContactRequest respondToContactRequest;
   private final ConnectedUser connectedUser;
+  private final ResidentAccessPolicy residentAccessPolicy;
 
   @GET
   @Path("/pending")
@@ -40,6 +43,21 @@ public class ContactRequestRestEndpoint {
   @Operation(operationId = "getPendingRequests")
   public List<ContactRequestDto> getPendingRequests() {
     return getPendingContactRequests.getPendingRequestsForUser(connectedUser.getId())
+        .stream()
+        .map(ContactRequestMapper::toDto)
+        .toList();
+  }
+
+  @GET
+  @Path("/pending/of-user")
+  @PermitAll // Guard is managed in the route by the ResidentAccessPolicy
+  @Operation(operationId = "getPendingRequestsOfUser")
+  public List<ContactRequestDto> getPendingRequestsOfUser(@QueryParam("userId") UUID userId) {
+    if (!residentAccessPolicy.canManage(userId)) {
+      throw new ForbiddenException("Not allowed to manage this resident's contact requests");
+    }
+
+    return getPendingContactRequests.getPendingRequestsForUser(userId)
         .stream()
         .map(ContactRequestMapper::toDto)
         .toList();

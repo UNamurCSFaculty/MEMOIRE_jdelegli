@@ -50,6 +50,10 @@
       "AcceptCall": "Oproep accepteren",
       "DeclineCall": "Oproep weigeren"
     },
+    "PendingRequestsBadge": {
+      "Label_one": "{{count}} openstaand contactverzoek",
+      "Label_other": "{{count}} openstaande contactverzoeken"
+    },
     "ContactRequestModal": {
       "Title": "Je hebt een of meerdere contactverzoeken",
       "ContactPictureAlt": "Foto van {{name}}",
@@ -145,7 +149,14 @@
     },
     "ResidentSettingsPage": {
       "Title": "Instellingen van {{name}}",
-      "AutonomyLevel": "Zelfstandigheidsniveau"
+      "AutonomyLevel": "Zelfstandigheidsniveau",
+      "PendingRequestsTitle": "Openstaande contactverzoeken",
+      "NoPendingRequests": "Geen openstaande verzoeken.",
+      "RequestAccepted": "Het verzoek van {{name}} is geaccepteerd.",
+      "RequestDeclined": "Het verzoek van {{name}} is geweigerd.",
+      "RequestResponseFailed": "Het verzoek kon niet worden verwerkt. Probeer opnieuw.",
+      "AcceptRequest": "Accepteren",
+      "DeclineRequest": "Weigeren"
     },
     "AddContactPage": {
       "NoVisibleUserFound": "Geen gebruikers gevonden"

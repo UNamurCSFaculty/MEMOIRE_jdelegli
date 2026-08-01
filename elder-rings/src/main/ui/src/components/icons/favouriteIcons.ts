@@ -21,3 +21,5 @@ export { default as IconRooms } from "~icons/mdi/bed-outline";
 export { default as IconSettings } from "~icons/mdi/cog-outline";
 export { default as IconLock } from "~icons/mdi/lock-outline";
 export { default as IconLockOpen } from "~icons/mdi/lock-open-variant-outline";
+export { default as IconCheck } from "~icons/mdi/check";
+export { default as IconClose } from "~icons/mdi/close";
