@@ -9,8 +9,11 @@ import org.unamur.elderrings.infra.user.entities.UserEntity;
 import org.unamur.elderrings.infra.user.repositories.UserContactRepository;
 import org.unamur.elderrings.infra.user.repositories.UserContactRequestRepository;
 import org.unamur.elderrings.infra.user.repositories.UserRepository;
+import org.unamur.elderrings.modules.authentication.services.ConnectedUser;
+import org.unamur.elderrings.modules.user.api.ResidentAccessPolicy;
 import org.unamur.elderrings.modules.user.api.RespondToContactRequest;
 
+import io.quarkus.security.ForbiddenException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,10 @@ public class RespondToContactRequestImpl implements RespondToContactRequest {
 
     private final UserRepository userRepository;
 
+    private final ConnectedUser connectedUser;
+
+    private final ResidentAccessPolicy residentAccessPolicy;
+
     @Transactional
     @Override
     public void respondToRequest(UUID requestId, boolean accepted) {
@@ -39,6 +46,13 @@ public class RespondToContactRequestImpl implements RespondToContactRequest {
 
       if (request.getStatus() != UserContactRequestEntity.ContactRequestStatusEntity.PENDING) {
           throw new IllegalStateException("Request already handled");
+      }
+
+      // Only the request's target, or someone allowed to manage the target
+      // (staff, or the target's tutor), may answer it
+      UUID targetId = request.getTarget().getId();
+      if (!targetId.equals(connectedUser.getId()) && !residentAccessPolicy.canManage(targetId)) {
+          throw new ForbiddenException("Not allowed to answer this contact request");
       }
 
       if (accepted) {
