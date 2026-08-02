@@ -25,10 +25,12 @@ import org.unamur.elderrings.app.user.mappers.ResidentMapper;
 import org.unamur.elderrings.app.user.mappers.UserMapper;
 import org.unamur.elderrings.app.user.mappers.UserPreferencesDtoMapper;
 import org.unamur.elderrings.modules.user.api.GetAllVisibleUsers;
+import org.unamur.elderrings.modules.user.api.GetResidentTutors;
 import org.unamur.elderrings.modules.user.api.GetUser;
 import org.unamur.elderrings.modules.user.api.GetUserContacts;
 import org.unamur.elderrings.modules.user.api.GetUserPicture;
 import org.unamur.elderrings.modules.user.api.GetUserPreferences;
+import org.unamur.elderrings.modules.user.api.RemoveTutor;
 import org.unamur.elderrings.modules.user.api.ResidentAccessPolicy;
 import org.unamur.elderrings.modules.user.api.SetUserPicture;
 import org.unamur.elderrings.modules.user.api.UpdateResidentSettings;
@@ -37,11 +39,14 @@ import org.unamur.elderrings.modules.user.api.models.Resident;
 
 import io.quarkus.security.ForbiddenException;
 
+import org.unamur.elderrings.modules.user.api.AssignTutor;
+import org.unamur.elderrings.modules.user.api.GetAllFamilies;
 import org.unamur.elderrings.modules.user.api.GetAllResidents;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -69,6 +74,10 @@ public class UserRestEndpoint {
   private final GetAllResidents getAllResidents;
   private final UpdateResidentSettings updateResidentSettings;
   private final ResidentAccessPolicy residentAccessPolicy;
+  private final GetResidentTutors getResidentTutors;
+  private final GetAllFamilies getAllFamilies;
+  private final AssignTutor assignTutor;
+  private final RemoveTutor removeTutor;
 
   @GET
   @Path("/me")
@@ -209,4 +218,45 @@ public class UserRestEndpoint {
     return RestResponse.ok(setUserPicture.setPictureForUser(userId, imageBytes));
   }
 
+  @GET
+  @Path("/families")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("staff")
+  @Operation(operationId = "getFamilies")
+  public RestResponse<List<ContactDto>> getFamilies() {
+    return RestResponse.ok(
+        getAllFamilies.getAllFamilies().stream().map(ContactMapper::toDto).toList());
+  }
+
+  @GET
+  @Path("/tutors/of-resident")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("staff")
+  @Operation(operationId = "getResidentTutors")
+  public RestResponse<List<ContactDto>> getTutorsOfUser(@QueryParam("residentId") UUID residentId) {
+    return RestResponse.ok(
+        getResidentTutors.getTutorsOfResident(residentId).stream().map(ContactMapper::toDto).toList());
+  }
+
+  @POST
+  @Path("/tutors/of-resident")
+  @RolesAllowed("staff")
+  @Operation(operationId = "assignTutor")
+  public RestResponse<Void> assignTutorOfUser(
+      @QueryParam("residentId") UUID residentId,
+      @QueryParam("tutorId") UUID tutorId) {
+    assignTutor.assignTutor(tutorId, residentId);
+    return RestResponse.ok();
+  }
+
+  @DELETE
+  @Path("/tutors/of-resident")
+  @RolesAllowed("staff")
+  @Operation(operationId = "removeTutor")
+  public RestResponse<Void> removeTutorOfUser(
+      @QueryParam("residentId") UUID residentId,
+      @QueryParam("tutorId") UUID tutorId) {
+    removeTutor.removeTutor(tutorId, residentId);
+    return RestResponse.ok();
+  }
 }

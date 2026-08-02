@@ -50,6 +50,18 @@
       "AcceptCall": "Oproep accepteren",
       "DeclineCall": "Oproep weigeren"
     },
+    "ResidentTutors": {
+      "Title": "Voogden",
+      "NoTutors": "Geen voogd.",
+      "RemoveTutor": "{{name}} verwijderen als voogd",
+      "SearchLabel": "Voogd toevoegen",
+      "SearchPlaceholder": "Zoek op naam of gebruikersnaam",
+      "AddTutor": "{{name}} toevoegen als voogd",
+      "NoMatch": "Geen familieaccount gevonden.",
+      "TutorAdded": "{{name}} is nu voogd.",
+      "TutorRemoved": "{{name}} is geen voogd meer.",
+      "ActionFailed": "De bewerking is mislukt. Probeer opnieuw."
+    },
     "PendingRequestsBadge": {
       "Label_one": "{{count}} openstaand contactverzoek",
       "Label_other": "{{count}} openstaande contactverzoeken"

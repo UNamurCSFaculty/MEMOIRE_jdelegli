@@ -10,7 +10,7 @@ interface BackHomeButtonProps extends Partial<ButtonProps> {
 }
 
 export default function BackHomeButton({
-  shortcuts = ["h"],
+  shortcuts = [],
   ref,
   ...rest
 }: Readonly<BackHomeButtonProps>) {
@@ -18,6 +18,8 @@ export default function BackHomeButton({
   const { t } = useTranslation();
 
   useEffect(() => {
+    if (shortcuts.length === 0) return;
+
     const handleKey = (e: KeyboardEvent) => {
       if (shortcuts.includes(e.key)) {
         e.preventDefault();

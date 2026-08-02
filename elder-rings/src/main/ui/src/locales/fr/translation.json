@@ -50,6 +50,18 @@
       "AcceptCall": "Accepter l'appel",
       "DeclineCall": "Refuser l'appel"
     },
+    "ResidentTutors": {
+      "Title": "Tuteurs",
+      "NoTutors": "Aucun tuteur.",
+      "RemoveTutor": "Retirer {{name}} des tuteurs",
+      "SearchLabel": "Ajouter un tuteur",
+      "SearchPlaceholder": "Cherchez par nom ou nom d'utilisateur",
+      "AddTutor": "Ajouter {{name}} comme tuteur",
+      "NoMatch": "Aucun compte famille trouvé.",
+      "TutorAdded": "{{name}} est maintenant tuteur.",
+      "TutorRemoved": "{{name}} n'est plus tuteur.",
+      "ActionFailed": "L'opération a échoué. Réessayez."
+    },
     "PendingRequestsBadge": {
       "Label_one": "{{count}} demande de contact en attente",
       "Label_other": "{{count}} demandes de contact en attente"

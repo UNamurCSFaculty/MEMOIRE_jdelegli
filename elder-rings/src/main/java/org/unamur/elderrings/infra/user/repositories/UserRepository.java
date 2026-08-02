@@ -19,13 +19,13 @@ import lombok.AllArgsConstructor;
 
 @ApplicationScoped
 @AllArgsConstructor
-public class UserRepository implements PanacheRepository<UserEntity>  {
+public class UserRepository implements PanacheRepository<UserEntity> {
 
-  private final UserPictureRepository userPictureRepository; 
+  private final UserPictureRepository userPictureRepository;
 
   // Get user by id
   public Optional<UserEntity> getUserById(UUID id) {
-    return find("id", id).firstResultOptional();  // Panache's findById() returns null if not found
+    return find("id", id).firstResultOptional(); // Panache's findById() returns null if not found
   }
 
   public void saveUser(UserEntity userEntity) {
@@ -35,7 +35,7 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
   // Update user by ID
   @Transactional
   public UserEntity createOrUpdateUser(UUID id, String username, String firstname, String lastname, UserType type) {
-    
+
     // Find the user by ID
     Optional<UserEntity> userOpt = getUserById(id);
 
@@ -43,14 +43,15 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
       UserEntity user = userOpt.get();
 
       if (!expectedClass(type).isInstance(user)) {
-        Log.warnf("User %s has type %s in token but was created as %s. Type change requires manual migration", username, type, user.getClass().getSimpleName());
+        Log.warnf("User %s has type %s in token but was created as %s. Type change requires manual migration", username,
+            type, user.getClass().getSimpleName());
       }
-          
+
       // Update fields
       user.setUsername(username);
       user.setFirstName(firstname);
       user.setLastName(lastname);
-          
+
       // Persist the updated user entity
       persist(user);
       return user;
@@ -68,7 +69,6 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
       user.setFirstName(firstname);
       user.setLastName(lastname);
 
-
       // Create user entity
       persist(user);
       return user;
@@ -77,14 +77,14 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
 
   @Transactional
   public UUID setUserPicture(UUID userId, byte[] image) {
-    Optional<UserEntity> userOpt = getUserById(userId);  // Fetch the user by ID
+    Optional<UserEntity> userOpt = getUserById(userId); // Fetch the user by ID
     if (userOpt.isPresent()) {
       UserEntity user = userOpt.get();
       UserPictureEntity userPicture = new UserPictureEntity();
       userPicture.setImage(image);
       userPictureRepository.persistAndFlush(userPicture);
-      user.setPicture(userPicture);  // Assuming you've set up a setProfilePicture method in UserEntity
-      persist(user);  // Save the updated user with the new profile picture
+      user.setPicture(userPicture); // Assuming you've set up a setProfilePicture method in UserEntity
+      persist(user); // Save the updated user with the new profile picture
       return userPicture.getId();
     } else {
       throw new IllegalArgumentException("User not found");
@@ -99,21 +99,35 @@ public class UserRepository implements PanacheRepository<UserEntity>  {
 
   public List<UserEntity> findAllVisibleUsersExcluding(UUID excludedUserId) {
     return find("""
-        SELECT u FROM UserEntity u
-        WHERE u.preferences.general.isPublic = true
-        AND u.id <> ?1
-    """, excludedUserId).list();
+            SELECT u FROM UserEntity u
+            WHERE u.preferences.general.isPublic = true
+            AND u.id <> ?1
+        """, excludedUserId).list();
   }
 
   public List<UserEntity> findAllResidents() {
     return find("SELECT r FROM ResidentEntity r").list();
   }
-  
+
   private Class<? extends UserEntity> expectedClass(UserType type) {
     return switch (type) {
-        case RESIDENT -> ResidentEntity.class;
-        case STAFF    -> StaffEntity.class;
-        case FAMILY   -> FamilyEntity.class;
+      case RESIDENT -> ResidentEntity.class;
+      case STAFF -> StaffEntity.class;
+      case FAMILY -> FamilyEntity.class;
     };
-}
+  }
+
+  public List<FamilyEntity> findAllFamilies() {
+    return getEntityManager()
+        .createQuery("SELECT f FROM FamilyEntity f", FamilyEntity.class)
+        .getResultList();
+  }
+
+  public List<FamilyEntity> findTutorsOfResident(UUID residentId) {
+    return getEntityManager()
+        .createQuery("SELECT f FROM FamilyEntity f WHERE f.tutorOf.id = :residentId", FamilyEntity.class)
+        .setParameter("residentId", residentId)
+        .getResultList();
+  }
+
 }
