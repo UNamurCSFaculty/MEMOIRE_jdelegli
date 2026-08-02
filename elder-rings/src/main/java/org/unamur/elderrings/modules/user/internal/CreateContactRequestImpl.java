@@ -1,5 +1,6 @@
 package org.unamur.elderrings.modules.user.internal;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,11 +47,21 @@ public class CreateContactRequestImpl implements CreateContactRequest {
             throw new IllegalStateException("A pending request already exists between users");
         }
 
+        // A previously handled request for this pair keeps its row (unique
+        // constraint on requester/target): reuse it instead of inserting a duplicate
+        Optional<UserContactRequestEntity> previous = requestRepository.findByRequesterAndTarget(requesterId, targetId);
+        if (previous.isPresent()) {
+            UserContactRequestEntity request = previous.get();
+            request.setStatus(UserContactRequestEntity.ContactRequestStatusEntity.PENDING);
+            request.setUpdatedAt(Instant.now());
+            return request.getId();
+        }
+
         UserContactRequestEntity request = new UserContactRequestEntity();
         request.setRequester(requesterOpt.get());
         request.setTarget(targetOpt.get());
         request.setStatus(UserContactRequestEntity.ContactRequestStatusEntity.PENDING);
-        
+
         requestRepository.persist(request);
         return request.getId();
     }
