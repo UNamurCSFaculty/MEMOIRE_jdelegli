@@ -415,6 +415,25 @@ const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/elder-rings/api/user/families",
+    alias: "getFamilies",
+    requestFormat: "json",
+    response: z.array(ContactDto),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
+    method: "get",
     path: "/elder-rings/api/user/get",
     alias: "getUser",
     requestFormat: "json",
@@ -611,6 +630,124 @@ const endpoints = makeApi([
         /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
       )
       .uuid(),
+  },
+  {
+    method: "delete",
+    path: "/elder-rings/api/user/tutors/of-resident",
+    alias: "removeTutor",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "residentId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+      {
+        name: "tutorId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z.void(),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/user/tutors/of-resident",
+    alias: "getResidentTutors",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "residentId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z.array(ContactDto),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/user/tutors/of-resident",
+    alias: "assignTutor",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "residentId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+      {
+        name: "tutorId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid()
+          .optional(),
+      },
+    ],
+    response: z.void(),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
   },
 ]);
 

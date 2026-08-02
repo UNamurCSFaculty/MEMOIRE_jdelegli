@@ -12,10 +12,12 @@ import UserPreferencesForm from "@components/userPreferences/UserPreferencesForm
 import LoadingPage from "./generic/LoadingPage";
 import { CALL_POLICY_FLOOR } from "@utils/callPolicyFloor";
 import { notifyError, notifySuccess } from "@utils/notifyUtil";
-import { Avatar, Label, ListBox, Select, Button } from "@heroui/react";
+import { Avatar, Label, ListBox, Select } from "@heroui/react";
 import { useUser } from "../hooks/useUser";
 import { ContactRequestWithUser } from "@components/addContact/ContactRequestModal";
 import { IconCheck, IconClose } from "@components/icons/favouriteIcons";
+import ResidentTutors from "@components/residentSettings/ResidentTutors";
+import UserRow from "@components/residentSettings/UserRow";
 
 export default function ResidentSettingsPage() {
   const { t } = useTranslation();
@@ -170,41 +172,28 @@ export default function ResidentSettingsPage() {
           </p>
         )}
         {pendingRequests.map(({ request, requester }) => (
-          <div key={request.id} className="flex items-center gap-4 bg-white/30 p-2 rounded-lg">
-            <Avatar className="size-10">
-              <Avatar.Image
-                src={requester.picture ? `data:image/*;base64,${requester.picture}` : undefined}
-                alt={`${requester.firstName} ${requester.lastName}`}
-              />
-              <Avatar.Fallback>
-                {requester.firstName?.[0]}
-                {requester.lastName?.[0]}
-              </Avatar.Fallback>
-            </Avatar>
-            <p>
-              {requester.firstName} {requester.lastName}
-            </p>
-            <div className="flex gap-2 ml-auto">
-              <Button
-                onPress={() => handleRequestResponse(request.id!, true)}
-                isIconOnly
-                variant="primary"
-                aria-label={t("Pages.ResidentSettingsPage.AcceptRequest")}
-              >
-                <IconCheck />
-              </Button>
-              <Button
-                onPress={() => handleRequestResponse(request.id!, false)}
-                isIconOnly
-                variant="danger"
-                aria-label={t("Pages.ResidentSettingsPage.DeclineRequest")}
-              >
-                <IconClose />
-              </Button>
-            </div>
-          </div>
+          <UserRow
+            key={request.id}
+            user={requester}
+            actions={[
+              {
+                icon: <IconCheck />,
+                label: t("Pages.ResidentSettingsPage.AcceptRequest"),
+                onClick: () => handleRequestResponse(request.id!, true),
+                variant: "primary",
+              },
+              {
+                icon: <IconClose />,
+                label: t("Pages.ResidentSettingsPage.DeclineRequest"),
+                onClick: () => handleRequestResponse(request.id!, false),
+                variant: "danger",
+              },
+            ]}
+          />
         ))}
       </section>
+
+      {user.userType === "STAFF" && <ResidentTutors residentId={id} />}
 
       <UserPreferencesForm
         preferences={preferences}

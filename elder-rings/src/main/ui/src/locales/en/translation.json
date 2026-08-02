@@ -50,6 +50,18 @@
       "AcceptCall": "Accept call",
       "DeclineCall": "Decline call"
     },
+    "ResidentTutors": {
+      "Title": "Tutors",
+      "NoTutors": "No tutor.",
+      "RemoveTutor": "Remove {{name}} from the tutors",
+      "SearchLabel": "Add a tutor",
+      "SearchPlaceholder": "Search by name or username",
+      "AddTutor": "Add {{name}} as a tutor",
+      "NoMatch": "No family account found.",
+      "TutorAdded": "{{name}} is now a tutor.",
+      "TutorRemoved": "{{name}} is no longer a tutor.",
+      "ActionFailed": "The operation failed. Please try again."
+    },
     "PendingRequestsBadge": {
       "Label_one": "{{count}} pending contact request",
       "Label_other": "{{count}} pending contact requests"
