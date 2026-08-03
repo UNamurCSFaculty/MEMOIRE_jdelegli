@@ -3,7 +3,12 @@
     "LoadingSuspension": "Loading...",
     "Back": "Back",
     "GoBackHome": "Go back home.",
-    "DoNotDisturb": "{{name}} does not want to be disturbed at the moment"
+    "DoNotDisturb": "{{name}} does not want to be disturbed at the moment",
+    "DndToggle": {
+      "Notification": "Do Not Disturb is now {{status}}",
+      "Enabled": "enabled",
+      "Disabled": "disabled"
+    }
   },
   "Components": {
     "Errors": {
@@ -129,16 +134,13 @@
       "Preference": "Preferences",
       "Weather": "Weather",
       "DoNotDisturbButton": {
-        "Label": "Do Not Disturb",
-        "notification": "Do Not Disturb is now {{status}}",
-        "Enabled": "enabled",
-        "Disabled": "disabled"
+        "Label": "Do Not Disturb"
       },
       "Residents": "Residents",
       "TutoredResident": "My relative's settings"
     },
     "CallRoom": {
-      "UserLeft": "Your contact left the conversation",
+      "UserLeftCall": "Your contact left the call",
       "UserRejectedCall": "Your contact declined the call",
       "WaitingUserToJoin": "Waiting for your contact to join",
       "EndCall": "Hang up",
@@ -147,7 +149,11 @@
       "DisplayVideo": "Show webcam",
       "HideVideo": "Hide webcam",
       "Mute": "Mute",
-      "Unmute": "Unmute"
+      "Unmute": "Unmute",
+      "CameraOffBadge": "Your camera is off",
+      "MicOffBadge": "Your microphone is off",
+      "CameraOffHint": "Press the <1></1> button on the remote to turn it on",
+      "MicOffHint": "Press the <1></1> button on the remote to turn it on"
     },
     "ContactPage": {
       "NoContactsFound": "No contacts found"
