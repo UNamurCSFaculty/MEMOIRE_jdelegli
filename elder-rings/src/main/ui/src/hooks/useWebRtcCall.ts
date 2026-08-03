@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import useWebSocket from "react-use-websocket";
+import { notifyWarning } from "@utils/notifyUtil";
 import {
   answerCall,
   closeAllConnections,
@@ -23,6 +26,8 @@ import { webrtcWebSocketEventMessage } from "@type/rtcWebSocketEventMessage";
  * almost simultaneously (e.g. with auto-answer enabled).
  */
 export function useWebRtcCall(roomId: string, cameraOn?: boolean | null, isCallee?: boolean) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -34,7 +39,6 @@ export function useWebRtcCall(roomId: string, cameraOn?: boolean | null, isCalle
 
   const [isCallStarted, setIsCallStarted] = useState<boolean>(false);
   const [userConnected, setUserConnected] = useState<boolean>(false);
-  const [userLeft, setUserLeft] = useState<boolean>(false);
   const [userRejectedCall, setUserRejectedCall] = useState<boolean>(false);
 
   const closeAllConnectionsAndSessions = () => {
@@ -127,8 +131,10 @@ export function useWebRtcCall(roomId: string, cameraOn?: boolean | null, isCalle
           break;
         }
         case "CALL_ROOM_USER_LEFT": {
-          setUserLeft(true);
+          // the correspondent left: warn and go straight back home
           closeAllConnectionsAndSessions();
+          notifyWarning(t("Pages.CallRoom.UserLeftCall"));
+          navigate("/");
           break;
         }
         case "CALL_ROOM_USER_REJECTED_CALL": {
@@ -152,7 +158,6 @@ export function useWebRtcCall(roomId: string, cameraOn?: boolean | null, isCalle
     peerConnection,
     isCallStarted,
     userConnected,
-    userLeft,
     userRejectedCall,
     endCall,
   };

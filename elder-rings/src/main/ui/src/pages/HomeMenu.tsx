@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import {
@@ -11,11 +11,9 @@ import {
 } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 //import WeatherSnippet from "@components/weather/WeatherSnippet";
-import { apiClient } from "@openapi/zodiosClient";
-import { notifySuccess } from "@utils/notifyUtil";
 import { Button } from "@heroui/react";
 import { useUser } from "../hooks/useUser";
-import { useUserPreferences } from "../hooks/useUserPreferences";
+import { useToggleDnd } from "../hooks/useToggleDnd";
 import DndBanner from "@components/dnd/DndBanner";
 import { useDndStatus } from "../hooks/useDndStatus";
 import PendingRequestsBadge from "@components/addContact/PendingRequestsBadge";
@@ -24,33 +22,9 @@ export default function HomeMenu() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const user = useUser();
-  const { userPreferences, refreshUserPreferences } = useUserPreferences();
   const { active: dndActive } = useDndStatus();
 
-  const toggleDoNotDisturb = useCallback(async () => {
-    const durationMinutes = userPreferences.dnd?.durationMinutes ?? null;
-    const activate = !dndActive;
-
-    const resp = await apiClient.updateCurrentUserPreferences({
-      ...userPreferences,
-      dnd: {
-        ...userPreferences.dnd,
-        enabled: activate && durationMinutes == null,
-        until:
-          activate && durationMinutes != null
-            ? new Date(Date.now() + durationMinutes * 60_000).toISOString()
-            : undefined,
-      },
-    });
-    await refreshUserPreferences();
-    notifySuccess(
-      t(`Pages.HomeMenu.DoNotDisturbButton.notification`, {
-        status: resp.dnd?.active
-          ? t("Pages.HomeMenu.DoNotDisturbButton.Enabled")
-          : t("Pages.HomeMenu.DoNotDisturbButton.Disabled"),
-      }),
-    );
-  }, [dndActive, userPreferences, refreshUserPreferences, t]);
+  const toggleDoNotDisturb = useToggleDnd();
 
   const options = useMemo(
     () => [

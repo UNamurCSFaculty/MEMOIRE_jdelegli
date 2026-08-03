@@ -3,7 +3,12 @@
     "LoadingSuspension": "Bezig met laden...",
     "Back": "Terug",
     "GoBackHome": "Terug naar de startpagina.",
-    "DoNotDisturb": "{{name}} wil momenteel niet gestoord worden"
+    "DoNotDisturb": "{{name}} wil momenteel niet gestoord worden",
+    "DndToggle": {
+      "Notification": "Niet storen is nu {{status}}",
+      "Enabled": "ingeschakeld",
+      "Disabled": "uitgeschakeld"
+    }
   },
   "Components": {
     "Errors": {
@@ -129,16 +134,13 @@
       "Preference": "Voorkeuren",
       "Weather": "Weer",
       "DoNotDisturbButton": {
-        "Label": "Niet storen",
-        "notification": "Niet storen is nu {{status}}",
-        "Enabled": "ingeschakeld",
-        "Disabled": "uitgeschakeld"
+        "Label": "Niet storen"
       },
       "Residents": "Bewoners",
       "TutoredResident": "Instellingen van mijn naaste"
     },
     "CallRoom": {
-      "UserLeft": "Je gesprekspartner heeft het gesprek verlaten",
+      "UserLeftCall": "Je gesprekspartner heeft de oproep verlaten",
       "UserRejectedCall": "Je gesprekspartner heeft het gesprek geweigerd",
       "WaitingUserToJoin": "Wachten tot je gesprekspartner meedoet",
       "EndCall": "Oproep beëindigen",
@@ -147,7 +149,11 @@
       "DisplayVideo": "Webcam tonen",
       "HideVideo": "Webcam verbergen",
       "Mute": "Microfoon dempen",
-      "Unmute": "Microfoon aanzetten"
+      "Unmute": "Microfoon aanzetten",
+      "CameraOffBadge": "Je camera staat uit",
+      "MicOffBadge": "Je microfoon staat uit",
+      "CameraOffHint": "Druk op de <1></1> knop van de afstandsbediening om ze aan te zetten",
+      "MicOffHint": "Druk op de <1></1> knop van de afstandsbediening om ze aan te zetten"
     },
     "ContactPage": {
       "NoContactsFound": "Geen contacten gevonden"

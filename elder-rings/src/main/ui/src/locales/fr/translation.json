@@ -3,7 +3,12 @@
     "LoadingSuspension": "Chargement ...",
     "Back": "Retour",
     "GoBackHome": "Retour à l'accueil.",
-    "DoNotDisturb": "{{name}} a activé le mode ne pas déranger"
+    "DoNotDisturb": "{{name}} a activé le mode ne pas déranger",
+    "DndToggle": {
+      "Notification": "Le mode ne pas déranger est maintenant {{status}}",
+      "Enabled": "activé",
+      "Disabled": "désactivé"
+    }
   },
   "Components": {
     "Errors": {
@@ -129,16 +134,13 @@
       "Preference": "Préférences",
       "Weather": "Météo",
       "DoNotDisturbButton": {
-        "Label": "Ne pas déranger",
-        "notification": "Le mode ne pas déranger est maintenant {{status}}",
-        "Enabled": "activé",
-        "Disabled": "désactivé"
+        "Label": "Ne pas déranger"
       },
       "Residents": "Résidents",
       "TutoredResident": "Réglages de mon proche"
     },
     "CallRoom": {
-      "UserLeft": "Votre correspondant à quitté la conversation",
+      "UserLeftCall": "Votre correspondant a quitté l'appel",
       "UserRejectedCall": "Votre correspondant à refusé l'appel",
       "WaitingUserToJoin": "En attente de votre correspondant",
       "EndCall": "Raccrocher",
@@ -147,7 +149,11 @@
       "DisplayVideo": "Afficher la webcam",
       "HideVideo": "Cacher la webcam",
       "Mute": "Couper le micro",
-      "Unmute": "Activer le micro"
+      "Unmute": "Activer le micro",
+      "CameraOffBadge": "Votre caméra est coupée",
+      "MicOffBadge": "Votre micro est coupé",
+      "CameraOffHint": "Appuyez sur le bouton <1></1> de la télécommande pour l'allumer",
+      "MicOffHint": "Appuyez sur le bouton <1></1> de la télécommande pour l'allumer"
     },
     "ContactPage": {
       "NoContactsFound": "Pas de contacts trouvés"

@@ -1,4 +1,5 @@
 import Col from "@components/layout/Col";
+import RemoteButtonListener from "@components/remote/RemoteButtonListener";
 import SoundPlayer from "@components/sounds/SoundPlayer";
 import PreferencesSyncListener from "@components/userPreferences/PreferencesSyncListener";
 import IncomingCallListener from "@components/webrtc/IncomingCallListener";
@@ -11,6 +12,7 @@ export default function RootLayout() {
       <Outlet />
       <IncomingCallListener />
       <PreferencesSyncListener />
+      <RemoteButtonListener />
       <SoundPlayer />
       <ToastContainer />
     </Col>
