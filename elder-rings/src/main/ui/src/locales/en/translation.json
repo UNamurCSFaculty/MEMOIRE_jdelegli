@@ -105,6 +105,8 @@
       "AddFilter": "Add a filter",
       "TestConfigTitle": "Test configuration",
       "SavePreferences": "Save preferences",
+      "Required": "required",
+      "DndAutoDisableRequired": "For an intermediate resident, the do not disturb mode must turn off automatically. Check the box and choose a duration.",
       "LockSection": "Lock for the tutor",
       "UnlockSection": "Unlock",
       "LockedByStaff": "This setting is protected by the staff. You cannot change it."

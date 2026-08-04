@@ -38,22 +38,30 @@ export default function HomeMenu() {
       //   onClick: () => navigate("/events"),
       //   icon: IconEvent,
       // },
-      {
-        label: "Preference",
-        onClick: () => navigate("/user-preferences"),
-        icon: IconGear,
-      },
+      ...(user.autonomyLevel !== "DEPENDENT" && user.autonomyLevel !== "INTERMEDIATE" // Only show preferences for non-residents or autonomous residents (non-residents don't have autonomy level)
+        ? [
+            {
+              label: "Preference",
+              onClick: () => navigate("/user-preferences"),
+              icon: IconGear,
+            },
+          ]
+        : []),
       // {
       //   label: "Weather",
       //   onClick: () => navigate("/weather"),
       //   render: () => <WeatherSnippet />,
       // },
-      {
-        label: "DoNotDisturbButton.Label",
-        onClick: () => toggleDoNotDisturb(),
-        icon: IconDoNotDisturb,
-        className: dndActive ? "bg-red-500/40 hover:bg-red-500/50" : undefined,
-      },
+      ...(user.autonomyLevel !== "DEPENDENT" // Only show DND for non-residents or autonomous/intermediate residents (non-residents don't have autonomy level)
+        ? [
+            {
+              label: "DoNotDisturbButton.Label",
+              onClick: () => toggleDoNotDisturb(),
+              icon: IconDoNotDisturb,
+              className: dndActive ? "bg-red-500/40 hover:bg-red-500/50" : undefined,
+            },
+          ]
+        : []),
       ...(user.userType === "STAFF"
         ? [
             {
@@ -79,7 +87,14 @@ export default function HomeMenu() {
           ]
         : []),
     ],
-    [navigate, toggleDoNotDisturb, user.userType, user.tutorOfResidentId, dndActive],
+    [
+      user.userType,
+      user.autonomyLevel,
+      user.tutorOfResidentId,
+      dndActive,
+      navigate,
+      toggleDoNotDisturb,
+    ],
   );
 
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);

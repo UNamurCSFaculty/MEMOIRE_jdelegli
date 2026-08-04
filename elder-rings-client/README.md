@@ -117,7 +117,7 @@ echo '{"AutoSelectCertificateForUrls":["{\"pattern\":\"https://keycloak.local\",
 
 ### Run the CEC wake daemon
 
-The Node script does not open the browser anymore: the kiosk browser runs permanently (next section) and handles the whole call flow (incoming call dialog, resident call policy, WebRTC). The daemon's only job is to turn the TV on through HDMI-CEC when a call invitation arrives. It fetches a fresh token and reconnects automatically whenever the connection drops.
+The Node script does not open the browser anymore: the kiosk browser runs permanently (next section) and handles the whole call flow (incoming call dialog, resident call policy, WebRTC). The daemon's job is to drive the TV power through HDMI-CEC: it turns the TV on when a call invitation arrives, turns it off after the call ends for dependent residents (everything is automatic for them), and executes the on/off orders sent from the app by the other residents through the TV remote (any key wakes the TV, the back key turns it off outside a call). It fetches a fresh token and reconnects automatically whenever the connection drops.
 
 Manual run (requires the elder-rings app to be running on your "server") :
 
@@ -157,6 +157,20 @@ cp ~/Desktop/elder-rings-kiosk.desktop ~/.config/autostart/
 
 Also disable screen blanking on the Pi, the TV manages its own standby : `sudo raspi-config` > Display Options > Screen Blanking > No.
 
+### Keep the HDMI output alive across TV standby
+
+When the TV goes to standby it cuts the HDMI link: the Pi sees the display as unplugged, the compositor removes the output and the Chromium window loses keyboard focus. After the TV wakes up, the remote keys no longer reach the app (no arrow navigation, no call actions). Force the kernel to treat the HDMI output as always connected by appending this to the single line of `/boot/firmware/cmdline.txt` :
+
+```
+video=HDMI-A-1:1920x1080@60D
+```
+
+Then reboot.
+
+> /!\ `HDMI-A-1` is the port closest to the power input, and the trailing `D` is what forces the "always connected" state. If the TV is plugged in the other port use `HDMI-A-2`, and adapt the resolution to your TV. Check which connector is in use with : `cat /sys/class/drm/card*-HDMI-A-1/status`
+
 ### Test the whole flow
 
 Turn the TV off (standby), then start a call from any account to the room account configured on this Pi. The TV should turn on and, depending on the resident call policy, either ring with the incoming call dialog (answer with the TV remote) or join the call directly.
+
+Then, with a non dependent resident : press any remote key while the TV is in standby (the TV should turn on), and press the back key on the home page (the TV should turn off). With a dependent resident the TV should turn off by itself a few seconds after the call ends.

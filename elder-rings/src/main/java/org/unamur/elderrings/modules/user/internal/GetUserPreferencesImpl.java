@@ -34,7 +34,8 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
                         new UserPreferences.VisualPreferences(TextSize.MD, false),
                         new UserPreferences.AudioPreferences(false, List.of(), false),
                         defaultCallPolicyFor(userId),
-                        new UserPreferences.DndPreferences(false, null, null, List.of(), false)));
+                        new UserPreferences.DndPreferences(false, null, defaultDndDurationFor(userId), List.of(),
+                                false)));
     }
 
     private UserPreferences.CallPolicyPreferences defaultCallPolicyFor(UUID userId) {
@@ -47,5 +48,14 @@ public class GetUserPreferencesImpl implements GetUserPreferences {
         }
         return UserPreferences.CallPolicyPreferences.defaultsFor(
                 Resident.AutonomyLevel.valueOf(resident.getAutonomyLevel().name()));
+    }
+
+    private Integer defaultDndDurationFor(UUID userId) {
+        var owner = userRepository.getUserById(userId).orElse(null);
+        if (owner instanceof ResidentEntity resident
+                && resident.getAutonomyLevel() == ResidentEntity.AutonomyLevel.INTERMEDIATE) {
+            return 60;
+        }
+        return null;
     }
 }

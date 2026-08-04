@@ -12,6 +12,7 @@ import StaffRoute from "@components/navigation/StaffRoute";
 import ResidentsPage from "@pages/ResidentsPage";
 import ResidentSettingsPage from "@pages/ResidentSettingsPage";
 import ResidentAccessRoute from "@components/navigation/ResidentAccessRoute";
+import PreferencesAccessRoute from "@components/navigation/PreferencesAccessRoute";
 
 const mainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -25,7 +26,9 @@ const mainRouter = createBrowserRouter(
         <Route path="residents/:id/settings" element={<ResidentSettingsPage />} />
       </Route>
       <Route path="add-contact" element={<AddContactPage />} />
-      <Route path="user-preferences" element={<UserPreferencePage />} />
+      <Route element={<PreferencesAccessRoute />}>
+        <Route path="user-preferences" element={<UserPreferencePage />} />
+      </Route>
       <Route path="call-room/:roomId" element={<CallRoomPage />} />
       <Route path="*" element={<PageNotFound />} />
     </Route>,

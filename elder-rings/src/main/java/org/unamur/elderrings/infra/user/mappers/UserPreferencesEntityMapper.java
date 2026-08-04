@@ -48,7 +48,7 @@ public class UserPreferencesEntityMapper {
                                 new UserPreferences.DndPreferences(
                                                 entity.getDnd().isDoNotDisturb(),
                                                 entity.getDnd().getDoNotDisturbUntil(),
-                                                entity.getDnd().getDoNotDisturbDurationMinutes(),
+                                                dndDurationFor(entity.getDnd().getDoNotDisturbDurationMinutes(), owner),
                                                 entity.getDndWindows().stream()
                                                                 .map(w -> new DndWindow(
                                                                                 w.getDay(),
@@ -75,6 +75,16 @@ public class UserPreferencesEntityMapper {
                                 stored.isAutoAnswer() || floor.isAutoAnswer(),
                                 stored.isCameraOnByDefault() || floor.isCameraOnByDefault(),
                                 stored.isLocked());
+        }
+
+        // Dnd auto disable is required for intermediate residents
+        private Integer dndDurationFor(Integer stored, UserEntity owner) {
+                if (stored == null
+                                && owner instanceof ResidentEntity resident
+                                && resident.getAutonomyLevel() == ResidentEntity.AutonomyLevel.INTERMEDIATE) {
+                        return 60; // Dnd auto disable for intermediate residents is 60 minutes by default
+                }
+                return stored;
         }
 
         public UserPreferencesEntity toEntity(UserPreferences model, UserEntity userEntity) {

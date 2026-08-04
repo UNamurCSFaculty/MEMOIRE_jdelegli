@@ -18,6 +18,7 @@ import { basePath } from "../../../basepath.config";
 import BackHomeButton from "@components/navigation/BackHomeButton";
 import DndWindowsEditor from "@components/dnd/DndWindowsEditor";
 import { CallPolicyFloor } from "@utils/callPolicyFloor";
+import { notifyError } from "@utils/notifyUtil";
 
 interface UserPreferencesFormProps {
   preferences: UserPreferencesDto;
@@ -27,6 +28,8 @@ interface UserPreferencesFormProps {
   showCallPolicySection?: boolean;
   callPolicyFloor?: CallPolicyFloor;
   lockMode?: "manage" | "readonly";
+  showDndAutoDisable?: boolean;
+  requireDndAutoDisable?: boolean;
 }
 
 export default function UserPreferencesForm({
@@ -37,6 +40,8 @@ export default function UserPreferencesForm({
   showCallPolicySection = false,
   callPolicyFloor,
   lockMode,
+  showDndAutoDisable = true,
+  requireDndAutoDisable = false,
 }: Readonly<UserPreferencesFormProps>) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<UserPreferencesDto | null>(null);
@@ -75,6 +80,14 @@ export default function UserPreferencesForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // intermediate residents: a forgotten DND must never isolate them
+    // permanently, the auto disable duration is mandatory
+    if (requireDndAutoDisable && formData.dnd?.durationMinutes == null) {
+      notifyError(t("Components.UserPreferencesForm.DndAutoDisableRequired"));
+      return;
+    }
+
     try {
       await onSave(formData, file);
       setFile(null);
@@ -338,41 +351,51 @@ export default function UserPreferencesForm({
                   )}
                 </Checkbox.Content>
               </Checkbox>
-              <Checkbox
-                isSelected={formData.dnd?.durationMinutes != null}
-                isDisabled={dndReadonly}
-                onChange={(isSelected: boolean) =>
-                  handleChange("dnd", "durationMinutes", isSelected ? 60 : undefined)
-                }
-                aria-label={t("Components.UserPreferencesForm.DndAutoDisable")}
-              >
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
-                <Checkbox.Content>
-                  {t("Components.UserPreferencesForm.DndAutoDisable")}
-                </Checkbox.Content>
-              </Checkbox>
-              {formData.dnd?.durationMinutes != null && (
-                <NumberField
-                  value={formData.dnd.durationMinutes}
-                  isDisabled={dndReadonly}
-                  onChange={(value) => {
-                    if (typeof value !== "number" || !Number.isFinite(value)) return;
-                    handleChange("dnd", "durationMinutes", value);
-                  }}
-                  minValue={1}
-                  maxValue={480}
-                  aria-label={t("Components.UserPreferencesForm.DndDurationMinutes")}
-                  className="max-w-xs"
-                >
-                  <Label>{t("Components.UserPreferencesForm.DndDurationMinutes")}</Label>
-                  <NumberField.Group>
-                    <NumberField.DecrementButton />
-                    <NumberField.Input className="w-full min-w-0 text-center" />
-                    <NumberField.IncrementButton />
-                  </NumberField.Group>
-                </NumberField>
+              {showDndAutoDisable && (
+                <>
+                  <Checkbox
+                    isSelected={formData.dnd?.durationMinutes != null}
+                    isDisabled={dndReadonly}
+                    onChange={(isSelected: boolean) =>
+                      handleChange("dnd", "durationMinutes", isSelected ? 60 : undefined)
+                    }
+                    aria-label={t("Components.UserPreferencesForm.DndAutoDisable")}
+                  >
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Content>
+                      {t("Components.UserPreferencesForm.DndAutoDisable")}
+                      {requireDndAutoDisable && (
+                        <span className="text-sm text-slate-600">
+                          {" "}
+                          ({t("Components.UserPreferencesForm.Required")})
+                        </span>
+                      )}
+                    </Checkbox.Content>
+                  </Checkbox>
+                  {formData.dnd?.durationMinutes != null && (
+                    <NumberField
+                      value={formData.dnd.durationMinutes}
+                      isDisabled={dndReadonly}
+                      onChange={(value) => {
+                        if (typeof value !== "number" || !Number.isFinite(value)) return;
+                        handleChange("dnd", "durationMinutes", value);
+                      }}
+                      minValue={1}
+                      maxValue={480}
+                      aria-label={t("Components.UserPreferencesForm.DndDurationMinutes")}
+                      className="max-w-xs"
+                    >
+                      <Label>{t("Components.UserPreferencesForm.DndDurationMinutes")}</Label>
+                      <NumberField.Group>
+                        <NumberField.DecrementButton />
+                        <NumberField.Input className="w-full min-w-0 text-center" />
+                        <NumberField.IncrementButton />
+                      </NumberField.Group>
+                    </NumberField>
+                  )}
+                </>
               )}
               <DndWindowsEditor
                 windows={formData.dnd?.windows ?? []}

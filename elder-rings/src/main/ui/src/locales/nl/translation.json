@@ -105,6 +105,8 @@
       "AddFilter": "Filter toevoegen",
       "TestConfigTitle": "Configuratie testen",
       "SavePreferences": "Voorkeuren opslaan",
+      "Required": "verplicht",
+      "DndAutoDisableRequired": "Voor een gemiddeld zelfstandige bewoner moet de niet-storen-modus automatisch uitschakelen. Vink het vakje aan en kies een duur.",
       "LockSection": "Vergrendelen voor de voogd",
       "UnlockSection": "Ontgrendelen",
       "LockedByStaff": "Deze instelling is beschermd door het personeel. Je kunt ze niet wijzigen."

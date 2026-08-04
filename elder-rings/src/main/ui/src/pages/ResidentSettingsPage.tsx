@@ -205,6 +205,8 @@ export default function ResidentSettingsPage() {
           resident.autonomyLevel ? CALL_POLICY_FLOOR[resident.autonomyLevel] : undefined
         }
         lockMode={user.userType === "STAFF" ? "manage" : "readonly"}
+        showDndAutoDisable={resident.autonomyLevel !== "DEPENDENT"}
+        requireDndAutoDisable={resident.autonomyLevel === "INTERMEDIATE"}
       />
     </div>
   );
