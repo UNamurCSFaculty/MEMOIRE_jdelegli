@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import useWebSocket from "react-use-websocket";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 import { notifyWarning } from "@utils/notifyUtil";
 import { buildWsUrl } from "@utils/webSocketHelper";
@@ -82,7 +82,7 @@ export function useWebRtcCall(roomId: string, cameraOn?: boolean | null) {
   const [userRejectedCall, setUserRejectedCall] = useState<boolean>(false);
   const [mediaError, setMediaError] = useState<boolean>(false);
 
-  const { getWebSocket, sendJsonMessage } = useWebSocket(buildWsUrl("call-room", roomId), {
+  const { getWebSocket, sendJsonMessage, readyState } = useWebSocket(buildWsUrl("call-room", roomId), {
     // every single frame has to be handled: the library stores the last one in
     // a state, so two frames arriving in the same tick would be coalesced and
     // the first one silently lost. An answer swallowed by the ice candidate
@@ -551,6 +551,8 @@ export function useWebRtcCall(roomId: string, cameraOn?: boolean | null) {
     participants,
     captions,
     isCallStarted,
+    // the server only answers about a room once our own session joined it
+    isRoomJoined: readyState === ReadyState.OPEN,
     isScreenSharing,
     userRejectedCall,
     mediaError,

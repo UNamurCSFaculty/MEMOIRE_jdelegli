@@ -48,6 +48,7 @@ export default function VideoCall({ roomId, cameraOn }: Readonly<VideoCallProps>
     participants,
     captions,
     isCallStarted,
+    isRoomJoined,
     isScreenSharing,
     userRejectedCall,
     mediaError,
@@ -198,6 +199,7 @@ export default function VideoCall({ roomId, cameraOn }: Readonly<VideoCallProps>
       {!isResident && (
         <VideoCallActionBar
           disabled={!isCallStarted}
+          isRoomJoined={isRoomJoined}
           localStreamRef={localStreamRef}
           endCall={endCallAndGoHome}
           className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
@@ -208,6 +210,7 @@ export default function VideoCall({ roomId, cameraOn }: Readonly<VideoCallProps>
           isScreenSharing={isScreenSharing}
           startScreenShare={startScreenShare}
           stopScreenShare={stopScreenShare}
+          roomId={roomId}
         />
       )}
     </div>

@@ -77,6 +77,17 @@
       "Accept": "Accepter",
       "Decline": "Refuser"
     },
+    "AddParticipantModal": {
+      "Title": "Ajouter quelqu'un à l'appel",
+      "Add": "Ajouter {{name}} à l'appel",
+      "Invited": "{{name}} a été invité.",
+      "NoCandidate": "Personne à ajouter.",
+      "OwnContacts": "Mes contacts",
+      "Colleagues": "Personnel",
+      "ResidentContacts": "Proches du résident",
+      "LoadFailed": "La liste n'a pas pu être chargée. Réessayez.",
+      "Failed": "L'invitation a échoué. Réessayez."
+    },
     "UserPreferencesForm": {
       "DndTitle": "Ne pas déranger",
       "DndEnabled": "Ne pas déranger activé (jusqu'à désactivation)",
@@ -148,6 +159,7 @@
       "WaitingUserToJoin": "En attente de votre correspondant",
       "MediaError": "La caméra ou le micro n'est pas disponible.",
       "EndCall": "Raccrocher",
+      "AddParticipant": "Ajouter quelqu'un",
       "StopScreenShare": "Arrêter le partage d'écran",
       "ShareScreen": "Partager l'écran",
       "DisplayVideo": "Afficher la webcam",

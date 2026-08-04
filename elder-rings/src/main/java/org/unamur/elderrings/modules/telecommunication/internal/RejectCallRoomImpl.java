@@ -42,6 +42,9 @@ public class RejectCallRoomImpl implements RejectCallRoomInterface {
     repository.markRejectedBy(room.id(), CallRoomMember.of(user));
 
     room.sessions().remove(CallRoomMember.of(user));
+    // declining gives up membership, so the caller may invite this person again
+    // and a decliner keeps no right over the call that goes on without them
+    room.members().remove(CallRoomMember.of(user));
     log.info("User {} refused to join the call room {}", user.getId(), room.id().value());
 
     // delete room if no user left

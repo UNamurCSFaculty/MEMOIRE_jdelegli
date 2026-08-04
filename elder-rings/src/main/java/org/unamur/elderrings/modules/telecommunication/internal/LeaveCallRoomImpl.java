@@ -44,6 +44,10 @@ public class LeaveCallRoomImpl implements LeaveCallRoomInterface {
       return;
     }
 
+    // membership is deliberately kept: a closed socket is not a departure, it is
+    // also a page reload or a network blip, and membership is what allows the
+    // participant to open the socket again. Who is actually in the call is
+    // answered by connectedMembers(), which is what the invite right relies on.
     log.info("User {} left the call room {}", member.userId(), room.id().value());
 
     // the resident daemon listens to this one to put the TV on standby

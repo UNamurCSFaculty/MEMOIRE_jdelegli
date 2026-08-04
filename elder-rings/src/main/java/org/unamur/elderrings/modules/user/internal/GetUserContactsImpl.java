@@ -1,6 +1,7 @@
 package org.unamur.elderrings.modules.user.internal;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.unamur.elderrings.infra.user.mappers.UserEntityMapper;
 import org.unamur.elderrings.infra.user.repositories.UserContactRepository;
@@ -27,5 +28,11 @@ public class GetUserContactsImpl implements GetUserContacts {
   public List<Contact> getUserContacts() {
     return repository.findContactsByUserId(user.getId()).stream().map(UserEntityMapper::toContact).toList();
   }
-  
+
+  @Override
+  @Transactional
+  public List<Contact> getContactsForUser(UUID userId) {
+    return repository.findContactsByUserId(userId).stream().map(UserEntityMapper::toContact).toList();
+  }
+
 }
