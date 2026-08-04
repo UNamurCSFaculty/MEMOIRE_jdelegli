@@ -9,40 +9,37 @@ import {
 } from "@components/icons/favouriteIcons";
 import Row from "@components/layout/Row";
 import { Button, Tooltip } from "@heroui/react";
-import {
-  stopScreenShare,
-  startScreenShare,
-  toggleMuteAudio,
-  toggleVideo,
-} from "@utils/webRtcHelper";
+import { toggleMuteAudio, toggleVideo } from "@utils/webRtcHelper";
 import { t } from "i18next";
-import { RefObject, useState } from "react";
+import { MutableRefObject } from "react";
 
 interface VideoCallActionBarProps {
   disabled: boolean;
-  peerConnection: RefObject<RTCPeerConnection>;
-  localVideoRef: RefObject<HTMLVideoElement>;
+  localStreamRef: MutableRefObject<MediaStream | null>;
   endCall: () => void;
   className?: string;
   isAudioMuted: boolean;
   setIsAudioMuted: (b: boolean) => void;
   isVideoHidden: boolean;
   setIsVideoHidden: (b: boolean) => void;
+  isScreenSharing: boolean;
+  startScreenShare: () => void;
+  stopScreenShare: () => void;
 }
 
 export default function VideoCallActionBar({
   disabled,
   endCall,
-  localVideoRef,
-  peerConnection,
+  localStreamRef,
   className,
   isAudioMuted,
   setIsAudioMuted,
   isVideoHidden,
   setIsVideoHidden,
+  isScreenSharing,
+  startScreenShare,
+  stopScreenShare,
 }: Readonly<VideoCallActionBarProps>) {
-  const [isScreenSharing, setIsScreenSharing] = useState<boolean>(false);
-
   return (
     <div className={className ?? ""}>
       <Row className="gap-4 mx-auto">
@@ -66,14 +63,7 @@ export default function VideoCallActionBar({
             <Button
               isIconOnly
               size="lg"
-              onPress={() => {
-                if (isScreenSharing) {
-                  stopScreenShare(peerConnection, localVideoRef);
-                } else {
-                  startScreenShare(peerConnection, localVideoRef);
-                }
-                setIsScreenSharing(!isScreenSharing);
-              }}
+              onPress={() => (isScreenSharing ? stopScreenShare() : startScreenShare())}
               isDisabled={disabled}
               aria-label={
                 isScreenSharing
@@ -96,10 +86,7 @@ export default function VideoCallActionBar({
             <Button
               isIconOnly
               size="lg"
-              onPress={() => {
-                toggleMuteAudio(peerConnection);
-                setIsAudioMuted(!isAudioMuted);
-              }}
+              onPress={() => setIsAudioMuted(toggleMuteAudio(localStreamRef.current))}
               isDisabled={disabled}
               aria-label={isAudioMuted ? t("Pages.CallRoom.Unmute") : t("Pages.CallRoom.Mute")}
             >
@@ -116,11 +103,10 @@ export default function VideoCallActionBar({
             <Button
               isIconOnly
               size="lg"
-              onPress={() => {
-                toggleVideo(peerConnection);
-                setIsVideoHidden(!isVideoHidden);
-              }}
-              isDisabled={disabled}
+              onPress={() => setIsVideoHidden(toggleVideo(localStreamRef.current))}
+              // the camera toggle would not change what peers receive while the
+              // screen is shared
+              isDisabled={disabled || isScreenSharing}
               aria-label={
                 isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")
               }

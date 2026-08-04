@@ -146,6 +146,7 @@
       "UserLeftCall": "Your contact left the call",
       "UserRejectedCall": "Your contact declined the call",
       "WaitingUserToJoin": "Waiting for your contact to join",
+      "MediaError": "The camera or the microphone is not available.",
       "EndCall": "Hang up",
       "StopScreenShare": "Stop screen sharing",
       "ShareScreen": "Share screen",

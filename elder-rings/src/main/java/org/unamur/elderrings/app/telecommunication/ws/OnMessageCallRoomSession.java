@@ -1,13 +1,17 @@
 package org.unamur.elderrings.app.telecommunication.ws;
 
-import org.unamur.elderrings.modules.authentication.services.ConnectedUser;
-import org.unamur.elderrings.modules.telecommunication.api.BroadcastCallRoomMessageInterface;
-import org.unamur.elderrings.modules.telecommunication.api.GetCallRoomInterface;
-import org.unamur.elderrings.modules.telecommunication.api.models.CallRoom;
-import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomId;
+import java.util.Set;
+import java.util.UUID;
 
-import io.quarkus.security.ForbiddenException;
+import org.unamur.elderrings.modules.telecommunication.api.RelayCallRoomMessageInterface;
+import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomId;
+import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomMember;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,19 +20,55 @@ import lombok.extern.slf4j.Slf4j;
 @ApplicationScoped
 public class OnMessageCallRoomSession {
 
-  private final ConnectedUser user;
-  private final GetCallRoomInterface getCallRoom;
-  private final BroadcastCallRoomMessageInterface broadcastCallRoomMessage;
+  /**
+   * Only the WebRTC negotiation traffic may travel from one participant to
+   * another: anything else would let a member forge a room event at a peer.
+   */
+  private static final Set<String> SIGNAL_TYPES = Set.of("offer", "answer", "ice-candidate");
 
-  public void onMessage(String roomId, String message){
-    CallRoomId callRoomId = CallRoomId.fromString(roomId);
-    CallRoom callRoom = getCallRoom.getCallRoom(callRoomId);
+  private final ObjectMapper objectMapper;
+  private final RelayCallRoomMessageInterface relayCallRoomMessage;
 
-    if(!callRoom.isMember(user)) {
-      throw new ForbiddenException(String.format("User %s is not in the room", user.getId()));
+  public void onMessage(String roomId, String message, Session session){
+
+    // being attached to the socket is the proof of membership, it was checked
+    // when the session was opened
+    var sender = CallRoomMember.of(session);
+    if (sender == null) {
+      log.warn("Ignoring a message from a session with no member attached in the call room {}", roomId);
+      return;
     }
 
-    broadcastCallRoomMessage.broadcastMessage(callRoomId, message);
+    ObjectNode incoming;
+    try {
+      incoming = (ObjectNode) objectMapper.readTree(message);
+    } catch (Exception e) {
+      log.warn("Ignoring a malformed message from user {} in the call room {}", sender.userId(), roomId);
+      return;
+    }
+
+    var signalType = incoming.path("type").asText(null);
+    if (!SIGNAL_TYPES.contains(signalType)) {
+      log.warn("Ignoring a message of type {} from user {} in the call room {}", signalType, sender.userId(), roomId);
+      return;
+    }
+
+    UUID target;
+    try {
+      target = UUID.fromString(incoming.path("to").asText());
+    } catch (IllegalArgumentException e) {
+      log.warn("Ignoring a {} with no valid target from user {} in the call room {}", signalType, sender.userId(),
+          roomId);
+      return;
+    }
+
+    if (target.equals(sender.userId())) {
+      log.warn("Ignoring a {} that user {} addressed to itself", signalType, sender.userId());
+      return;
+    }
+
+    relayCallRoomMessage.relaySignal(CallRoomId.fromString(roomId), sender.userId(), target, signalType,
+        incoming.get("value"));
   }
-  
+
 }

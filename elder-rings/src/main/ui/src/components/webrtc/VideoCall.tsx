@@ -15,35 +15,53 @@ import { toggleMuteAudio, toggleVideo } from "@utils/webRtcHelper";
 import VideoCallActionBar from "./VideoCallActionBar";
 import Captions from "./Captions";
 import CallEndedScreen from "./CallEndedScreen";
-import { useAudioFilters } from "../../hooks/useAudioFilters";
+import ParticipantTile from "./ParticipantTile";
 import { useUser } from "../../hooks/useUser";
 import { useWebRtcCall } from "../../hooks/useWebRtcCall";
 
 export interface VideoCallProps {
   roomId: string;
   cameraOn?: boolean | null;
-  isCallee?: boolean;
 }
 
-export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<VideoCallProps>) {
+/**
+ * The remote participants share the screen as a grid: one tile each, so the
+ * layout holds from a one to one call up to a small group.
+ */
+function gridClassFor(participantCount: number): string {
+  if (participantCount <= 1) {
+    return "grid-cols-1";
+  }
+  if (participantCount === 2) {
+    return "grid-cols-1 sm:grid-cols-2";
+  }
+  return "grid-cols-2";
+}
+
+export default function VideoCall({ roomId, cameraOn }: Readonly<VideoCallProps>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const {
     localVideoRef,
-    remoteVideoRef,
-    peerConnection,
+    localStreamRef,
+    participants,
+    captions,
     isCallStarted,
-    userConnected,
+    isScreenSharing,
     userRejectedCall,
+    mediaError,
+    sendCaption,
+    startScreenShare,
+    stopScreenShare,
     endCall,
-  } = useWebRtcCall(roomId, cameraOn, isCallee);
+  } = useWebRtcCall(roomId, cameraOn);
 
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoHidden, setIsVideoHidden] = useState(cameraOn === false);
-  const { handlePlay } = useAudioFilters(remoteVideoRef);
   const user = useUser();
   const isResident = user.userType === "RESIDENT";
+  const someoneConnected = participants.length > 0;
 
   function endCallAndGoHome() {
     endCall();
@@ -56,23 +74,24 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
     if (!isResident) return;
 
     const onRemoteButton = (e: Event) => {
-      if (!isCallStarted) return;
       const action = (e as CustomEvent<string>).detail;
-      if (action === "TOGGLE_CAMERA") {
-        toggleVideo(peerConnection);
-        setIsVideoHidden((prev) => !prev);
-      } else if (action === "TOGGLE_MIC") {
-        toggleMuteAudio(peerConnection);
-        setIsAudioMuted((prev) => !prev);
-      } else if (action === "END_CALL") {
+      // hanging up must always work, even when the media never started
+      if (action === "END_CALL") {
         endCallAndGoHome();
+        return;
+      }
+      if (!isCallStarted) return;
+      if (action === "TOGGLE_CAMERA") {
+        setIsVideoHidden(toggleVideo(localStreamRef.current));
+      } else if (action === "TOGGLE_MIC") {
+        setIsAudioMuted(toggleMuteAudio(localStreamRef.current));
       }
     };
 
     window.addEventListener(REMOTE_BUTTON_EVENT, onRemoteButton);
     return () => window.removeEventListener(REMOTE_BUTTON_EVENT, onRemoteButton);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isResident, isCallStarted, peerConnection]);
+  }, [isResident, isCallStarted]);
 
   if (userRejectedCall) {
     return <CallEndedScreen message={t("Pages.CallRoom.UserRejectedCall")} />;
@@ -80,28 +99,35 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
 
   return (
     <div className="w-screen h-screen bg-black">
-      {/* Remote Video - Fullscreen */}
-      <video
-        ref={remoteVideoRef}
-        onPlay={handlePlay}
-        autoPlay
-        muted={false}
-        className={twMerge("h-full w-full", userConnected ? "" : "hidden")}
-      />
+      {/* Remote participants */}
+      {someoneConnected && (
+        <div className={twMerge("grid gap-2 h-full w-full", gridClassFor(participants.length))}>
+          {participants.map((participant) => (
+            <ParticipantTile
+              key={participant.userId}
+              userId={participant.userId}
+              stream={participant.stream}
+              caption={captions[participant.userId]}
+            />
+          ))}
+        </div>
+      )}
 
       <div
         className={twMerge(
           "w-[20%] absolute bottom-4 right-4 border-2 border-gray-100 rounded-lg overflow-hidden",
-          userConnected ? "" : "hidden",
+          someoneConnected ? "" : "hidden",
         )}
       >
         <video
           ref={localVideoRef}
           autoPlay
           muted={true}
-          className={twMerge("w-full", isVideoHidden ? "hidden" : "")}
+          // while the screen is shared it is the screen that goes out, so the
+          // camera badge would claim the opposite of what the peers receive
+          className={twMerge("w-full", isVideoHidden && !isScreenSharing ? "hidden" : "")}
         />
-        {isVideoHidden && (
+        {isVideoHidden && !isScreenSharing && (
           <div className="aspect-video w-full bg-yellow-500 flex flex-col items-center justify-center gap-2 text-white px-6 py-3">
             <IconStopVideo className={"w-8 h-8"} />
             <p className={"font-semibold text-center text-xl"}>
@@ -119,11 +145,11 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
         )}
       </div>
 
-      {/* Waiting State - Hidden when user is connected */}
+      {/* Waiting State - Hidden as soon as someone is in the call */}
       <Col
         className={twMerge(
           "h-full w-full bg-gray-200 rounded-xl flex items-center justify-center",
-          userConnected ? "hidden" : "",
+          someoneConnected ? "hidden" : "",
         )}
       >
         <PrimeSpinnerDotted className="animate-spin h-12 w-12 text-gray-600/80 mx-auto" />
@@ -132,13 +158,23 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
         </p>
       </Col>
 
+      {/* Shown whatever the state of the call: a participant tile exists as
+          soon as someone is expected, so the waiting column is not a reliable
+          place to explain that the camera was refused */}
+      {mediaError && (
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-red-600 text-white font-semibold rounded-full shadow-lg px-6 py-3 text-xl">
+          {t("Pages.CallRoom.MediaError")}
+        </div>
+      )}
+
       {/* Muted microphone badge: the camera state is already shown by the
           local video placeholder, the microphone has no natural spot */}
-      {userConnected && isAudioMuted && (
+      {someoneConnected && isAudioMuted && (
         <div
-          className={
-            "absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-yellow-500 text-white font-semibold rounded-full shadow-lg px-6 py-3 text-xl"
-          }
+          className={twMerge(
+            "absolute left-1/2 -translate-x-1/2 flex items-center gap-3 bg-yellow-500 text-white font-semibold rounded-full shadow-lg px-6 py-3 text-xl",
+            mediaError ? "top-24" : "top-6",
+          )}
         >
           <IconMute className={"w-8 h-8"} />
           <p className="flex flex-col">
@@ -155,25 +191,23 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
         </div>
       )}
 
-      {/* text Captions - Positioned just above the action bar */}
-      <Captions
-        peerConnection={peerConnection}
-        className="absolute bottom-24 left-1/2 transform -translate-x-1/2"
-        emitCaptions={!isAudioMuted}
-      />
+      {/* Speech recognition: each caption is displayed on its author's tile */}
+      <Captions sendCaption={sendCaption} emitCaptions={!isAudioMuted} />
 
       {/* Action Bar - desktop browsers only: residents use the TV remote */}
       {!isResident && (
         <VideoCallActionBar
           disabled={!isCallStarted}
-          peerConnection={peerConnection}
-          localVideoRef={localVideoRef}
+          localStreamRef={localStreamRef}
           endCall={endCallAndGoHome}
           className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
           isAudioMuted={isAudioMuted}
           setIsAudioMuted={setIsAudioMuted}
           isVideoHidden={isVideoHidden}
           setIsVideoHidden={setIsVideoHidden}
+          isScreenSharing={isScreenSharing}
+          startScreenShare={startScreenShare}
+          stopScreenShare={stopScreenShare}
         />
       )}
     </div>

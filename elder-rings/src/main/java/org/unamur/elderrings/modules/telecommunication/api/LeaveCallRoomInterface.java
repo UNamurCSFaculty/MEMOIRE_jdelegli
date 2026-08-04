@@ -2,8 +2,10 @@ package org.unamur.elderrings.modules.telecommunication.api;
 
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomId;
 
+import jakarta.websocket.Session;
+
 public interface LeaveCallRoomInterface {
-    
-    void leaveCallRoom(CallRoomId id);
+
+    void leaveCallRoom(CallRoomId id, Session session);
 
 }

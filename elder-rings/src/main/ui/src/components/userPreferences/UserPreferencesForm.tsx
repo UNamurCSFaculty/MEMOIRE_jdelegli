@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UserPreferencesDto, textSizeDtoValues } from "@type/openapiTypes";
+import { UserFrequencyGainDto, UserPreferencesDto, textSizeDtoValues } from "@type/openapiTypes";
 import AudioSampleTest from "./AudioSampleTest";
 import { useTranslation } from "react-i18next";
 import { SupportedLanguage } from "../../locales/i18n";
@@ -19,6 +19,10 @@ import BackHomeButton from "@components/navigation/BackHomeButton";
 import DndWindowsEditor from "@components/dnd/DndWindowsEditor";
 import { CallPolicyFloor } from "@utils/callPolicyFloor";
 import { notifyError } from "@utils/notifyUtil";
+
+// a fresh array on every render would rebuild the whole audio graph of the
+// sample player each time the form re-renders
+const NO_EQ_BANDS: UserFrequencyGainDto[] = [];
 
 interface UserPreferencesFormProps {
   preferences: UserPreferencesDto;
@@ -518,7 +522,7 @@ export default function UserPreferencesForm({
                   {t("Components.UserPreferencesForm.TestConfigTitle")}
                 </h3>
                 <AudioSampleTest
-                  eqBands={formData.audio?.filters ?? []}
+                  eqBands={formData.audio?.filters ?? NO_EQ_BANDS}
                   compression={formData.audio?.compression ?? false}
                 />
               </div>

@@ -5,6 +5,7 @@ import org.unamur.elderrings.modules.telecommunication.api.GetCallRoomInterface;
 import org.unamur.elderrings.modules.telecommunication.api.JoinCallRoomInterface;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoom;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomId;
+import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomMember;
 
 import io.quarkus.security.ForbiddenException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,6 +30,10 @@ public class OnOpenCallRoomSession {
     if(!callRoom.isMember(user)) {
       throw new ForbiddenException(String.format("User %s is not allowed in the room", user.getId()));
     }
+
+    // the identity is resolved once, here, where the request context is reliable:
+    // the message and close paths then read it back from the socket itself
+    session.getUserProperties().put(CallRoomMember.SESSION_KEY, CallRoomMember.of(user));
 
     joinCallRoom.joinCallRoom(callRoomId, session);
   } 

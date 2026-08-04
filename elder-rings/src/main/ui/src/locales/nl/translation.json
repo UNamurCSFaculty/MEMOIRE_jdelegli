@@ -146,6 +146,7 @@
       "UserLeftCall": "Je gesprekspartner heeft de oproep verlaten",
       "UserRejectedCall": "Je gesprekspartner heeft het gesprek geweigerd",
       "WaitingUserToJoin": "Wachten tot je gesprekspartner meedoet",
+      "MediaError": "De camera of de microfoon is niet beschikbaar.",
       "EndCall": "Oproep beëindigen",
       "StopScreenShare": "Scherm delen stoppen",
       "ShareScreen": "Scherm delen",

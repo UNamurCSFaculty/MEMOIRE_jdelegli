@@ -1,6 +1,5 @@
 package org.unamur.elderrings.modules.telecommunication.internal;
 
-import org.unamur.elderrings.modules.authentication.services.ConnectedUser;
 import org.unamur.elderrings.modules.notification.api.SendNotificationInterface;
 import org.unamur.elderrings.modules.telecommunication.api.LeaveCallRoomInterface;
 import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomId;
@@ -8,8 +7,7 @@ import org.unamur.elderrings.modules.telecommunication.api.models.CallRoomMember
 import org.unamur.elderrings.modules.telecommunication.internal.messages.CallRoomUserLeftMessage;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.ForbiddenException;
+import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,55 +16,64 @@ import lombok.extern.slf4j.Slf4j;
 @ApplicationScoped
 public class LeaveCallRoomImpl implements LeaveCallRoomInterface {
 
-  private final ConnectedUser user;
-
   private final CallRoomRepository repository;
 
   private final SendNotificationInterface sendNotification;
 
   @Override
-  public void leaveCallRoom(CallRoomId id) {
+  public void leaveCallRoom(CallRoomId id, Session session) {
 
-    var room = repository.findById(id)
-        .orElseThrow(() -> new BadRequestException(String.format("Call room with id %s not found", id.value())));
-
-    if (!room.isMember(user)) {
-      throw new ForbiddenException(
-          String.format("User %s cannot leave the call room %s as he is not a member", user.getId(),
-              room.id().value()));
+    var room = repository.findById(id).orElse(null);
+    if (room == null) {
+      // the room is already gone, there is nothing left to clean up
+      return;
     }
 
-    if (!room.sessions().containsKey(CallRoomMember.of(user))) {
-      throw new BadRequestException(
-          String.format("User %s is not connected to the call room %s, he cannot leave it", user.getId(),
-              room.id().value()));
+    // the identity comes from the socket that is closing, the request context is
+    // not reliable on this path
+    var member = CallRoomMember.of(session);
+    if (member == null) {
+      log.warn("Closing a session with no member attached in the call room {}", id.value());
+      return;
     }
 
-    room.sessions().remove(CallRoomMember.of(user));
-    log.info("User {} left the call room {}", user.getId(), room.id().value());
-    sendNotification.send(user.getId(), CallRoomUserLeftMessage.builder()
+    // remove the mapping only if it still points to this very session: the late
+    // close of a replaced socket must not evict the member's current one
+    if (!room.sessions().remove(member, session)) {
+      log.info("The session of user {} in the call room {} was already replaced", member.userId(), id.value());
+      return;
+    }
+
+    log.info("User {} left the call room {}", member.userId(), room.id().value());
+
+    // the resident daemon listens to this one to put the TV on standby
+    sendNotification.send(member.userId(), CallRoomUserLeftMessage.builder()
         .type("CALL_ROOM_USER_LEFT")
-        .value(user.getId())
+        .value(member.userId())
         .build());
 
-    // delete room if no user left
-    if (room.sessions().isEmpty()) {
-      repository.delete(room.id());
-      log.info("Call room {} is empty, deleting it", room.id());
-    }
-
-    // notify all users that the user left
-    room.sessions().values().forEach(session -> {
+    // the remaining participants only tear down that peer, the call goes on
+    room.connectedMembers().forEach(peer -> {
+      var peerSession = room.sessions().get(peer);
+      if (peerSession == null || !peerSession.isOpen()) {
+        return;
+      }
       try {
-        session.getBasicRemote()
+        peerSession.getBasicRemote()
             .sendObject(CallRoomUserLeftMessage.builder()
                 .type("CALL_ROOM_USER_LEFT")
-                .value(user.getId())
+                .value(member.userId())
                 .build());
       } catch (Exception e) {
-        log.error("Error while sending user left message in room {}. Error {}", room.id().value(), e);
+        log.error("Error while sending user left message in room {}", room.id().value(), e);
       }
     });
+
+    // delete room if no user left
+    if (room.connectedMembers().isEmpty()) {
+      repository.delete(room.id());
+      log.info("Call room {} is empty, deleting it", room.id().value());
+    }
 
   }
 

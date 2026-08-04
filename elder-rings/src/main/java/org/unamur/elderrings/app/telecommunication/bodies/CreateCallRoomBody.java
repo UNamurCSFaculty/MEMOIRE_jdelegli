@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Schema(name = "CreateCallRoomBody", description = "The body of the request to create a call room")
 public class CreateCallRoomBody {
 
-  @Size(min = 1, max = 1) // Note : this might evolve, currently it's only 1 to 1 calls
+  @Size(min = 1)
   @NotNull
   @Schema(description = "The list of the users that the source use wants to call")
   private List<UUID> userIds;

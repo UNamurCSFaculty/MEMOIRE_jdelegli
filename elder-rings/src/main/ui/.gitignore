@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# TypeScript build artifacts: tsconfig.node.json is composite, so a type check
+# emits the compiled config next to vite.config.ts
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

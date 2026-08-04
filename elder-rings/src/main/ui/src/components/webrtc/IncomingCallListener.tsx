@@ -38,7 +38,7 @@ export default function IncomingCallListener() {
     setRoomOffer(null);
     setContact(null);
     navigate("call-room/" + roomOffer?.roomId, {
-      state: { cameraOn: roomOffer?.cameraOn, isCallee: true },
+      state: { cameraOn: roomOffer?.cameraOn },
     });
   }, [navigate, roomOffer]);
 
@@ -55,7 +55,7 @@ export default function IncomingCallListener() {
         const parsedMessage = callRoomInvitationMessageContent.parse(parsedSocketMessage.value);
         if (parsedMessage.autoAnswer === true) {
           navigate("call-room/" + parsedMessage.roomId, {
-            state: { cameraOn: parsedMessage.cameraOn, isCallee: true },
+            state: { cameraOn: parsedMessage.cameraOn },
           });
         } else {
           setRoomOffer(parsedMessage);

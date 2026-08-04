@@ -41,12 +41,12 @@ public class CallRoomWebSocketController {
   @OnClose
   public void onClose(Session session, CloseReason closeReason, @PathParam("roomId") String roomId){
     log.info("WebSocket closed for room {} - code: {}, reason: {}", roomId, closeReason.getCloseCode(), closeReason.getReasonPhrase());
-    onCloseCallRoomSession.onClose(roomId);
+    onCloseCallRoomSession.onClose(roomId, session);
   }
 
   @OnMessage
   public void onMessage(Session session, String message, @PathParam("roomId") String roomId){
-    onMessageCallRoomSession.onMessage(roomId, message);
+    onMessageCallRoomSession.onMessage(roomId, message, session);
   }
   
 }
