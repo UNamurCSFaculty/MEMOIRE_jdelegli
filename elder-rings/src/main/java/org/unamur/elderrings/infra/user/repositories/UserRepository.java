@@ -117,6 +117,10 @@ public class UserRepository implements PanacheRepository<UserEntity> {
     };
   }
 
+  public List<UserEntity> findAllStaff() {
+    return find("SELECT s FROM StaffEntity s").list();
+  }
+
   public List<FamilyEntity> findAllFamilies() {
     return getEntityManager()
         .createQuery("SELECT f FROM FamilyEntity f", FamilyEntity.class)

@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { apiClient } from "@openapi/zodiosClient";
 import { ContactDto } from "@type/openapiTypes";
-import { Avatar, Button, Card } from "@heroui/react";
 import { IconSettings, IconStartCall } from "@components/icons/favouriteIcons";
 import { useNavigate } from "react-router-dom";
 import { useStartCall } from "../hooks/useStartCall";
 import BackHomeButton from "@components/navigation/BackHomeButton";
 import PendingRequestsBadge from "@components/addContact/PendingRequestsBadge";
+import UserCard from "@components/users/UserCard";
 
 function ResidentsPage() {
   const { t } = useTranslation();
@@ -39,58 +38,35 @@ function ResidentsPage() {
     <div className="flex flex-col items-center flex-1 min-h-0 p-4 m-8 gap-4 bg-white/60 rounded-xl">
       <h1 className="text-3xl font-semibold w-full">{t("Pages.ResidentsPage.Title")}</h1>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] auto-rows-max gap-6 flex-1 w-full overflow-y-auto min-h-0 p-2 -m-2">
-        {residents.map((resident) => (
-          <Card key={resident.id} className="items-center relative gap-4 p-6 overflow-visible">
-            <Avatar className="size-24">
-              <Avatar.Image
-                src={resident.picture ? `data:image/*;base64,${resident.picture}` : undefined}
-                alt={t("Pages.ResidentsPage.PictureAlt", {
-                  name: `${resident.firstName} ${resident.lastName}`,
-                })}
-              />
-              <Avatar.Fallback>
-                {resident.firstName?.[0]}
-                {resident.lastName?.[0]}
-              </Avatar.Fallback>
-            </Avatar>
-            <Card.Content className="text-center">
-              <Card.Title className="text-xl font-semibold">
-                {resident.firstName} {resident.lastName}
-              </Card.Title>
-              {dndMap[resident.id!] && (
-                <p className="mt-1 inline-flex items-center gap-2 bg-red-100 text-red-900 py-1 px-3 rounded-full text-sm">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
-                  {t("Pages.ResidentsPage.DoNotDisturb")}
-                </p>
-              )}
-            </Card.Content>
-            <Card.Footer className="flex gap-2">
-              <Button
-                variant="primary"
-                className="bg-success"
-                isIconOnly
-                isDisabled={dndMap[resident.id!]}
-                onPress={() => startCall(resident)}
-                aria-label={t("Pages.ResidentsPage.Call", {
-                  name: `${resident.firstName} ${resident.lastName}`,
-                })}
-              >
-                <IconStartCall />
-              </Button>
-              <Button
-                isIconOnly
-                variant="primary"
-                onPress={() => navigate(`/residents/${resident.id}/settings`)}
-                aria-label={t("Pages.ResidentsPage.Settings", {
-                  name: `${resident.firstName} ${resident.lastName}`,
-                })}
-              >
-                <IconSettings />
-              </Button>
-            </Card.Footer>
-            <PendingRequestsBadge userId={resident.id!} className="absolute -top-2 -right-2" />
-          </Card>
-        ))}
+        {residents.map((resident) => {
+          const name = `${resident.firstName} ${resident.lastName}`;
+          return (
+            <UserCard
+              key={resident.id}
+              user={resident}
+              pictureAlt={t("Pages.ResidentsPage.PictureAlt", { name })}
+              dndLabel={dndMap[resident.id!] ? t("Pages.ResidentsPage.DoNotDisturb") : undefined}
+              actions={[
+                {
+                  label: t("Pages.ResidentsPage.Call", { name }),
+                  icon: <IconStartCall />,
+                  variant: "primary",
+                  className: "bg-success",
+                  isDisabled: dndMap[resident.id!],
+                  onClick: () => startCall(resident),
+                },
+                {
+                  label: t("Pages.ResidentsPage.Settings", { name }),
+                  icon: <IconSettings />,
+                  variant: "primary",
+                  onClick: () => navigate(`/residents/${resident.id}/settings`),
+                },
+              ]}
+            >
+              <PendingRequestsBadge userId={resident.id!} className="absolute -top-2 -right-2" />
+            </UserCard>
+          );
+        })}
       </div>
       <BackHomeButton />
     </div>

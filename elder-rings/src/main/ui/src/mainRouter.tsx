@@ -13,6 +13,7 @@ import ResidentsPage from "@pages/ResidentsPage";
 import ResidentSettingsPage from "@pages/ResidentSettingsPage";
 import ResidentAccessRoute from "@components/navigation/ResidentAccessRoute";
 import PreferencesAccessRoute from "@components/navigation/PreferencesAccessRoute";
+import StaffsPage from "@pages/StaffsPage";
 
 const mainRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +22,7 @@ const mainRouter = createBrowserRouter(
       <Route path="contacts" element={<ContactPage />} />
       <Route element={<StaffRoute />}>
         <Route path="residents" element={<ResidentsPage />} />
+        <Route path="staffs" element={<StaffsPage />} />
       </Route>
       <Route element={<ResidentAccessRoute />}>
         <Route path="residents/:id/settings" element={<ResidentSettingsPage />} />

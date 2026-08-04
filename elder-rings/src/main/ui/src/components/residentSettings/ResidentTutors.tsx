@@ -5,7 +5,7 @@ import { ContactDto } from "@type/openapiTypes";
 import { Button, Input, Label } from "@heroui/react";
 import { IconAdd, IconRemove } from "@components/icons/favouriteIcons";
 import { notifyError, notifySuccess } from "@utils/notifyUtil";
-import UserRow from "./UserRow";
+import UserRow from "@components/users/UserRow";
 
 interface ResidentTutorsProps {
   residentId: string;
