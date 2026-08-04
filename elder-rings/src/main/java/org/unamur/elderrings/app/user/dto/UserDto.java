@@ -2,6 +2,7 @@ package org.unamur.elderrings.app.user.dto;
 
 import java.util.UUID;
 
+import org.unamur.elderrings.modules.user.api.models.Resident;
 import org.unamur.elderrings.modules.user.api.models.UserType;
 
 import lombok.AllArgsConstructor;
@@ -24,5 +25,7 @@ public class UserDto {
   private UserType userType;
 
   private UUID tutorOfResidentId;
+
+  private Resident.AutonomyLevel autonomyLevel;
 
 }

@@ -30,6 +30,7 @@ export default function UserAuthContextProvider({ children }: Readonly<UserAuthC
           userPreferences: preferences,
           status: "idle",
           refreshUserPreferences,
+          refreshUser,
         });
       } catch (e) {
         setUserAuth((curr) => ({
@@ -53,6 +54,19 @@ export default function UserAuthContextProvider({ children }: Readonly<UserAuthC
         }));
       } catch (e) {
         console.error("Failed to refresh preferences", e);
+      }
+    };
+
+    const refreshUser = async () => {
+      try {
+        const user = await apiClient.getCurrentUser();
+
+        setUserAuth((curr) => ({
+          ...curr,
+          user,
+        }));
+      } catch (e) {
+        console.error("Failed to refresh user", e);
       }
     };
 

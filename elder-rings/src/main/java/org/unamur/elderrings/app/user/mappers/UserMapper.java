@@ -19,7 +19,8 @@ public class UserMapper {
         model.getFirstName(),
         model.getLastName(),
         userTypeOf(model),
-        model instanceof Family family ? family.getTutorOfResidentId() : null);
+        model instanceof Family family ? family.getTutorOfResidentId() : null,
+        model instanceof Resident resident ? resident.getAutonomyLevel() : null);
   }
 
   static UserType userTypeOf(User model) {

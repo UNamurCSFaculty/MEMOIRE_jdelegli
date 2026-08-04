@@ -50,6 +50,7 @@ const ContactRequestDto = z
   })
   .partial()
   .passthrough();
+const SetTvPowerBody = z.object({ on: z.boolean() }).passthrough();
 const UserGeneralPreferencesDto = z
   .object({ lang: z.string(), isPublic: z.boolean() })
   .partial()
@@ -133,6 +134,7 @@ const ContactDto = z
   })
   .partial()
   .passthrough();
+const AutonomyLevel = z.enum(["AUTONOMOUS", "INTERMEDIATE", "DEPENDENT"]);
 const UserDto = z
   .object({
     id: UUID.regex(
@@ -145,10 +147,10 @@ const UserDto = z
     tutorOfResidentId: UUID.regex(
       /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
     ).uuid(),
+    autonomyLevel: AutonomyLevel,
   })
   .partial()
   .passthrough();
-const AutonomyLevel = z.enum(["AUTONOMOUS", "INTERMEDIATE", "DEPENDENT"]);
 const ResidentDto = z
   .object({
     id: UUID.regex(
@@ -175,6 +177,7 @@ export const schemas = {
   ContactRequestStatusDto,
   Instant,
   ContactRequestDto,
+  SetTvPowerBody,
   UserGeneralPreferencesDto,
   TextSizeDto,
   UserVisualPreferencesDto,
@@ -188,8 +191,8 @@ export const schemas = {
   UserPreferencesDto,
   UserType,
   ContactDto,
-  UserDto,
   AutonomyLevel,
+  UserDto,
   ResidentDto,
   ResidentSettingsDto,
 };
@@ -323,6 +326,20 @@ const endpoints = makeApi([
         name: "roomId",
         type: "Query",
         schema: z.string().optional(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/tv/power",
+    alias: "setTvPower",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({ on: z.boolean() }).passthrough(),
       },
     ],
     response: z.void(),

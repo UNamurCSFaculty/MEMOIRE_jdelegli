@@ -105,6 +105,8 @@
       "AddFilter": "Ajouter un filtre",
       "TestConfigTitle": "Tester la configuration",
       "SavePreferences": "Enregistrer les préférences",
+      "Required": "obligatoire",
+      "DndAutoDisableRequired": "Pour un résident intermédiaire, le mode ne pas déranger doit se désactiver automatiquement. Cochez la case et choisissez une durée.",
       "LockSection": "Verrouiller pour le tuteur",
       "UnlockSection": "Déverrouiller",
       "LockedByStaff": "Réglage protégé par le personnel. Vous ne pouvez pas le modifier."

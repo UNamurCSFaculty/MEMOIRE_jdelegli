@@ -103,16 +103,12 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
         />
         {isVideoHidden && (
           <div className="aspect-video w-full bg-yellow-500 flex flex-col items-center justify-center gap-2 text-white px-6 py-3">
-            <IconStopVideo className={isResident ? "w-12 h-12" : "w-8 h-8"} />
-            <p
-              className={twMerge("font-semibold text-center", isResident ? "text-4xl" : "text-xl")}
-            >
+            <IconStopVideo className={"w-8 h-8"} />
+            <p className={"font-semibold text-center text-xl"}>
               {t("Pages.CallRoom.CameraOffBadge")}
             </p>
             {isResident && (
-              <p
-                className={twMerge("text-center font-normal", isResident ? "text-4xl" : "text-xl")}
-              >
+              <p className={"text-center font-normal text-xl"}>
                 <Trans i18nKey="Pages.CallRoom.CameraOffHint">
                   Appuyez sur le bouton <IconStartVideo className="inline align-text-bottom" /> de
                   la télécommande pour l'allumer
@@ -140,16 +136,15 @@ export default function VideoCall({ roomId, cameraOn, isCallee }: Readonly<Video
           local video placeholder, the microphone has no natural spot */}
       {userConnected && isAudioMuted && (
         <div
-          className={twMerge(
-            "absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-yellow-500 text-white font-semibold rounded-full shadow-lg px-6 py-3",
-            isResident ? "text-4xl" : "text-xl",
-          )}
+          className={
+            "absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-yellow-500 text-white font-semibold rounded-full shadow-lg px-6 py-3 text-xl"
+          }
         >
-          <IconMute className={isResident ? "w-12 h-12" : "w-8 h-8"} />
+          <IconMute className={"w-8 h-8"} />
           <p className="flex flex-col">
             {t("Pages.CallRoom.MicOffBadge")}
             {isResident && (
-              <span className={twMerge("font-normal", isResident ? "text-4xl" : "text-xl")}>
+              <span className={"font-normal text-xl"}>
                 <Trans i18nKey="Pages.CallRoom.MicOffHint">
                   Appuyez sur le bouton <IconUnmute className="inline align-text-bottom" /> de la
                   télécommande pour l'allumer

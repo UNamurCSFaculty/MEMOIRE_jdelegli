@@ -7,6 +7,7 @@ export interface UserAuthContextType {
   status: "loading" | "idle";
   error?: string;
   refreshUserPreferences?: () => Promise<void>;
+  refreshUser?: () => Promise<void>;
 }
 
 export const UserAuthContext = createContext<UserAuthContextType>({

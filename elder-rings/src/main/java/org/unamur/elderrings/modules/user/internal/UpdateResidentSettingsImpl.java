@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import org.unamur.elderrings.infra.user.entities.ResidentEntity;
 import org.unamur.elderrings.infra.user.repositories.UserRepository;
+import org.unamur.elderrings.modules.notification.api.SendNotificationInterface;
 import org.unamur.elderrings.modules.user.api.UpdateResidentSettings;
 import org.unamur.elderrings.modules.user.api.models.Resident;
+import org.unamur.elderrings.modules.user.internal.messages.UserUpdatedMessage;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UpdateResidentSettingsImpl implements UpdateResidentSettings {
 
     private final UserRepository userRepository;
+    private final SendNotificationInterface sendNotification;
 
     @Override
     @Transactional
@@ -30,5 +33,10 @@ public class UpdateResidentSettingsImpl implements UpdateResidentSettings {
         }
 
         resident.setAutonomyLevel(ResidentEntity.AutonomyLevel.valueOf(level.name()));
+
+        sendNotification.send(residentId, UserUpdatedMessage.builder()
+                .type("USER_UPDATED")
+                .value(residentId)
+                .build());
     }
 }
