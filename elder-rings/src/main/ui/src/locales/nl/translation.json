@@ -77,6 +77,17 @@
       "Accept": "Accepteren",
       "Decline": "Weigeren"
     },
+    "AddParticipantModal": {
+      "Title": "Iemand aan de oproep toevoegen",
+      "Add": "{{name}} aan de oproep toevoegen",
+      "Invited": "{{name}} is uitgenodigd.",
+      "NoCandidate": "Niemand om toe te voegen.",
+      "OwnContacts": "Mijn contacten",
+      "Colleagues": "Personeel",
+      "ResidentContacts": "Naasten van de bewoner",
+      "LoadFailed": "De lijst kon niet worden geladen. Probeer opnieuw.",
+      "Failed": "De uitnodiging is mislukt. Probeer opnieuw."
+    },
     "UserPreferencesForm": {
       "DndTitle": "Niet storen",
       "DndEnabled": "Niet storen staat aan (tot uitschakeling)",
@@ -148,6 +159,7 @@
       "WaitingUserToJoin": "Wachten tot je gesprekspartner meedoet",
       "MediaError": "De camera of de microfoon is niet beschikbaar.",
       "EndCall": "Oproep beëindigen",
+      "AddParticipant": "Iemand toevoegen",
       "StopScreenShare": "Scherm delen stoppen",
       "ShareScreen": "Scherm delen",
       "DisplayVideo": "Webcam tonen",

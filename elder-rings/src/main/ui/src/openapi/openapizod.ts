@@ -23,6 +23,38 @@ const CallRoomDto = z
     ).uuid(),
   })
   .passthrough();
+const AddCallRoomMemberBody = z
+  .object({
+    roomId: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    userId: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+  })
+  .passthrough();
+const UserType = z.enum(["RESIDENT", "FAMILY", "STAFF"]);
+const ContactDto = z
+  .object({
+    id: UUID.regex(
+      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+    ).uuid(),
+    username: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    userType: UserType,
+    picture: z.union([z.string(), z.null()]),
+  })
+  .partial()
+  .passthrough();
+const AddableUsersDto = z
+  .object({
+    ownContacts: z.array(ContactDto),
+    colleagues: z.array(ContactDto),
+    residentContacts: z.array(ContactDto),
+  })
+  .partial()
+  .passthrough();
 const RejectCallRoomInvitationBody = z
   .object({
     roomId: UUID.regex(
@@ -119,20 +151,6 @@ const UserPreferencesDto = z
   })
   .partial()
   .passthrough();
-const UserType = z.enum(["RESIDENT", "FAMILY", "STAFF"]);
-const ContactDto = z
-  .object({
-    id: UUID.regex(
-      /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
-    ).uuid(),
-    username: z.string(),
-    firstName: z.string(),
-    lastName: z.string(),
-    userType: UserType,
-    picture: z.union([z.string(), z.null()]),
-  })
-  .partial()
-  .passthrough();
 const AutonomyLevel = z.enum(["AUTONOMOUS", "INTERMEDIATE", "DEPENDENT"]);
 const UserDto = z
   .object({
@@ -172,6 +190,10 @@ export const schemas = {
   CreateCallRoomBody,
   UUID,
   CallRoomDto,
+  AddCallRoomMemberBody,
+  UserType,
+  ContactDto,
+  AddableUsersDto,
   RejectCallRoomInvitationBody,
   ContactRequestStatusDto,
   Instant,
@@ -188,8 +210,6 @@ export const schemas = {
   UserDndWindowDto,
   UserDndPreferencesDto,
   UserPreferencesDto,
-  UserType,
-  ContactDto,
   AutonomyLevel,
   UserDto,
   ResidentDto,
@@ -210,6 +230,39 @@ const endpoints = makeApi([
       },
     ],
     response: CallRoomDto,
+  },
+  {
+    method: "post",
+    path: "/elder-rings/api/call-room/add-member",
+    alias: "addCallRoomMember",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AddCallRoomMemberBody,
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/elder-rings/api/call-room/addable-users",
+    alias: "getAddableCallRoomUsers",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "roomId",
+        type: "Query",
+        schema: z
+          .string()
+          .regex(
+            /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/
+          )
+          .uuid(),
+      },
+    ],
+    response: AddableUsersDto,
   },
   {
     method: "post",

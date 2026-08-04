@@ -24,3 +24,4 @@ export { default as IconLockOpen } from "~icons/mdi/lock-open-variant-outline";
 export { default as IconCheck } from "~icons/mdi/check";
 export { default as IconClose } from "~icons/mdi/close";
 export { default as IconStaff } from "~icons/mdi/account-group-outline";
+export { default as IconAddParticipant } from "~icons/mdi/account-plus-outline";

@@ -7,5 +7,7 @@ export default function CallRoomPage() {
   const { roomId } = useParams();
 
   if (!roomId) return <p>error</p>;
-  else return <VideoCall roomId={roomId} cameraOn={state?.cameraOn} />;
+  // keyed on the room: accepting an invitation while already in a call must
+  // build a new call rather than reuse the peer connections of the previous one
+  else return <VideoCall key={roomId} roomId={roomId} cameraOn={state?.cameraOn} />;
 }

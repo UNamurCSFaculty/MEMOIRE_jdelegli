@@ -77,6 +77,17 @@
       "Accept": "Accept",
       "Decline": "Decline"
     },
+    "AddParticipantModal": {
+      "Title": "Add someone to the call",
+      "Add": "Add {{name}} to the call",
+      "Invited": "{{name}} has been invited.",
+      "NoCandidate": "Nobody to add.",
+      "OwnContacts": "My contacts",
+      "Colleagues": "Staff",
+      "ResidentContacts": "The resident's relatives",
+      "LoadFailed": "The list could not be loaded. Please try again.",
+      "Failed": "The invitation failed. Please try again."
+    },
     "UserPreferencesForm": {
       "DndTitle": "Do not disturb",
       "DndEnabled": "Do not disturb is on (until turned off)",
@@ -148,6 +159,7 @@
       "WaitingUserToJoin": "Waiting for your contact to join",
       "MediaError": "The camera or the microphone is not available.",
       "EndCall": "Hang up",
+      "AddParticipant": "Add someone",
       "StopScreenShare": "Stop screen sharing",
       "ShareScreen": "Share screen",
       "DisplayVideo": "Show webcam",

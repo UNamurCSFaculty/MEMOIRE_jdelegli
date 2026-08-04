@@ -6,15 +6,19 @@ import {
   IconMute,
   IconStartVideo,
   IconStopVideo,
+  IconAddParticipant,
 } from "@components/icons/favouriteIcons";
 import Row from "@components/layout/Row";
 import { Button, Tooltip } from "@heroui/react";
 import { toggleMuteAudio, toggleVideo } from "@utils/webRtcHelper";
 import { t } from "i18next";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useState } from "react";
+import AddParticipantModal from "./AddParticipantModal";
 
 interface VideoCallActionBarProps {
   disabled: boolean;
+  /** the call room socket is open, so the server can answer about this room */
+  isRoomJoined: boolean;
   localStreamRef: MutableRefObject<MediaStream | null>;
   endCall: () => void;
   className?: string;
@@ -25,10 +29,12 @@ interface VideoCallActionBarProps {
   isScreenSharing: boolean;
   startScreenShare: () => void;
   stopScreenShare: () => void;
+  roomId: string;
 }
 
 export default function VideoCallActionBar({
   disabled,
+  isRoomJoined,
   endCall,
   localStreamRef,
   className,
@@ -39,7 +45,10 @@ export default function VideoCallActionBar({
   isScreenSharing,
   startScreenShare,
   stopScreenShare,
+  roomId,
 }: Readonly<VideoCallActionBarProps>) {
+  const [isAddOpen, setIsAddOpen] = useState(false);
+
   return (
     <div className={className ?? ""}>
       <Row className="gap-4 mx-auto">
@@ -118,7 +127,25 @@ export default function VideoCallActionBar({
             {isVideoHidden ? t("Pages.CallRoom.DisplayVideo") : t("Pages.CallRoom.HideVideo")}
           </Tooltip.Content>
         </Tooltip>
+        <Tooltip delay={0}>
+          <Tooltip.Trigger>
+            <Button
+              isIconOnly
+              size="lg"
+              onPress={() => setIsAddOpen(true)}
+              // inviting needs no local media, so a camera failure must not stop
+              // it, but the server can only answer once our session joined the
+              // room, otherwise the list comes back as a refusal
+              isDisabled={!isRoomJoined}
+              aria-label={t("Pages.CallRoom.AddParticipant")}
+            >
+              <IconAddParticipant />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content>{t("Pages.CallRoom.AddParticipant")}</Tooltip.Content>
+        </Tooltip>
       </Row>
+      <AddParticipantModal roomId={roomId} isOpen={isAddOpen} onOpenChange={setIsAddOpen} />
     </div>
   );
 }
