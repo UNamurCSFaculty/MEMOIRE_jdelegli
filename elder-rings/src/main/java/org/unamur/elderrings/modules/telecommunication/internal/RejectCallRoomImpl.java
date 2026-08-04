@@ -25,19 +25,18 @@ public class RejectCallRoomImpl implements RejectCallRoomInterface {
   public void markRejectedBy(CallRoomId id) {
 
     var room = repository.findById(id)
-                      .orElseThrow(() -> new BadRequestException(String.format("Call room with id %s not found", id.value()))
-                      );
-    
+        .orElseThrow(() -> new BadRequestException(String.format("Call room with id %s not found", id.value())));
+
     if (!room.isMember(user)) {
       throw new ForbiddenException(
-        String.format("User %s cannot reject the call room %s as he is not a member", user.getId(), room.id().value())
-      );
+          String.format("User %s cannot reject the call room %s as he is not a member", user.getId(),
+              room.id().value()));
     }
 
     if (room.sessions().containsKey(CallRoomMember.of(user))) {
       throw new BadRequestException(
-        String.format("User %s already joined the call room %s, he cannot reject the request", user.getId(), room.id().value())
-      );
+          String.format("User %s already joined the call room %s, he cannot reject the request", user.getId(),
+              room.id().value()));
     }
 
     repository.markRejectedBy(room.id(), CallRoomMember.of(user));
@@ -45,27 +44,24 @@ public class RejectCallRoomImpl implements RejectCallRoomInterface {
     room.sessions().remove(CallRoomMember.of(user));
     log.info("User {} refused to join the call room {}", user.getId(), room.id().value());
 
-
     // delete room if no user left
-    if(room.sessions().isEmpty()) {
-      repository.delete( room.id());
-      log.info("Call room {} is empty, deleting it",  room.id());
+    if (room.sessions().isEmpty()) {
+      repository.delete(room.id());
+      log.info("Call room {} is empty, deleting it", room.id());
     }
 
     // notify all users that the user left
-    room.sessions().values().forEach(session ->
-      {
-        try {
-          session.getBasicRemote()
-                  .sendObject(CallRoomRejectionMessage.builder()
-                                                            .type("CALL_ROOM_USER_REJECTED_CALL")
-                                                            .value(user.getId())
-                                                            .build());                          
-        } catch (Exception e) {
-          log.error("Error while sending user rejection message in room {}. Error {}", room.id().value(), e);
-        }
+    room.sessions().values().forEach(session -> {
+      try {
+        session.getBasicRemote()
+            .sendObject(CallRoomRejectionMessage.builder()
+                .type("CALL_ROOM_USER_REJECTED_CALL")
+                .value(user.getId())
+                .build());
+      } catch (Exception e) {
+        log.error("Error while sending user rejection message in room {}. Error {}", room.id().value(), e);
       }
-    );
+    });
   }
-  
+
 }

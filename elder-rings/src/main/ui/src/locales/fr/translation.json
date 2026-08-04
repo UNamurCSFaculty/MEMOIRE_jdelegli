@@ -146,6 +146,7 @@
       "UserLeftCall": "Votre correspondant a quitté l'appel",
       "UserRejectedCall": "Votre correspondant à refusé l'appel",
       "WaitingUserToJoin": "En attente de votre correspondant",
+      "MediaError": "La caméra ou le micro n'est pas disponible.",
       "EndCall": "Raccrocher",
       "StopScreenShare": "Arrêter le partage d'écran",
       "ShareScreen": "Partager l'écran",

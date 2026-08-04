@@ -1,296 +1,137 @@
 // This util file is dedicated to handle and centralize the web rtc logic only
-// It is also slightly related to the environement
-//    - we display both the local user and the remote user video signal (via React Ref)
-//    - we flag data in the web socket message (type field, and the message is in value)
+//
+// A call is a mesh: an RTCPeerConnection is a pipe between exactly two browsers,
+// so every participant holds one connection per other participant. Everything
+// here therefore works on a single peer at a time, or on the whole set of
+// connections when the change concerns what we send to everyone (screen share).
+//
+// The local tracks are shared by every connection, which is why muting happens
+// on the stream itself and why closing one connection must never stop a track.
 
-import { MutableRefObject, RefObject } from "react";
-import { WebrtcWebSocketEventMessage } from "../types/rtcWebSocketEventMessage";
+import { WebrtcSignalType } from "../types/rtcWebSocketEventMessage";
 
-export function onIceCandidateHandler(
-  evt: RTCPeerConnectionIceEvent,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void,
-) {
-  if (!evt?.candidate) return;
-  else sendJsonMessage({ type: "ice-candidate", value: evt.candidate });
+export type SendSignal = (message: {
+  type: WebrtcSignalType;
+  to: string;
+  value: unknown;
+}) => void;
+
+export function createPeerConnection(): RTCPeerConnection {
+  return new RTCPeerConnection();
 }
 
-export function closeAllConnections(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  remoteVideoRef: RefObject<HTMLVideoElement>,
-  localVideoRef: RefObject<HTMLVideoElement>,
+export async function createAndSendOffer(
+  connection: RTCPeerConnection,
+  peerId: string,
+  sendSignal: SendSignal,
 ) {
-  // 1. close all WebRTC peer connections
-  if (peerConnection.current && peerConnection.current.signalingState !== "closed") {
-    peerConnection.current.getSenders().forEach((sender) => {
-      if (sender.track) sender.track.stop();
-      peerConnection.current?.removeTrack(sender);
-    });
-    peerConnection.current.close();
-    peerConnection.current = null;
-  }
-  // 2. Stop local media tracks
-  if (localVideoRef.current?.srcObject) {
-    const stream = localVideoRef.current.srcObject as MediaStream;
-    stream.getTracks().forEach((track) => {
-      track.stop();
-    });
-    localVideoRef.current.srcObject = null;
-  }
-  // 2. Stop remote media tracks
-  if (remoteVideoRef.current?.srcObject) {
-    const stream = remoteVideoRef.current.srcObject as MediaStream;
-    stream.getTracks().forEach((track) => {
-      track.stop();
-    });
-    remoteVideoRef.current.srcObject = null;
-  }
-}
-
-export function onTrackHandler(evt: RTCTrackEvent, remoteVideoRef: RefObject<HTMLVideoElement>) {
-  if (remoteVideoRef.current) {
-    remoteVideoRef.current.srcObject = evt.streams[0];
-  }
-}
-
-export function initiateCall(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void,
-  localStreamRef?: MutableRefObject<MediaStream | null>,
-  cameraOn?: boolean | null,
-) {
-  if (!peerConnection?.current) {
-    console.error("Cannot initiate a call before the connection is ready");
-  } else {
-    const streamPromise = localStreamRef?.current
-      ? Promise.resolve(localStreamRef.current)
-      : navigator.mediaDevices.getUserMedia({
-          audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true },
-          video: true,
-        });
-
-    streamPromise.then((stream) => {
-      if (cameraOn === false) {
-        stream.getVideoTracks().forEach((track) => (track.enabled = false));
-      }
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      // we can ignore the "is possibly null" issue on current as already tested in if condition
-      stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-      createAndSendOffer(peerConnection, sendJsonMessage);
-    });
-  }
-}
-
-export function stopScreenShare(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>,
-) {
-  if (!peerConnection.current) {
-    console.error("Cannot stop screen share before the connection is established.");
+  if (connection.signalingState !== "stable") {
+    // an offer is already being negotiated with this peer, sending another one
+    // now would corrupt it
+    console.warn("Skipping offer creation, signaling state is:", connection.signalingState);
     return;
   }
-
-  // Get back the webcam stream
-  navigator.mediaDevices
-    .getUserMedia({
-      audio: {
-        noiseSuppression: true,
-        echoCancellation: true,
-        autoGainControl: true,
-      },
-      video: true,
-    })
-    .then((stream) => {
-      const webcamTrack = stream.getVideoTracks()[0];
-
-      // Restore local video to webcam feed
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-
-      // Replace the screen-sharing track with webcam track
-      const sender = peerConnection.current?.getSenders().find((s) => s.track?.kind === "video");
-
-      if (sender) {
-        sender.replaceTrack(webcamTrack);
-      }
-    });
+  try {
+    const offer = await connection.createOffer();
+    await connection.setLocalDescription(offer);
+    sendSignal({ type: "offer", to: peerId, value: connection.localDescription });
+  } catch (e) {
+    console.error("Error while trying to send an offer to", peerId, e);
+  }
 }
 
-export function startScreenShare(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>,
+export async function createAndSendAnswer(
+  connection: RTCPeerConnection,
+  peerId: string,
+  sendSignal: SendSignal,
 ) {
-  if (!peerConnection.current) {
-    console.error("Cannot share screen before the connection is established.");
+  try {
+    const answer = await connection.createAnswer();
+    await connection.setLocalDescription(answer);
+    sendSignal({ type: "answer", to: peerId, value: connection.localDescription });
+  } catch (e) {
+    console.error("Error while trying to send an answer to", peerId, e);
+  }
+}
+
+/**
+ * @returns true when the description was applied, so the caller knows whether
+ *          the buffered candidates may be replayed and an answer produced
+ */
+export async function applyRemoteDescription(
+  connection: RTCPeerConnection,
+  description: RTCSessionDescriptionInit,
+): Promise<boolean> {
+  try {
+    await connection.setRemoteDescription(new RTCSessionDescription(description));
+    return true;
+  } catch (e) {
+    console.error("Error while processing a remote peer description:", e);
+    return false;
+  }
+}
+
+/**
+ * Closes one peer connection. The local tracks are deliberately left alone:
+ * every connection sends the very same track objects, so stopping them here
+ * would cut the camera for all the other participants.
+ */
+export function closePeerConnection(connection: RTCPeerConnection) {
+  if (connection.signalingState === "closed") {
     return;
   }
-
-  navigator.mediaDevices
-    .getDisplayMedia({ video: true, audio: false }) // Set `audio: true` if needed
-    .then((screenStream) => {
-      const screenTrack = screenStream.getVideoTracks()[0];
-
-      // Display screen in local video element
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = screenStream;
-      }
-
-      // Replace the existing video track in the connection
-      const sender = peerConnection.current?.getSenders().find((s) => s.track?.kind === "video");
-
-      if (sender) {
-        sender.replaceTrack(screenTrack);
-      }
-
-      // Stop sharing when the user ends it
-      screenTrack.onended = () => {
-        stopScreenShare(peerConnection, localVideoRef);
-      };
-    })
-    .catch((error) => console.error("Error starting screen share:", error));
+  connection.onicecandidate = null;
+  connection.ontrack = null;
+  connection.ondatachannel = null;
+  connection.close();
 }
 
-export function answerCall(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void,
-  localStreamRef?: MutableRefObject<MediaStream | null>,
-  cameraOn?: boolean | null,
-) {
-  if (!peerConnection?.current) {
-    console.error("Cannot answer a call before the connection is ready");
-  } else {
-    const streamPromise = localStreamRef?.current
-      ? Promise.resolve(localStreamRef.current)
-      : navigator.mediaDevices.getUserMedia({
-          audio: { noiseSuppression: true, echoCancellation: true, autoGainControl: true },
-          video: true,
-        });
-
-    streamPromise.then((stream) => {
-      if (cameraOn === false) {
-        stream.getVideoTracks().forEach((track) => (track.enabled = false));
-      }
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-      // we can ignore the "is possibly null" issue on current as already tested in if condition
-      stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-      createAndSendAnswer(peerConnection, sendJsonMessage);
-    });
+/**
+ * @returns true when the microphone ends up muted
+ */
+export function toggleMuteAudio(stream: MediaStream | null): boolean {
+  if (!stream) {
+    return false;
   }
+  let muted = false;
+  stream.getAudioTracks().forEach((track) => {
+    track.enabled = !track.enabled;
+    muted = !track.enabled;
+  });
+  return muted;
 }
 
-export function terminateCall(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  localVideoRef: RefObject<HTMLVideoElement>,
-  remoteVideoRef: RefObject<HTMLVideoElement>,
-) {
-  if (!peerConnection?.current) {
-    console.error("Cannot end a call before the connection is ready");
-  } else {
-    closeAllConnections(peerConnection, remoteVideoRef, localVideoRef);
+/**
+ * @returns true when the camera ends up hidden
+ */
+export function toggleVideo(stream: MediaStream | null): boolean {
+  if (!stream) {
+    return false;
   }
+  let hidden = false;
+  stream.getVideoTracks().forEach((track) => {
+    track.enabled = !track.enabled;
+    hidden = !track.enabled;
+  });
+  return hidden;
 }
 
-export function toggleMuteAudio(peerConnection: MutableRefObject<RTCPeerConnection | null>) {
-  peerConnection.current?.getSenders().forEach((sender) => {
-    if (sender.track?.kind === "audio") {
-      sender.track.enabled = !sender.track.enabled;
-    }
+/**
+ * Swaps what every peer receives as video. replaceTrack does not need a new
+ * negotiation, which is what makes screen sharing cheap in a mesh.
+ */
+export function replaceVideoTrack(connections: RTCPeerConnection[], track: MediaStreamTrack) {
+  connections.forEach((connection) => {
+    const sender = connection.getSenders().find((s) => s.track?.kind === "video");
+    sender?.replaceTrack(track).catch((e) => console.error("Error while replacing a track:", e));
   });
 }
 
-export function toggleVideo(peerConnection: MutableRefObject<RTCPeerConnection | null>) {
-  peerConnection.current?.getSenders().forEach((sender) => {
-    if (sender.track?.kind === "video") {
-      sender.track.enabled = !sender.track.enabled;
-    }
-  });
-}
-
-function createAndSendOffer(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void,
-) {
-  if (!peerConnection.current) {
-    console.error("Peer connection not established");
-  } else if (peerConnection.current.signalingState !== "stable") {
-    // Glare guard: an offer was already received (or sent) while this one
-    // was being prepared, sending ours now would corrupt the negotiation
-    console.warn(
-      "Skipping offer creation, signaling state is:",
-      peerConnection.current.signalingState,
-    );
-  } else {
-    peerConnection.current
-      .createOffer()
-      .then((offer) => {
-        const offerSessionDesc = new RTCSessionDescription(offer);
-        // we can ignore the "is possibly null" issue on current as already tested in if condition
-        peerConnection
-          .current!.setLocalDescription(offerSessionDesc)
-          .then(() => {
-            sendJsonMessage({ type: "offer", value: offerSessionDesc });
-          })
-          .catch((e) => {
-            console.error("Error while trying to send offer message: ", e);
-          });
-      })
-      .catch((e) => {
-        console.error("Error while trying to generate offer message: ", e);
-      });
-  }
-}
-
-function createAndSendAnswer(
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendJsonMessage: (params: any) => void,
-) {
-  if (!peerConnection.current) {
-    console.error("Peer connection not established");
-  } else {
-    peerConnection.current
-      .createAnswer()
-      .then((answer) => {
-        peerConnection
-          .current!.setLocalDescription(answer)
-          .then(() => {
-            sendJsonMessage({ type: "answer", value: answer });
-          })
-          .catch((e) => {
-            console.error("Error while trying to send answer message: ", e);
-          });
-      })
-      .catch((e) => {
-        console.error("Error while trying to generate answer message: ", e);
-      });
-  }
-}
-
-export function proccessWebRTCMessage(
-  message: WebrtcWebSocketEventMessage,
-  peerConnection: MutableRefObject<RTCPeerConnection | null>,
-) {
-  if (!peerConnection.current) {
-    console.error("Peer connection not established");
-  } else if (message.type === "offer" || message.type === "answer") {
-    peerConnection.current
-      .setRemoteDescription(new RTCSessionDescription(message.value))
-      .catch((e) => {
-        console.error("Error while processing remote peer description :", e);
-      });
-  } else if (message.type === "ice-candidate") {
-    peerConnection.current.addIceCandidate(new RTCIceCandidate(message.value)).catch((e) => {
-      console.error("Error while processing remote peer ice candidate :", e);
-    });
+export async function acquireScreenStream(): Promise<MediaStream | null> {
+  try {
+    return await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+  } catch (e) {
+    console.error("Error starting screen share:", e);
+    return null;
   }
 }

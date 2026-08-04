@@ -15,12 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 public class GetCallRoomImpl implements GetCallRoomInterface {
 
   private final CallRoomRepository repository;
-  
+
   @Override
   public CallRoom getCallRoom(CallRoomId id) {
     return repository.findById(id)
-                      .orElseThrow(() -> new BadRequestException(String.format("Call room with id %s not found", id.value()))
-                      );
+        .orElseThrow(() -> new BadRequestException(String.format("Call room with id %s not found", id.value())));
   }
-  
+
 }

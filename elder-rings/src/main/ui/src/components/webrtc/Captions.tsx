@@ -1,9 +1,8 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useUserPreferences } from "../../hooks/useUserPreferences";
 
 export interface CaptionsProps {
-  peerConnection: MutableRefObject<RTCPeerConnection | null>;
-  className?: string;
+  sendCaption: (caption: string) => void;
   emitCaptions: boolean;
 }
 
@@ -16,54 +15,25 @@ export function getSpeechLocaleFromUserPrefs(lang: string | undefined): string {
   return map[lang ?? "fr"] ?? "fr-FR";
 }
 
-export default function Captions({
-  peerConnection,
-  className,
-  emitCaptions,
-}: Readonly<CaptionsProps>) {
-  const [remoteCaption, setRemoteCaption] = useState("");
+/**
+ * Recognizes what the local user says and sends it to the other participants
+ * through the data channels owned by the call hook. It displays nothing: each
+ * caption is shown on the tile of the participant who said it.
+ */
+export default function Captions({ sendCaption, emitCaptions }: Readonly<CaptionsProps>) {
   const { userPreferences } = useUserPreferences();
+  const lang = getSpeechLocaleFromUserPrefs(userPreferences?.general?.lang);
 
-  const dataChannel = useRef<RTCDataChannel | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognition = useRef<any | null>(null);
 
   useEffect(() => {
-    if (!peerConnection.current) {
+    // a muted microphone must stop the recognizer, not merely drop what it
+    // produces: it would otherwise keep listening for the whole call
+    if (!emitCaptions) {
       return;
     }
 
-    // Create a DataChannel for sending captions (only initiator)
-    if (!dataChannel.current) {
-      dataChannel.current = peerConnection.current.createDataChannel("captions");
-
-      // Handle sending local captions to the remote peer
-      dataChannel.current.onopen = () => {
-        console.log("Data channel open, ready to send captions.");
-      };
-
-      dataChannel.current.onclose = () => {
-        console.log("Data channel closed.");
-      };
-    }
-
-    // Handle receiving data channel for the non-initiator
-    peerConnection.current.ondatachannel = (event: RTCDataChannelEvent) => {
-      const channel = event.channel;
-      if (channel.label === "captions") {
-        channel.onmessage = (msgEvent: MessageEvent) => {
-          setRemoteCaption(msgEvent.data); // Update remote captions
-        };
-      }
-    };
-
-    return () => {
-      // Clean up the data channel when the component unmounts
-      dataChannel.current?.close();
-    };
-  }, [peerConnection.current]);
-
-  useEffect(() => {
     if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
       console.error("SpeechRecognition API is not supported in this browser.");
       return;
@@ -75,7 +45,7 @@ export default function Captions({
 
     recognition.current = new SpeechRecognition();
     recognition.current.continuous = true;
-    recognition.current.lang = getSpeechLocaleFromUserPrefs(userPreferences?.general?.lang);
+    recognition.current.lang = lang;
     recognition.current.interimResults = true;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,24 +54,16 @@ export default function Captions({
       for (let i = event.resultIndex; i < event.results.length; i++) {
         transcript += event.results[i][0].transcript;
       }
-
-      if (dataChannel.current?.readyState === "open" && emitCaptions) {
-        dataChannel.current?.send(transcript); // Send caption if data channel is open
-      }
+      sendCaption(transcript);
     };
 
     recognition.current.start();
 
     return () => {
       recognition.current?.stop();
+      recognition.current = null;
     };
-  }, [emitCaptions]);
+  }, [emitCaptions, lang, sendCaption]);
 
-  return (
-    <div className={className ?? ""}>
-      {remoteCaption !== "" && (
-        <p className="bg-black/60 text-white text-4xl px-8 py-4 rounded-lg">{remoteCaption}</p>
-      )}
-    </div>
-  );
+  return null;
 }
