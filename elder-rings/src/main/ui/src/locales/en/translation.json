@@ -139,6 +139,7 @@
         "Label": "Do Not Disturb"
       },
       "Residents": "Residents",
+      "Colleagues": "Colleagues",
       "TutoredResident": "My relative's settings"
     },
     "CallRoom": {
@@ -165,6 +166,12 @@
       "PictureAlt": "{{name}}'s photo",
       "Call": "Start a call with {{name}}",
       "Settings": "{{name}}'s settings",
+      "DoNotDisturb": "Do not disturb"
+    },
+    "StaffPage": {
+      "Title": "Staff members",
+      "PictureAlt": "{{name}}'s photo",
+      "Call": "Start a call with {{name}}",
       "DoNotDisturb": "Do not disturb"
     },
     "ResidentSettingsPage": {

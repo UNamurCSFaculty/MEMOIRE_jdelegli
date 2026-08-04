@@ -17,7 +17,7 @@ import { useUser } from "../hooks/useUser";
 import { ContactRequestWithUser } from "@components/addContact/ContactRequestModal";
 import { IconCheck, IconClose } from "@components/icons/favouriteIcons";
 import ResidentTutors from "@components/residentSettings/ResidentTutors";
-import UserRow from "@components/residentSettings/UserRow";
+import UserRow from "@components/users/UserRow";
 
 export default function ResidentSettingsPage() {
   const { t } = useTranslation();

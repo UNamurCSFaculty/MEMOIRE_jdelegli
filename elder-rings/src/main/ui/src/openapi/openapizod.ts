@@ -649,6 +649,25 @@ const endpoints = makeApi([
       .uuid(),
   },
   {
+    method: "get",
+    path: "/elder-rings/api/user/staff",
+    alias: "getStaffMembers",
+    requestFormat: "json",
+    response: z.array(ContactDto),
+    errors: [
+      {
+        status: 401,
+        description: `Not Authorized`,
+        schema: z.void(),
+      },
+      {
+        status: 403,
+        description: `Not Allowed`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
     method: "delete",
     path: "/elder-rings/api/user/tutors/of-resident",
     alias: "removeTutor",

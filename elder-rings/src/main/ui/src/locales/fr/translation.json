@@ -139,6 +139,7 @@
         "Label": "Ne pas déranger"
       },
       "Residents": "Résidents",
+      "Colleagues": "Collègues",
       "TutoredResident": "Réglages de mon proche"
     },
     "CallRoom": {
@@ -165,6 +166,12 @@
       "PictureAlt": "Photo de {{name}}",
       "Call": "Démarrer un appel avec {{name}}",
       "Settings": "Réglages de {{name}}",
+      "DoNotDisturb": "Ne pas déranger"
+    },
+    "StaffPage": {
+      "Title": "Membres du personnel",
+      "PictureAlt": "Photo de {{name}}",
+      "Call": "Démarrer un appel avec {{name}}",
       "DoNotDisturb": "Ne pas déranger"
     },
     "ResidentSettingsPage": {

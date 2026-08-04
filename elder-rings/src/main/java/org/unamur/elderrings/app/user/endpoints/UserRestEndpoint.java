@@ -42,6 +42,7 @@ import io.quarkus.security.ForbiddenException;
 import org.unamur.elderrings.modules.user.api.AssignTutor;
 import org.unamur.elderrings.modules.user.api.GetAllFamilies;
 import org.unamur.elderrings.modules.user.api.GetAllResidents;
+import org.unamur.elderrings.modules.user.api.GetAllStaff;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -78,6 +79,7 @@ public class UserRestEndpoint {
   private final GetAllFamilies getAllFamilies;
   private final AssignTutor assignTutor;
   private final RemoveTutor removeTutor;
+  private final GetAllStaff getAllStaff;
 
   @GET
   @Path("/me")
@@ -258,5 +260,14 @@ public class UserRestEndpoint {
       @QueryParam("tutorId") UUID tutorId) {
     removeTutor.removeTutor(tutorId, residentId);
     return RestResponse.ok();
+  }
+
+  @GET
+  @Path("/staff")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(operationId = "getStaffMembers")
+  @RolesAllowed("staff")
+  public RestResponse<List<ContactDto>> getStaffMembers() {
+    return RestResponse.ok(getAllStaff.getAllStaff().stream().map(ContactMapper::toDto).toList());
   }
 }

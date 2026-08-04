@@ -139,6 +139,7 @@
         "Label": "Niet storen"
       },
       "Residents": "Bewoners",
+      "Colleagues": "Collega's",
       "TutoredResident": "Instellingen van mijn naaste"
     },
     "CallRoom": {
@@ -165,6 +166,12 @@
       "PictureAlt": "Foto van {{name}}",
       "Call": "Start een oproep met {{name}}",
       "Settings": "Instellingen van {{name}}",
+      "DoNotDisturb": "Niet storen"
+    },
+    "StaffPage": {
+      "Title": "Personeelsleden",
+      "PictureAlt": "Foto van {{name}}",
+      "Call": "Start een oproep met {{name}}",
       "DoNotDisturb": "Niet storen"
     },
     "ResidentSettingsPage": {

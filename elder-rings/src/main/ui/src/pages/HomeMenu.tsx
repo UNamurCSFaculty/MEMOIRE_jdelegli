@@ -8,6 +8,7 @@ import {
   IconDoNotDisturb,
   IconRooms,
   IconSettings,
+  IconStaff,
 } from "@components/icons/favouriteIcons";
 import { useTranslation } from "react-i18next";
 //import WeatherSnippet from "@components/weather/WeatherSnippet";
@@ -68,6 +69,11 @@ export default function HomeMenu() {
               label: "Residents",
               onClick: () => navigate("/residents"),
               icon: IconRooms,
+            },
+            {
+              label: "Colleagues",
+              onClick: () => navigate("/staffs"),
+              icon: IconStaff,
             },
           ]
         : []),
