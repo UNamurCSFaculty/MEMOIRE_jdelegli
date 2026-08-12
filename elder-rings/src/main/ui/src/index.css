@@ -3,12 +3,8 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* The app scrolls inside RootLayout's column only: stray hidden elements
-   appended to <body> by libraries must never create a window-level scroll */
-html,
 body {
-  height: 100%;
-  overflow: hidden;
+  background-color: var(--color-indigo-900);
 }
 
 @theme {

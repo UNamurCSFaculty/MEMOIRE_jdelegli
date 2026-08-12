@@ -151,7 +151,7 @@ export default function UserPreferencesForm({
   const callPolicyReadonly = lockMode === "readonly" && (formData.callPolicy?.locked ?? false);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 flex-1 min-h-0 overflow-auto">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 flex-1">
       {/* Profile Picture */}
       <div className="flex flex-wrap gap-8 justify-start">
         {showPictureSection && (

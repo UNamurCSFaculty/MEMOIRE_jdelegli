@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 
 export default function RootLayout() {
   return (
-    <Col className="h-screen w-full bg-linear-to-br from-indigo-900 via-sky-800 to-blue-900 overflow-auto">
+    <Col className="min-h-screen w-full bg-linear-to-br from-indigo-900 via-sky-800 to-blue-900">
       <Outlet />
       <IncomingCallListener />
       <PreferencesSyncListener />

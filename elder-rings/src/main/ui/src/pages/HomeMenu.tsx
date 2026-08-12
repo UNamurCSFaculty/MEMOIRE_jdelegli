@@ -151,9 +151,9 @@ export default function HomeMenu() {
   }, [options]);
 
   return (
-    <div className="flex flex-col w-screen h-screen p-6 gap-4">
+    <div className="flex flex-col w-full min-h-screen sm:h-screen p-6 gap-4">
       <DndBanner />
-      <div className="grid grid-cols-2 auto-rows-fr gap-4 w-full flex-1 min-h-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 auto-rows-[minmax(11rem,1fr)] sm:auto-rows-fr gap-4 w-full flex-1 sm:min-h-0">
         {options.map((option, index) => {
           const isAloneOnRow = index === options.length - 1 && options.length % 2 === 1;
           return (
@@ -167,7 +167,7 @@ export default function HomeMenu() {
               onClick={option.onClick}
               className={twMerge(
                 "relative h-full transition-all duration-200 backdrop-blur-xl bg-white/10 hover:bg-white/20 text-white rounded-2xl flex flex-col items-center justify-center text-center shadow-lg focus:outline-none",
-                isAloneOnRow && "col-span-2",
+                isAloneOnRow && "sm:col-span-2",
                 option.className,
               )}
             >
@@ -175,9 +175,9 @@ export default function HomeMenu() {
               {/* {option.render ? (
                 option.render()
               ) : ( */}
-              <option.icon className="mb-4 drop-shadow w-32 h-32" />
+              <option.icon className="mb-4 drop-shadow w-24 h-24 sm:w-32 sm:h-32" />
               {/* )} */}
-              <span className="text-3xl font-semibold drop-shadow">
+              <span className="text-2xl sm:text-3xl font-semibold drop-shadow">
                 {t(`Pages.HomeMenu.${option.label}`)}
               </span>
             </Button>
